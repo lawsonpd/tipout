@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% for expense in expenses %}
+<ul>
+    <li>{{ expense.expense_name }} {{ expense.cost }} {{ expense.frequency }}</li>
+</ul>
+{% endfor %}
+
+<p><a href="/enter-expenses/">Enter more expenses</a>
+
+{% endblock %}
