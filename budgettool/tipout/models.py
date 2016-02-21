@@ -9,7 +9,7 @@ from django.utils.encoding import python_2_unicode_compatible
 class Employee(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='employees')
     new_user = models.BooleanField()
-    init_avg_daily_tips = models.IntegerField()
+    init_avg_daily_tips = models.IntegerField(default=0)
 #     first_name = models.CharField(max_length=50)
 #     last_name = models.CharField(max_length=50)
 #
