@@ -5,14 +5,16 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.encoding import python_2_unicode_compatible
 
-# @python_2_unicode_compatible
-# class Employee(models.Model):
-#     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='employees')
+@python_2_unicode_compatible
+class Employee(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='employees')
+    new_user = models.BooleanField()
+    init_avg_daily_tips = models.IntegerField()
 #     first_name = models.CharField(max_length=50)
 #     last_name = models.CharField(max_length=50)
 #
-#     def __str__(self):
-#         return "%s, %s" % (self.last_name, self.first_name)
+    def __str__(self):
+        return self.user.username
 
 class Tip(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='tips')
