@@ -39,6 +39,11 @@ class Expense(models.Model):
                                  choices=FREQ_CHOICES,
                                  default=MONTHLY)
 
+class DailyExpenditures(models.Model):
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='daily_expenditures')
+    cost = models.IntegerField()
+    date = models.DateField(default=date.today)
+
 # not sure if Budget is needed. can we get the data insights we want
 # just by having the Tip and Expense models?
 class Budget(models.Model):
