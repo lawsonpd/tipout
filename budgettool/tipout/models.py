@@ -1,9 +1,9 @@
 from __future__ import unicode_literals
 from datetime import date
-
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.encoding import python_2_unicode_compatible
+from django.forms import ModelForm
 
 # @python_2_unicode_compatible
 # class Employee(models.Model):
@@ -44,3 +44,13 @@ class Expense(models.Model):
 class Budget(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='budget')
     daily_budget = models.FloatField()
+
+class EditTipsForm(ModelForm):
+    class Meta:
+        model = Tip
+        exclude = ['owner', 'hours_worked']
+
+class EditExpensesForm(ModelForm):
+    class Meta:
+        model = Expense
+        exclude = ['owner', 'frequency']
