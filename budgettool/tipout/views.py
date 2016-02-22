@@ -6,17 +6,16 @@ from django.views.decorators.http import require_http_methods
 from tipout.models import Tip, Expense
 from django.contrib.auth.models import User
 
+from tipout.budget import calc_tips_avg
+
 # Create your views here.
 
 def index(request):
+    '''
+    Dummy response
+    '''
     return HttpResponse("hello world")
 
-@login_required(login_url='/login/')
-def view_daily_budget(request):
-    '''
-    Show the budget for the day.
-    Assume we base the daily budget on the current months tips.
-    '''
 @login_required(login_url='/login/')
 def enter_tips(request):
     # if this is a POST request, we need to process the form data
@@ -43,6 +42,10 @@ def enter_tips(request):
 
 @login_required(login_url='/login/')
 def enter_expenses(request):
+    '''
+    On POST request, get expenses data from form and update db.
+    On GET request, show enter_expenses template/form.
+    '''
     if request.method == 'POST':
         form = EnterExpensesForm(request.POST)
         if form.is_valid():
@@ -62,18 +65,36 @@ def enter_expenses(request):
 @login_required(login_url='/login/')
 @require_http_methods(["GET"])
 def view_expenses(request):
+    '''
+    Get expenses that belong to current user and pass them to the template.
+    '''
     expenses = Expense.objects.filter(owner_id=request.user.id)
     return render(request, 'view_expenses.html', {'expenses': expenses})
 
 @login_required(login_url='/login/')
 @require_http_methods(["GET"])
 def tips_summary(request):
+    '''
+    Get tips that belong to current user and pass them to the template.
+    '''
     tips = Tip.objects.filter(owner_id=request.user.id)
     return render(request, 'tips_summary.html', {'tips': tips})
 
 def user_test(request):
     return HttpResponse(request.user.id)
 
+@login_required(login_url='/login/')
+@require_http_methods(["GET"])
 def budget(request):
-    # pass 'user' and user details to template
-    pass
+    '''
+    Get User from request context, then get tips belonging to that user
+    and pass the daily average for past 30 days to template.
+
+    *** Currently this implementation averages ALL tips belonging to user
+    and does NOT give average just considering past 30 days.
+    '''
+    u = User.objects.get(username=request.user)
+    tip_obj = Tip.objects.filter(owner=u)
+    tip_values = [ tip.amount for tip in tip_obj ]
+    daily_tip_avg = calc_tips_avg(tip_values)
+    return render(request, 'budget.html', {'daily_tip_avg': daily_tip_avg})
