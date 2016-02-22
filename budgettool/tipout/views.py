@@ -73,7 +73,7 @@ def view_expenses(request):
     return render(request, 'view_expenses.html', {'expenses': expenses})
 
 @login_required(login_url='/login/')
-@require_http_methods(["GET"])
+@require_http_methods(['GET'])
 def tips_summary(request):
     '''
     Get tips that belong to current user and pass them to the template.
@@ -85,7 +85,7 @@ def user_test(request):
     return HttpResponse(request.user.id)
 
 @login_required(login_url='/login/')
-@require_http_methods(["GET"])
+@require_http_methods(['GET'])
 def budget(request):
     '''
     Get User from request context, then get tips belonging to that user
@@ -144,3 +144,10 @@ def enter_expenditure(request):
         form = EnterExpenditureForm(initial={'date': date.today()})
 
     return render(request, 'enter_expenditure.html', {'form': form})
+
+@login_required(login_url='/login/')
+@require_http_methods(['GET'])
+def view_expenditures(request):
+    u = User.objects.get(username=request.user)
+    exps = Expenditure.objects.filter(owner=u).filter(date=date.today())
+    return render(request, 'expenditures.html', {'exps': exps})

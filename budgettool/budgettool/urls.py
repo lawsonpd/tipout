@@ -16,8 +16,9 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
+from tipout import urls as tipout_urls
 
 urlpatterns = [
-    url(r'^', include('tipout.urls')),
+    url(r'^', include(tipout_urls)),
     url(r'^admin/', admin.site.urls),
 ]
