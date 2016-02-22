@@ -1,16 +1,16 @@
 from __future__ import unicode_literals
 from datetime import date
-
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.encoding import python_2_unicode_compatible
+from django.forms import ModelForm
 
 @python_2_unicode_compatible
 class Employee(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='employees')
     new_user = models.BooleanField(editable=False)
     init_avg_daily_tips = models.IntegerField(default=0)
-    signup_date = models.DateField(auto_now_add=True, editable=False)
+    signup_date = models.DateField(auto_now_add=True)
 #     first_name = models.CharField(max_length=50)
 #     last_name = models.CharField(max_length=50)
 #
@@ -42,8 +42,23 @@ class Expense(models.Model):
                                  choices=FREQ_CHOICES,
                                  default=MONTHLY)
 
+class DailyExpenditures(models.Model):
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='daily_expenditures')
+    cost = models.IntegerField()
+    date = models.DateField(default=date.today)
+
 # not sure if Budget is needed. can we get the data insights we want
 # just by having the Tip and Expense models?
 class Budget(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='budget')
     daily_budget = models.FloatField()
+
+class EditTipsForm(ModelForm):
+    class Meta:
+        model = Tip
+        exclude = ['owner', 'hours_worked']
+
+class EditExpensesForm(ModelForm):
+    class Meta:
+        model = Expense
+        exclude = ['owner', 'frequency']
