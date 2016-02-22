@@ -73,3 +73,7 @@ def tips_summary(request):
 
 def user_test(request):
     return HttpResponse(request.user.id)
+
+def budget(request):
+    # pass 'user' and user details to template
+    pass
