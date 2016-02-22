@@ -42,8 +42,8 @@ class Expense(models.Model):
                                  choices=FREQ_CHOICES,
                                  default=MONTHLY)
 
-class DailyExpenditures(models.Model):
-    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='daily_expenditures')
+class Expenditure(models.Model):
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='expenditures')
     cost = models.IntegerField()
     date = models.DateField(default=date.today)
 
@@ -62,3 +62,8 @@ class EditExpensesForm(ModelForm):
     class Meta:
         model = Expense
         exclude = ['owner', 'frequency']
+
+class EnterExpenditureForm(ModelForm):
+    class Meta:
+        model = Expenditure
+        exclude = ['owner']

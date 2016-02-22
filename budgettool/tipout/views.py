@@ -3,7 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from .forms import EnterTipsForm, EnterExpensesForm
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
-from tipout.models import Tip, Expense, Employee
+from tipout.models import Tip, Expense, Employee, EnterExpenditureForm
 from django.contrib.auth.models import User
 
 from tipout.budget import calc_tips_avg, calc_tips_avg_initial
@@ -124,3 +124,23 @@ def budget(request):
         budget = avg_daily_tips - daily_expense_cost
 
         return render(request, 'budget.html', {'avg_daily_tips': avg_daily_tips, 'budget': budget})
+
+@login_required(login_url='/login/')
+def enter_expenditure(request):
+    '''
+
+    '''
+    if request.method == 'POST':
+        form = EnterExpenditureForm(request.POST)
+        if form.is_valid():
+            # process form data
+            u = User.objects.get(username=request.user)
+            exp_data = form.cleaned_data
+            e = Expenditure(owner=u, cost=exp_data['cost'], date=exp_data['date'])
+            e.save()
+
+            return HttpResponseRedirect('/summary/')
+    else:
+        form = EnterExpenditureForm(initial={'date': date.today()})
+
+    return render(request, 'enter_expenditure.html', {'form': form})

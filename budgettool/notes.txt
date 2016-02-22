@@ -1,0 +1,22 @@
+for expenditures feature:
+
+add "enter expenditure" link to budget template
+create '/enter-expenditure/' url, view
+modify budget view to subtract all expenditures for current day
+
+* what if an expenditure is > today's budget? do we return a negative budget? do we show a warning and ask if user wants to add a "special" expenditure that counts against their total monthly budget rather than daily budget?
+
+
+
+paycheck feature:
+
+to account for total income, user can add income from paychecks
+
+add Paycheck model
+budget should account for paycheck income
+
+
+
+income feature:
+
+user should be able to see total income, YTD and MTD, summing tips and paycheck
