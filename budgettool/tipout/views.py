@@ -6,7 +6,8 @@ from django.views.decorators.http import require_http_methods
 from tipout.models import Tip, Expense, Employee
 from django.contrib.auth.models import User
 
-from tipout.budget import calc_tips_avg
+from tipout.budget import calc_tips_avg, calc_tips_avg_initial
+from datetime import date
 
 # Create your views here.
 
@@ -90,11 +91,36 @@ def budget(request):
     Get User from request context, then get tips belonging to that user
     and pass the daily average for past 30 days to template.
 
-    *** Currently this implementation averages ALL tips belonging to user
-    and does NOT give average just considering past 30 days.
+    Since budget is first view upon login, check to see if user is 'new'.
+    If so, and it has been less than 30 days since signup, calculate tips
+    based on init_daily_avg_tips. Otherwise, calculate based on actual tips.
     '''
+
+    # get user, employee
     u = User.objects.get(username=request.user)
-    tip_obj = Tip.objects.filter(owner=u)[:30]
-    tip_values = [ tip.amount for tip in tip_obj ]
-    daily_tip_avg = calc_tips_avg(tip_values)
-    return render(request, 'budget.html', {'daily_tip_avg': daily_tip_avg})
+    emp = Employee(user=u)
+
+    # expenses, daily expense cost - assuming every expense is paid monthly
+    exps = Expense.objects.filter(owner=u)
+    daily_expense_cost = sum([ exp.cost for exp in exps ]) / 30
+
+    # get tips for last 30 days
+    # not sure if order_by is ascending or descending
+    tips = Tip.objects.filter(owner=u).order_by('date_earned')[:30]
+    tip_values = [ tip.amount for tip in tips ]
+
+    if (date.today() - emp.signup_date).days < 30:
+        emp_signup_date = emp.signup_date
+        budget = calc_tips_avg_initial(emp.init_avg_daily_tips, tip_values, emp_signup_date) \
+                 - daily_expense_cost
+
+        return render(request, 'budget.html', {'avg_daily_tips': emp.init_avg_daily_tips, \
+                                               'budget': budget})
+
+    else:
+        # if user signed up more than 30 days ago, flip new_user flag
+        emp.new_user = False
+        avg_daily_tips = calc_tips_avg(tips_value)
+        budget = avg_daily_tips - daily_expense_cost
+
+        return render(request, 'budget.html', {'avg_daily_tips': avg_daily_tips, 'budget': budget})

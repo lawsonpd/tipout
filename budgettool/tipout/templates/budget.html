@@ -2,12 +2,8 @@
 
 {% block content %}
 
-{% if user.new_user == True %}
-    <!-- show budget based on tips so far normalized with init_daily_avg_tips -->
-    <p>You're a new user. Check back soon.</p>
-{% else %}
-    <!-- show actual budget based on tips so far (i.e. tips within last 30 days -->
-    {{ daily_tip_avg }}
-{% endif %}
+    <p>Average daily tips: {{ avg_daily_tips }}</p>
+
+    <p>Daily budget: {{ budget }}</p>
 
 {% endblock %}

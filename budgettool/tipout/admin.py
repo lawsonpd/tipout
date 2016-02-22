@@ -1,7 +1,7 @@
 from django.contrib import admin
 
-from .models import Tip, Expense, Budget
+from .models import Employee, Tip, Expense, Budget
 
 # Register your models here.
 
-admin.site.register([Tip, Expense, Budget])
+admin.site.register([Employee, Tip, Expense, Budget])

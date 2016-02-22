@@ -9,8 +9,8 @@ from django.forms import ModelForm
 class Employee(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='employees')
     new_user = models.BooleanField(editable=False)
-    init_avg_daily_tips = models.IntegerField(default=0)
-    signup_date = models.DateField(auto_now_add=True)
+    init_avg_daily_tips = models.IntegerField()
+    signup_date = models.DateField(default=date.today)
 #     first_name = models.CharField(max_length=50)
 #     last_name = models.CharField(max_length=50)
 #
