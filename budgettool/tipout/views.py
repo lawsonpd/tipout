@@ -3,7 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from .forms import EnterTipsForm, EnterExpensesForm
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
-from tipout.models import Tip, Expense
+from tipout.models import Tip, Expense, Employee
 from django.contrib.auth.models import User
 
 from tipout.budget import calc_tips_avg
@@ -94,7 +94,7 @@ def budget(request):
     and does NOT give average just considering past 30 days.
     '''
     u = User.objects.get(username=request.user)
-    tip_obj = Tip.objects.filter(owner=u)
+    tip_obj = Tip.objects.filter(owner=u)[:30]
     tip_values = [ tip.amount for tip in tip_obj ]
     daily_tip_avg = calc_tips_avg(tip_values)
     return render(request, 'budget.html', {'daily_tip_avg': daily_tip_avg})
