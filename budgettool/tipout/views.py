@@ -3,7 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from .forms import EnterTipsForm, EnterExpensesForm
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
-from tipout.models import Tip, Expense, Employee, EnterExpenditureForm
+from tipout.models import Tip, Expense, Employee, Expenditure, EnterExpenditureForm
 from django.contrib.auth.models import User
 
 from tipout.budget import calc_tips_avg, calc_tips_avg_initial
