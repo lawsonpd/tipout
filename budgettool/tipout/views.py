@@ -98,7 +98,7 @@ def budget(request):
 
     # get user, employee
     u = User.objects.get(username=request.user)
-    emp = Employee(user=u)
+    emp = Employee.objects.get(user=u)
 
     # expenses, daily expense cost - assuming every expense is paid monthly
     exps = Expense.objects.filter(owner=u)
@@ -110,12 +110,9 @@ def budget(request):
     tip_values = [ tip.amount for tip in tips ]
 
     if (date.today() - emp.signup_date).days < 30:
-        emp_signup_date = emp.signup_date
-        budget = calc_tips_avg_initial(emp.init_avg_daily_tips, tip_values, emp_signup_date) \
-                 - daily_expense_cost
+        budget = calc_tips_avg_initial(emp.init_avg_daily_tips, tip_values, emp.signup_date) - daily_expense_cost
 
-        return render(request, 'budget.html', {'avg_daily_tips': emp.init_avg_daily_tips, \
-                                               'budget': budget})
+        return render(request, 'budget.html', {'avg_daily_tips': emp.init_avg_daily_tips, 'budget': budget})
 
     else:
         # if user signed up more than 30 days ago, flip new_user flag
@@ -128,7 +125,7 @@ def budget(request):
 @login_required(login_url='/login/')
 def enter_expenditure(request):
     '''
-
+    If POST, admit and process form. Otherwise, show blank form.
     '''
     if request.method == 'POST':
         form = EnterExpenditureForm(request.POST)
