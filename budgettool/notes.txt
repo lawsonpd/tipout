@@ -27,4 +27,7 @@ when new user registers, need to create Employee object
 
 
 
-home view
+TODO:
+error messages
+session mgmt (after logout, still able to view back history)
+cache

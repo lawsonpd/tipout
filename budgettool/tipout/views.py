@@ -5,17 +5,40 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
 from tipout.models import Tip, Expense, Employee, Expenditure, EnterExpenditureForm
 from django.contrib.auth.models import User
+from django.contrib.auth.forms import UserCreationForm
 
 from tipout.budget import calc_tips_avg, calc_tips_avg_initial
 from datetime import date
 
 # Create your views here.
 
-def index(request):
+def home(request):
     '''
-    Dummy response
+    If user is logged in, redirect to '/budget/'. Else, show basic info and provide
+    link to registration.
     '''
-    return HttpResponse("hello world")
+    if request.user.is_authenticated():
+        return HttpResponseRedirect('/budget/')
+
+    else:
+        form = UserCreationForm()
+        return render(request, 'home.html', {'form': form})
+
+@require_http_methods(['POST'])
+def register(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            # create new User
+            user_data = form.cleaned_data
+            # create_user automatically saves entry to db
+            user = User.objects.create_user(user_data['username'], password=user_data['password1'])
+
+            # create new Employee
+            emp = Employee(user=user, new_user=True, init_avg_daily_tips=0, signup_date=date.today())
+            emp.save()
+    else:
+        return HttpResponseRedirect('/home/')
 
 @login_required(login_url='/login/')
 def enter_tips(request):
@@ -33,7 +56,7 @@ def enter_tips(request):
                     date_earned=tip_data['date_earned'],
                     owner=tip_owner)
             t.save()
-            return HttpResponseRedirect('/summary/')
+            return HttpResponseRedirect('/tips/')
 
     # if a GET (or any other method), we'll create a blank form
     else:
@@ -64,7 +87,7 @@ def enter_expenses(request):
     return render(request, 'enter_expenses.html', {'form': form})
 
 @login_required(login_url='/login/')
-@require_http_methods(["GET"])
+@require_http_methods(['GET'])
 def view_expenses(request):
     '''
     Get expenses that belong to current user and pass them to the template.
@@ -74,12 +97,12 @@ def view_expenses(request):
 
 @login_required(login_url='/login/')
 @require_http_methods(['GET'])
-def tips_summary(request):
+def tips(request):
     '''
     Get tips that belong to current user and pass them to the template.
     '''
     tips = Tip.objects.filter(owner_id=request.user.id)
-    return render(request, 'tips_summary.html', {'tips': tips})
+    return render(request, 'tips.html', {'tips': tips})
 
 def user_test(request):
     return HttpResponse(request.user.id)
@@ -136,7 +159,7 @@ def enter_expenditure(request):
             e = Expenditure(owner=u, cost=exp_data['cost'], date=exp_data['date'])
             e.save()
 
-            return HttpResponseRedirect('/summary/')
+            return HttpResponseRedirect('/tips/')
     else:
         form = EnterExpenditureForm(initial={'date': date.today()})
 

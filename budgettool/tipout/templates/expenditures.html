@@ -2,12 +2,17 @@
 
 {% block content %}
 
-<p>Today's expenditures:</p>
-
-<ul>
-    {% for exp in exps %}
-        <li>{{ exp.cost }}</li>
-    {% endfor %}
-</ul>
+{% if exps %}
+  <p>Today's expenditures:</p>
+  
+  <ul>
+      {% for exp in exps %}
+          <li>{{ exp.cost }}</li>
+      {% endfor %}
+  </ul>
+{% else %}
+  <p>No expenditures yet today.</p>
+  <p><a href="/enter-expenditure/">Enter expenditures</a></p>
+{% endif %}
 
 {% endblock %}
