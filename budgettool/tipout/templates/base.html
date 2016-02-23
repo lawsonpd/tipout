@@ -26,15 +26,23 @@
         <a class="navbar-brand" href="/">Tipout</a>
       </div> <!-- /.navbar-header -->
   
+      {% if user.is_authenticated %}
       <div class="collapse navbar-collapse" aria-expanded="false">
         <ul class="nav navbar-nav">
-          <li class="active"><a href="#">Expenditures</a></li>
-          <li><a href="#">Expenses</a></li>
+          <li class="active"><a href="/expenditures/">Expenditures</a></li>
+          <li><a href="/expenses/">Expenses</a></li>
         </ul>
         <ul class="nav navbar-nav navbar-right">
           <li><a href="/logout/">Logout</a></li>
         </ul>
       </div> <!-- /.navbar-collapse -->
+      {% else %}
+      <div class="collapse navbar-collapse" aria-expanded="false">
+        <ul class="nav navbar-nav navbar-right">
+          <li><a href="/login/">Login</a></li>
+        </ul>
+      </div>
+      {% endif %}
     </div> <!-- /.container-fluid -->
   </nav>
 

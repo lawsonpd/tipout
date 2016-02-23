@@ -16,6 +16,11 @@ urlpatterns = [
     url(r'^enter-expenditure/$', views.enter_expenditure, name='enter-expenditure'),
     url(r'^expenditures/$', views.view_expenditures, name='view-expenditures'),
     url(
+        r'^login/$',
+        auth_views.login,
+        {'template_name': 'registration/login.html'}
+    ),
+    url(
         r'^logout/$',
         auth_views.logout,
         {'template_name': 'registration/logout.html'}
