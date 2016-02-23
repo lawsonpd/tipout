@@ -18,3 +18,13 @@ budget should account for paycheck income
 income feature:
 
 user should be able to see total income, YTD and MTD, summing tips and paycheck
+
+
+
+new user registration:
+
+when new user registers, need to create Employee object
+
+
+
+home view

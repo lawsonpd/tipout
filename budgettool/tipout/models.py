@@ -8,7 +8,7 @@ from django.forms import ModelForm
 @python_2_unicode_compatible
 class Employee(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='employees')
-    new_user = models.BooleanField(editable=False)
+    new_user = models.BooleanField()
     init_avg_daily_tips = models.IntegerField()
     signup_date = models.DateField(default=date.today)
 #     first_name = models.CharField(max_length=50)
@@ -17,12 +17,16 @@ class Employee(models.Model):
     def __str__(self):
         return self.user.username
 
+# @python_2_unicode_compatible
 class Tip(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='tips')
     amount = models.IntegerField()
     # DEFAULT_HOURS_WORKED = 8
     hours_worked = models.FloatField(default=8)
     date_earned = models.DateField(default=date.today)
+
+    # def __str__(self):
+    #     return str(self.amount)
 
 class Expense(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='expenses')
