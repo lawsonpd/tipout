@@ -18,6 +18,7 @@
 </head>
 
 <body>
+    <nav class="navbar navbar-default navbar-static-top">
     <div class="container">
       <div class="navbar-header">
         <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
@@ -31,10 +32,11 @@
   
       {% if user.is_authenticated %}
       <div class="collapse navbar-collapse" aria-expanded="false">
-        <ul class="nav nav-pills navbar-nav pull-right">
-          <li class="active"><a href="/budget/">Budget</a></li>
-          <li><a href="/expenditures/">Expenditures</a></li>
+        <ul class="nav navbar-nav">
+          <li class="active"><a href="/expenditures/">Expenditures</a></li>
           <li><a href="/expenses/">Expenses</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
           <li><a href="/logout/">Logout</a></li>
         </ul>
       </div> <!-- /.navbar-collapse -->
@@ -46,16 +48,13 @@
       </div>
       {% endif %}
     </div> <!-- /.container-fluid -->
-    <!-- </nav> -->
+    </nav>
 
   <div class="container">
 
 
     {% block content %} {% endblock %}
-    
-    <footer class="footer">
-      <p>&copy; 2016 Overhauled Productions, Inc.</p>
-    </footer>
+
 
   </div><!-- /.container -->
 

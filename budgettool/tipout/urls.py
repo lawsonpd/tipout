@@ -15,7 +15,10 @@ urlpatterns = [
     # url(r'^edit-expenses/$', views.edit_expenses, name='edit-expenses'),
     url(r'^enter-expenditure/$', views.enter_expenditure, name='enter-expenditure'),
     url(r'^expenditures/$', views.view_expenditures, name='view-expenditures'),
-    url(r'^register/$', views.register, name='register'),
+    url(r'^register/$',
+        views.register,
+        {'template_name': 'registration/register.html'}
+    ),
     url(
         r'^login/$',
         auth_views.login,

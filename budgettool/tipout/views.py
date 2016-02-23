@@ -21,11 +21,10 @@ def home(request):
         return HttpResponseRedirect('/budget/')
 
     else:
-        form = UserCreationForm()
-        return render(request, 'home.html', {'form': form})
+        return render(request, 'home.html')
 
-@require_http_methods(['POST'])
-def register(request):
+@require_http_methods(['GET', 'POST'])
+def register(request, template_name):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
@@ -38,7 +37,8 @@ def register(request):
             emp = Employee(user=user, new_user=True, init_avg_daily_tips=0, signup_date=date.today())
             emp.save()
     else:
-        return HttpResponseRedirect('/home/')
+        form = UserCreationForm()
+        return render(request, template_name, {'form': form})
 
 @login_required(login_url='/login/')
 def enter_tips(request):

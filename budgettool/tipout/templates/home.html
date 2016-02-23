@@ -2,10 +2,14 @@
 
 {% block content %}
 
-<form action='/register/' method='post'>
-  {% csrf_token %}
-  {{ form }}
-  <input type='submit' value='Register' />
-</form>
+<div class="jumbotron">
+
+    <h1>Tipout</h1>
+    
+    <p>Tipout is a budgeting tool for restaurants servers, valets, and anyone else who works for tips.</p>
+    
+    <a class="btn btn-lg btn-primary" href='/register/' role="button">Create an account</a>
+
+</div>
 
 {% endblock %}
