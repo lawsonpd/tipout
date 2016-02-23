@@ -1,4 +1,5 @@
 from django.conf.urls import url, include
+from django.contrib.auth import views as auth_views
 
 from . import views
 
@@ -14,5 +15,10 @@ urlpatterns = [
     # url(r'^edit-expenses/$', views.edit_expenses, name='edit-expenses'),
     url(r'^enter-expenditure/$', views.enter_expenditure, name='enter-expenditure'),
     url(r'^expenditures/$', views.view_expenditures, name='view-expenditures'),
-    # url('^', include('django.contrib.auth.urls')),
+    url(
+        r'^logout/$',
+        auth_views.logout,
+        {'template_name': 'registration/logout.html'}
+    ),
+    url('^', include('django.contrib.auth.urls')),
 ]
