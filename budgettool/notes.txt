@@ -31,3 +31,5 @@ TODO:
 error messages
 session mgmt (after logout, still able to view back history)
 cache
+production web server (gunicorn?)
+turn off DEBUG
