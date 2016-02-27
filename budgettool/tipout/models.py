@@ -49,6 +49,7 @@ class Expense(models.Model):
 class Expenditure(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='expenditures')
     cost = models.IntegerField()
+    note = models.CharField(max_length=100, default="Expenditure")
     date = models.DateField(default=date.today)
 
 # not sure if Budget is needed. can we get the data insights we want

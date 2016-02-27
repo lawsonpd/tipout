@@ -168,6 +168,12 @@ def enter_expenditure(request):
 @login_required(login_url='/login/')
 @require_http_methods(['GET'])
 def view_expenditures(request):
+    '''
+    Default expenditures page show TODAY'S expenditures.
+    '''
     u = User.objects.get(username=request.user)
     exps = Expenditure.objects.filter(owner=u).filter(date=date.today())
     return render(request, 'expenditures.html', {'exps': exps})
+
+# @login_required(login_url='/login/')
+# def expenditure_year_archive(request):

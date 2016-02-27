@@ -2,9 +2,11 @@
 
 {% block content %}
 
-{% for expense in expenses %}
+{% for exp in expenses %}
+<p>Your expenses</p>
+
 <ul>
-    <li>{{ expense.expense_name }} {{ expense.cost }} {{ expense.frequency }}</li>
+    <li>{{ exp.expense_name }} {{ exp.cost }} {{ exp.frequency }} | <a href="/edit-expense/{{ exp.expense_name|slugify }}/">Edit</a></li>
 </ul>
 {% endfor %}
 

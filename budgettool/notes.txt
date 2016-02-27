@@ -26,6 +26,7 @@ new user registration:
 when new user registers, need to create Employee object
 
 
+could one view for, e.g., expenditures handle all the parameters? perhaps they can be passed into the template and using template logic the right details can be shown. probably not, since the objects passed from the queries need to contain just the right info. test this in another app. could try using if/elif clauses to check for the presence of parameters (e.g. if args[2]:... elif args[1]...).
 
 TODO:
 error messages
@@ -33,3 +34,4 @@ session mgmt (after logout, still able to view back history)
 cache
 production web server (gunicorn?)
 turn off DEBUG
+add urlconf for expenditures, expenses, tips (to include in main urlconf)
