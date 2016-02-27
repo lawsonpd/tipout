@@ -7,7 +7,7 @@
   
   <ul>
     {% for exp in exps %}
-    <li>{{ exp.note }} {{ exp.cost }} <a href="/edit-expenditure/{{ exp.date.year }}/{{ exp.date.month }}/{{ exp.date.day }}/">Edit</a></li>
+    <li>{{ exp.note }} {{ exp.cost }}</li>
     {% endfor %}
   </ul>
 {% else %}

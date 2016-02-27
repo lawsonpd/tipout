@@ -22,6 +22,7 @@ urlpatterns = [
     url(r'^expenditures/([0-9]{4})/([0-9]{2})/$', views.expenditures_month_archive, name='expenditures-month-archive'),
     url(r'^expenditures/([0-9]{4})/([0-9]{2})/([0-9]+)/$', views.expenditures_day_archive, name='expenditures-day-archive'),
     url(r'^expenditures/(?P<year>[0-9]{4})/(?P<month>[0-9]{2})/(?P<day>[0-9]+)/(?P<exp>[0-9]+)$', views.expenditure_detail, name='expenditure-detail'),
+    url(r'^new-user-setup/$', views.new_user_setup, name='new-user-setup'),
     url(r'^register/$',
         views.register,
         {'template_name': 'registration/register.html'}

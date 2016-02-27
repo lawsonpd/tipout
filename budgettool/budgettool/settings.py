@@ -25,7 +25,7 @@ SECRET_KEY = 't_!m&6z6fl0t3d-&21*1_rnmem#d@m)$jq@sbt(7b55*_mc!mv'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost']
 
 
 # Application definition
@@ -121,6 +121,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
 STATIC_URL = '/static/'
+
+STATIC_ROOT = ''
 
 # Login redirect URL to override '/accounts/profile/'
 LOGIN_REDIRECT_URL = '/budget/'

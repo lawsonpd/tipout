@@ -3,9 +3,10 @@ from django.http import HttpResponse, HttpResponseRedirect
 from .forms import EnterTipsForm, EnterExpensesForm
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
-from tipout.models import Tip, Expense, Employee, Expenditure, EnterExpenditureForm, EditExpenseForm
+from tipout.models import Tip, Expense, Employee, Expenditure, EnterExpenditureForm, EditExpenseForm, NewUserSetupForm
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import authenticate, login
 
 from tipout.budget import calc_tips_avg, calc_tips_avg_initial
 from datetime import date
@@ -31,15 +32,40 @@ def register(request, template_name):
         if form.is_valid():
             # create new User
             user_data = form.cleaned_data
+
             # create_user automatically saves entry to db
             user = User.objects.create_user(user_data['username'], password=user_data['password1'])
 
             # create new Employee
             emp = Employee(user=user, new_user=True, init_avg_daily_tips=0, signup_date=date.today())
             emp.save()
+
+            return HttpResponseRedirect('/login/')
+        else:
+            return render(request, template_name, {'form': form})
     else:
         form = UserCreationForm()
         return render(request, template_name, {'form': form})
+
+@require_http_methods(['GET', 'POST'])
+def new_user_setup(request):
+    u = User.objects.get(username=request.user)
+    emp = Employee.objects.get(user=u)
+    if request.method == 'GET':
+        if not emp.new_user:
+            return render(request, 'new_user_setup.html', {'new_user': False})
+        else:
+            form = NewUserSetupForm()
+            return render(request, 'new_user_setup.html', {'new_user': True, 'form': form})
+
+    else:
+        form = NewUserSetupForm(request.POST)
+        if form.is_valid():
+            form_data = form.cleaned_data
+            emp.init_avg_daily_tips = form_data['init_avg_daily_tips']
+            emp.new_user = False
+            emp.save()
+            return HttpResponseRedirect('/expenses/')
 
 @login_required(login_url='/login/')
 def enter_tips(request):
@@ -83,9 +109,9 @@ def enter_expenses(request):
             e.save()
             return HttpResponseRedirect('/expenses/')
     else:
-        form = EnterExpensesForm()
 
-    return render(request, 'enter_expenses.html', {'form': form})
+        form = EnterExpensesForm()
+        return render(request, 'enter_expenses.html', {'form': form})
 
 @login_required(login_url='/login/')
 @require_http_methods(['GET'])
@@ -120,9 +146,17 @@ def budget(request):
     based on init_daily_avg_tips. Otherwise, calculate based on actual tips.
     '''
 
+    '''
+    If user is new, send to new-user-setup to set init_avg_daily_tips.
+    '''
+
     # get user, employee
     u = User.objects.get(username=request.user)
     emp = Employee.objects.get(user=u)
+
+    # if user is new, send to new-user-setup
+    if emp.new_user:
+        return HttpResponseRedirect('/new-user-setup/')
 
     # expenses, daily expense cost - assuming every expense is paid monthly
     expenses = Expense.objects.filter(owner=u)
@@ -137,16 +171,14 @@ def budget(request):
     tips = Tip.objects.filter(owner=u).order_by('date_earned')[:30]
     tip_values = [ tip.amount for tip in tips ]
 
-    if (date.today() - emp.signup_date).days < 30:
+    if (date.today() - emp.signup_date).days <= 30:
         budget = calc_tips_avg_initial(emp.init_avg_daily_tips, tip_values, emp.signup_date) - daily_expense_cost - expenditures_today
 
         return render(request, 'budget.html', {'avg_daily_tips': emp.init_avg_daily_tips, 'budget': budget})
 
     else:
-        # if user signed up more than 30 days ago, flip new_user flag
-        emp.new_user = False
         avg_daily_tips = calc_tips_avg(tips_value)
-        budget = avg_daily_tips - daily_expense_cost
+        budget = avg_daily_tips - daily_expense_cost - expenditures_today
 
         return render(request, 'budget.html', {'avg_daily_tips': avg_daily_tips, 'budget': budget})
 

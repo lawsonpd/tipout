@@ -4,6 +4,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.encoding import python_2_unicode_compatible
 from django.forms import ModelForm
+from django.utils.translation import ugettext_lazy as _
 
 @python_2_unicode_compatible
 class Employee(models.Model):
@@ -72,3 +73,11 @@ class EnterExpenditureForm(ModelForm):
     class Meta:
         model = Expenditure
         exclude = ['owner']
+
+class NewUserSetupForm(ModelForm):
+    class Meta:
+        model = Employee
+        exclude = ['user', 'new_user', 'signup_date']
+        labels = {
+            'init_avg_daily_tips': _('Estimated daily tips'),
+        }
