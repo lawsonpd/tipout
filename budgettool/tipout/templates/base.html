@@ -13,7 +13,7 @@
   <link rel="stylesheet" type="text/css" href="{% static 'tipout/navbar-static-top.css' %}" />
   <link rel="stylesheet" type="text/css" href="{% static 'tipout/jumbotron-narrow.css' %}" />
 
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script src="{% static 'tipout/jquery-2.2.1.js' %}"></script>
   <script src="{% static 'tipout/bootstrap.min.js' %}"></script>
 </head>
 
@@ -30,9 +30,9 @@
       </div> <!-- /.navbar-header -->
   
       {% if user.is_authenticated %}
-      <div class="collapse navbar-collapse" aria-expanded="false">
+      <div class="collapse navbar-collapse" aria-expanded="false" aria-pressed="true">
         <ul class="nav nav-pills navbar-nav pull-right">
-          <li class="active"><a href="/budget/">Budget</a></li>
+          <li><a href="/budget/">Budget</a></li>
           <li><a href="/expenditures/">Expenditures</a></li>
           <li><a href="/expenses/">Expenses</a></li>
           <li><a href="/logout/">Logout</a></li>

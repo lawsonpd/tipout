@@ -63,10 +63,10 @@ class EditTipsForm(ModelForm):
         model = Tip
         exclude = ['owner', 'hours_worked']
 
-class EditExpensesForm(ModelForm):
+class EditExpenseForm(ModelForm):
     class Meta:
         model = Expense
-        exclude = ['owner', 'frequency']
+        exclude = ['owner', 'expense_name', 'frequency']
 
 class EnterExpenditureForm(ModelForm):
     class Meta:

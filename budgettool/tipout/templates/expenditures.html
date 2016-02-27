@@ -3,16 +3,17 @@
 {% block content %}
 
 {% if exps %}
-  <p>Today's expenditures:</p>
+  <p>Today's expenditures</p>
   
   <ul>
-      {% for exp in exps %}
-          <li>{{ exp.cost }}</li>
-      {% endfor %}
+    {% for exp in exps %}
+    <li>{{ exp.note }} {{ exp.cost }} <a href="/edit-expenditure/{{ exp.date.year }}/{{ exp.date.month }}/{{ exp.date.day }}/">Edit</a></li>
+    {% endfor %}
   </ul>
 {% else %}
   <p>No expenditures yet today.</p>
-  <p><a href="/enter-expenditure/">Enter expenditures</a></p>
 {% endif %}
+
+<p><a href="/enter-expenditure/">Enter expenditures</a></p>
 
 {% endblock %}

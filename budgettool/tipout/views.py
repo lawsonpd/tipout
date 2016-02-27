@@ -3,12 +3,13 @@ from django.http import HttpResponse, HttpResponseRedirect
 from .forms import EnterTipsForm, EnterExpensesForm
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
-from tipout.models import Tip, Expense, Employee, Expenditure, EnterExpenditureForm
+from tipout.models import Tip, Expense, Employee, Expenditure, EnterExpenditureForm, EditExpenseForm
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 
 from tipout.budget import calc_tips_avg, calc_tips_avg_initial
 from datetime import date
+from string import lower
 
 # Create your views here.
 
@@ -76,7 +77,7 @@ def enter_expenses(request):
             expense_data = form.cleaned_data
             tip_owner = User.objects.get(pk=request.user.id)
             e = Expense(cost=expense_data['cost'],
-                        expense_name=expense_data['expense_name'],
+                        expense_name=expense_data['expense_name'].lower(),
                         frequency=expense_data['frequency'],
                         owner=tip_owner)
             e.save()
@@ -88,12 +89,12 @@ def enter_expenses(request):
 
 @login_required(login_url='/login/')
 @require_http_methods(['GET'])
-def view_expenses(request):
+def expenses(request):
     '''
     Get expenses that belong to current user and pass them to the template.
     '''
     expenses = Expense.objects.filter(owner_id=request.user.id)
-    return render(request, 'view_expenses.html', {'expenses': expenses})
+    return render(request, 'expenses.html', {'expenses': expenses})
 
 @login_required(login_url='/login/')
 @require_http_methods(['GET'])
@@ -124,8 +125,12 @@ def budget(request):
     emp = Employee.objects.get(user=u)
 
     # expenses, daily expense cost - assuming every expense is paid monthly
-    exps = Expense.objects.filter(owner=u)
-    daily_expense_cost = sum([ exp.cost for exp in exps ]) / 30
+    expenses = Expense.objects.filter(owner=u)
+    daily_expense_cost = sum([ exp.cost for exp in expenses ]) / 30
+
+    # expenditures for the day
+    expenditures_today_query = Expenditure.objects.filter(owner=u, date=date.today())
+    expenditures_today = sum([ exp.cost for exp in expenditures_today_query ])
 
     # get tips for last 30 days
     # not sure if order_by is ascending or descending
@@ -133,7 +138,7 @@ def budget(request):
     tip_values = [ tip.amount for tip in tips ]
 
     if (date.today() - emp.signup_date).days < 30:
-        budget = calc_tips_avg_initial(emp.init_avg_daily_tips, tip_values, emp.signup_date) - daily_expense_cost
+        budget = calc_tips_avg_initial(emp.init_avg_daily_tips, tip_values, emp.signup_date) - daily_expense_cost - expenditures_today
 
         return render(request, 'budget.html', {'avg_daily_tips': emp.init_avg_daily_tips, 'budget': budget})
 
@@ -156,10 +161,10 @@ def enter_expenditure(request):
             # process form data
             u = User.objects.get(username=request.user)
             exp_data = form.cleaned_data
-            e = Expenditure(owner=u, cost=exp_data['cost'], date=exp_data['date'])
+            e = Expenditure(owner=u, cost=exp_data['cost'], date=exp_data['date'], note=exp_data['note'].lower())
             e.save()
 
-            return HttpResponseRedirect('/tips/')
+            return HttpResponseRedirect('/budget/')
     else:
         form = EnterExpenditureForm(initial={'date': date.today()})
 
@@ -167,7 +172,7 @@ def enter_expenditure(request):
 
 @login_required(login_url='/login/')
 @require_http_methods(['GET'])
-def view_expenditures(request):
+def expenditures(request):
     '''
     Default expenditures page show TODAY'S expenditures.
     '''
@@ -175,5 +180,44 @@ def view_expenditures(request):
     exps = Expenditure.objects.filter(owner=u).filter(date=date.today())
     return render(request, 'expenditures.html', {'exps': exps})
 
-# @login_required(login_url='/login/')
-# def expenditure_year_archive(request):
+@login_required(login_url='/login/')
+def edit_expense(request, *args):
+    u = User.objects.get(username=request.user)
+    e = Expense.objects.filter(owner=u).get(expense_name=args[0])
+
+    if request.method == 'GET':
+        form = EditExpenseForm(initial={'cost': e.cost})
+        return render(request, 'edit_expense.html', {'form': form, 'expense_name': e.expense_name})
+
+    if request.method == 'POST':
+        form = EditExpenseForm(request.POST)
+        if form.is_valid():
+            exp_data = form.cleaned_data
+            exp = Expense.objects.get(owner=u, expense_name=e.expense_name)
+            exp.cost = exp_data['cost']
+            exp.save()
+        return HttpResponseRedirect('/expenses/')
+
+@login_required(login_url='/login/')
+def delete_expense(request, *args):
+    if request.method == 'POST':
+        u = User.objects.get(username=request.user)
+        e = Expense.objects.get(owner=u, expense_name=args[0])
+        e.delete()
+        return HttpResponseRedirect('/expenses/')
+
+@login_required(login_url='/login/')
+def expenditures_month_archive(request, *args):
+    pass
+
+@login_required(login_url='/login/')
+def expenditures_day_archive(request, *args):
+    pass
+
+@login_required(login_url='/login/')
+def expenditures_year_archive(request, *args):
+    pass
+
+@login_required(login_url='/login/')
+def expenditure_detail(request, *args):
+    pass

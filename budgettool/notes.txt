@@ -35,3 +35,6 @@ cache
 production web server (gunicorn?)
 turn off DEBUG
 add urlconf for expenditures, expenses, tips (to include in main urlconf)
+
+READ:
+urlconfs, passing in variables
