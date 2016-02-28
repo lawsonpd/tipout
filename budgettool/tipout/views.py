@@ -215,8 +215,10 @@ def expenditures(request):
 
 @login_required(login_url='/login/')
 def edit_expense(request, *args):
+    exp_name = args[0].replace('-', ' ')
+
     u = User.objects.get(username=request.user)
-    e = Expense.objects.filter(owner=u).get(expense_name=args[0])
+    e = Expense.objects.filter(owner=u).get(expense_name=exp_name)
 
     if request.method == 'GET':
         form = EditExpenseForm(initial={'cost': e.cost})
@@ -233,9 +235,11 @@ def edit_expense(request, *args):
 
 @login_required(login_url='/login/')
 def delete_expense(request, *args):
+    exp_name = args[0].replace('-', ' ')
+
     if request.method == 'POST':
         u = User.objects.get(username=request.user)
-        e = Expense.objects.get(owner=u, expense_name=args[0])
+        e = Expense.objects.get(owner=u, expense_name=exp_name)
         e.delete()
         return HttpResponseRedirect('/expenses/')
 
