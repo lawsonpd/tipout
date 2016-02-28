@@ -119,7 +119,8 @@ def expenses(request):
     '''
     Get expenses that belong to current user and pass them to the template.
     '''
-    expenses = Expense.objects.filter(owner_id=request.user.id)
+    u = User.objects.get(username=request.user)
+    expenses = Expense.objects.filter(owner=u)
     return render(request, 'expenses.html', {'expenses': expenses})
 
 @login_required(login_url='/login/')

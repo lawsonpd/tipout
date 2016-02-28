@@ -124,7 +124,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-STATIC_ROOT = '/svr/http/static/'
+STATIC_ROOT = '/tmp/static/'
 
 # Login redirect URL to override '/accounts/profile/'
 LOGIN_REDIRECT_URL = '/budget/'
@@ -137,8 +137,8 @@ CACHES = {
     }
 }
 
-CACHE_MIDDLEWARE_ALIAS = 'cache_storage'
+# CACHE_MIDDLEWARE_ALIAS
 
-CACHE_MIDDLEWARE_SECONDS = '600'
+CACHE_MIDDLEWARE_SECONDS = 600
 
 CACHE_MIDDLEWARE_KEY_PREFIX = ''
