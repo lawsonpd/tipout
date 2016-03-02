@@ -39,7 +39,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="/home/poorman/Prog/Python/budget_tool-django/ENV"
+VIRTUAL_ENV="/srv/http/budget_tool-django/ENV"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"

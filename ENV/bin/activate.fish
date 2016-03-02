@@ -32,7 +32,7 @@ end
 # unset irrelevant variables
 deactivate nondestructive
 
-set -gx VIRTUAL_ENV "/home/poorman/Prog/Python/budget_tool-django/ENV"
+set -gx VIRTUAL_ENV "/srv/http/budget_tool-django/ENV"
 
 set -gx _OLD_VIRTUAL_PATH $PATH
 set -gx PATH "$VIRTUAL_ENV/bin" $PATH
