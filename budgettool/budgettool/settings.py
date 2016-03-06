@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 't_!m&6z6fl0t3d-&21*1_rnmem#d@m)$jq@sbt(7b55*_mc!mv'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['localhost']
 
@@ -124,7 +124,11 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-STATIC_ROOT = '/tmp/static/'
+STATIC_ROOT = '/srv/http/static/'
+
+# STATICFILES_DIRS = [
+#     '/tmp/static/tipout'
+# ]
 
 # Login redirect URL to override '/accounts/profile/'
 LOGIN_REDIRECT_URL = '/budget/'
