@@ -20,12 +20,15 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 't_!m&6z6fl0t3d-&21*1_rnmem#d@m)$jq@sbt(7b55*_mc!mv'
+SECRET_KEY = os.environ['BTSECRET']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['localhost']
+ALLOWED_HOSTS = [
+    # 'localhost',
+    '.tipout-app.heroku.com',
+]
 
 
 # Application definition
@@ -78,13 +81,23 @@ WSGI_APPLICATION = 'budgettool.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': os.path.join(BASE_DIR, 'db/db.sqlite3'),
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db/db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'budgettool',
+        'USER': 'poorman',
+        'PASSWORD': '612077pl',
+        'HOST': '',
+        'PORT': '',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
