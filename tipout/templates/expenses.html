@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% if expenses %}
+    <p>Your expenses</p>
+    
+    {% for exp in expenses %}
+    <ul>
+        <li>{{ exp.expense_name }} {{ exp.cost }} {{ exp.frequency }} | <a href="/edit-expense/{{ exp.expense_name|slugify }}/">Edit</a></li>
+    </ul>
+    {% endfor %}
+    
+    <p><a href="/enter-expenses/">Enter more expenses</a>
+{% else %}
+    <p>You don't have any expenses right now.</p>
+    
+    <p><a href="/enter-expenses/">Enter some!</a></p>
+{% endif %}
+
+{% endblock %}
