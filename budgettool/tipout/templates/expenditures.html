@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% if exps %}
+  <p>Today's expenditures</p>
+  
+  <ul>
+    {% for exp in exps %}
+    <li>{{ exp.note }} {{ exp.cost }}</li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>No expenditures yet today.</p>
+{% endif %}
+
+<p><a href="/enter-expenditure/">Enter expenditures</a></p>
+
+{% endblock %}

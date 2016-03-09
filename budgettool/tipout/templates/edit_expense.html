@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<p>Edit expense</p>
+
+<form action="/edit-expense/{{ expense_name }}/" method="post">
+    {% csrf_token %}
+    <h3>{{ expense_name }}</h3>
+    {{ form }}
+    <input type="submit" class="btn btn-primary" value="Submit" />
+</form>
+
+<form action="/delete-expense/{{ expense_name|slugify }}/" method="post">
+    {% csrf_token %}
+    <input type="submit" class="btn btn-sm btn-danger" value="Delete Expense" />
+</form>
+
+{% endblock %}

@@ -1,4 +1,4 @@
-#!/home/poorman/Prog/Python/budget_tool-django/env/bin/python
+#!/home/poorman/Prog/Python/budgettool/env/bin/python
 
 import sys
 import getopt

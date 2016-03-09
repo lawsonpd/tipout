@@ -1,4 +1,4 @@
-#!/home/poorman/Prog/Python/budget_tool-django/env/bin/python2
+#!/home/poorman/Prog/Python/budgettool/env/bin/python2
 
 # -*- coding: utf-8 -*-
 import re
