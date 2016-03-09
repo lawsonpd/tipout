@@ -1,4 +1,4 @@
-{% load staticfiles %}
+<!-- {% load staticfiles %} -->
 
 <!DOCTYPE html>
 <html lang="en">
@@ -9,7 +9,9 @@
 
   <title>{% block title %}Tipout{% endblock %}</title>
 
-  <link rel="stylesheet" type="text/css" href="{% static 'tipout/bootstrap.min.css' %}" />
+  <!-- <link rel="stylesheet" type="text/css" href="{% static 'tipout/bootstrap.min.css' %}" /> -->
+  <link rel="stylesheet" type="text/css" href="/static/tipout/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="{% static 'tipout/navbar-static-top.css' %}" />
   <link rel="stylesheet" type="text/css" href="{% static 'tipout/navbar-static-top.css' %}" />
   <link rel="stylesheet" type="text/css" href="{% static 'tipout/jumbotron-narrow.css' %}" />
 

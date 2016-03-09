@@ -90,12 +90,17 @@ WSGI_APPLICATION = 'budgettool.wsgi.application'
 
 DATABASES = {
     'default': {
+<<<<<<< HEAD
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'budgettool',
         'USER': 'poorman',
         'PASSWORD': '612077pl',
         'HOST': '',
         'PORT': '',
+=======
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db/db.sqlite3'),
+>>>>>>> 9f397b33f9db277ae6adbde4e0dbca0038509f44
     }
 }
 
@@ -137,7 +142,11 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-STATIC_ROOT = '/tmp/static/'
+STATIC_ROOT = '/srv/http/static/'
+
+# STATICFILES_DIRS = [
+#     '/tmp/static/tipout'
+# ]
 
 # Login redirect URL to override '/accounts/profile/'
 LOGIN_REDIRECT_URL = '/budget/'
