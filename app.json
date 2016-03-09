@@ -1,0 +1,8 @@
+{
+  "name": "Tipout",
+  "description", "Daily budgeting tool for restaurant servers and anyone else who works for tips",
+  "image": "heroku/python",
+  // "repository": "https://gitlab.com/wunderlust/tipout.git",
+  "keywords": [ "python", "django" ],
+  "addons": [ "heroku-postgresql" ]
+}
