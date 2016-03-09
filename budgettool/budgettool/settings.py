@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
 import os
+import dj_database_url
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -81,28 +82,23 @@ WSGI_APPLICATION = 'budgettool.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': os.path.join(BASE_DIR, 'db/db.sqlite3'),
-#     }
-# }
-
 DATABASES = {
     'default': {
-<<<<<<< HEAD
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'budgettool',
-        'USER': 'poorman',
-        'PASSWORD': '612077pl',
-        'HOST': '',
-        'PORT': '',
-=======
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db/db.sqlite3'),
->>>>>>> 9f397b33f9db277ae6adbde4e0dbca0038509f44
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'budgettool',
+#         'USER': 'poorman',
+#         'PASSWORD': '612077pl',
+#         'HOST': '',
+#         'PORT': '',
+#     }
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
@@ -142,7 +138,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-STATIC_ROOT = '/srv/http/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # STATICFILES_DIRS = [
 #     '/tmp/static/tipout'
@@ -164,3 +160,6 @@ LOGIN_REDIRECT_URL = '/budget/'
 # CACHE_MIDDLEWARE_SECONDS = 60
 
 # CACHE_MIDDLEWARE_KEY_PREFIX = ''
+
+db_from_env = dj_database_url.config()
+DATABASES['default'].update(db_from_env)
