@@ -148,14 +148,14 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'bootstrap-3.3.6-dist/fonts'),
 ]
 
+# STATICFILES_DIRS = [
+#     '/tmp/static/tipout'
+# ]
+
 # Simplified static file serving
 # https://warehouse.python.org/project/whitenoise/
 
 STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
-
-# STATICFILES_DIRS = [
-#     '/tmp/static/tipout'
-# ]
 
 # Login redirect URL to override '/accounts/profile/'
 LOGIN_REDIRECT_URL = '/budget/'
