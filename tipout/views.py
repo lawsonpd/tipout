@@ -101,11 +101,11 @@ def enter_expenses(request):
         form = EnterExpensesForm(request.POST)
         if form.is_valid():
             expense_data = form.cleaned_data
-            tip_owner = User.objects.get(username=request.user)
-            e = Expense(cost=expense_data['cost'],
+            u = User.objects.get(username=request.user)
+            e = Expense(owner=u,
+                        cost=expense_data['cost'],
                         expense_name=expense_data['expense_name'].lower(),
-                        frequency=expense_data['frequency'],
-                        owner=tip_owner)
+                        frequency=expense_data['frequency'])
             e.save()
             return HttpResponseRedirect('/expenses/')
     else:
