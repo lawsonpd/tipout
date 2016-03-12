@@ -1,0 +1,18 @@
+[2016-03-11 13:30:28 +0000] [11760] [INFO] Starting gunicorn 19.4.5
+[2016-03-11 13:30:28 +0000] [11760] [INFO] Listening at: http://127.0.0.1:8000 (11760)
+[2016-03-11 13:30:28 +0000] [11760] [INFO] Using worker: sync
+[2016-03-11 13:30:28 +0000] [11765] [INFO] Booting worker with pid: 11765
+[2016-03-11 13:50:58 +0000] [11760] [INFO] Handling signal: winch
+[2016-03-11 13:51:09 +0000] [11760] [INFO] Handling signal: int
+[2016-03-11 19:51:09 +0000] [11765] [INFO] Worker exiting (pid: 11765)
+[2016-03-11 13:51:09 +0000] [11760] [INFO] Shutting down: Master
+[2016-03-11 13:54:20 +0000] [12511] [INFO] Starting gunicorn 19.4.5
+[2016-03-11 13:54:20 +0000] [12511] [INFO] Listening at: http://127.0.0.1:8000 (12511)
+[2016-03-11 13:54:20 +0000] [12511] [INFO] Using worker: sync
+[2016-03-11 13:54:20 +0000] [12516] [INFO] Booting worker with pid: 12516
+[2016-03-12 00:52:45 +0000] [12511] [CRITICAL] WORKER TIMEOUT (pid:12516)
+[2016-03-12 06:52:45 +0000] [12516] [INFO] Worker exiting (pid: 12516)
+[2016-03-12 00:52:45 +0000] [12951] [INFO] Booting worker with pid: 12951
+[2016-03-12 00:54:58 +0000] [12511] [INFO] Handling signal: winch
+[2016-03-12 01:04:03 +0000] [12511] [INFO] Handling signal: winch
+[2016-03-12 01:33:22 +0000] [12511] [INFO] Handling signal: winch

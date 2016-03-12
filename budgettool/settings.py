@@ -29,7 +29,7 @@ with open(os.path.join(BASE_DIR, 'secret_key.txt')) as f:
 DEBUG = False
 
 ALLOWED_HOSTS = [
-    # 'localhost',
+    'localhost',
     'tipout-app.herokuapp.com',
 ]
 
