@@ -10,7 +10,7 @@ from django.contrib.auth import authenticate, login
 
 from tipout.budget import calc_tips_avg, calc_tips_avg_initial
 from datetime import date
-from string import lower
+# from string import lower
 
 # Create your views here.
 
