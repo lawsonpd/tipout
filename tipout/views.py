@@ -109,7 +109,6 @@ def enter_expenses(request):
             e.save()
             return HttpResponseRedirect('/expenses/')
     else:
-
         form = EnterExpensesForm()
         return render(request, 'enter_expenses.html', {'form': form})
 
