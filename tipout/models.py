@@ -43,7 +43,7 @@ class Expense(models.Model):
         (MONTHLY, 'Monthly'),
         (YEARLY, 'Yearly'),
     )
-    frequency = models.CharField(max_length=20,
+    frequency = models.CharField(max_length=2,
                                  choices=FREQ_CHOICES,
                                  default=MONTHLY)
 
