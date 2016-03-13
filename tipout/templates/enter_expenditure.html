@@ -2,10 +2,14 @@
 
 {% block content %}
 
-<form action='/enter-expenditure/' method='post'>
-  {% csrf_token %}
-  {{ form }}
-  <input type='submit' value='Submit' />
+<h1>Enter an expenditure</h1>
+
+<form class="form-inline" action='/enter-expenditure/' method='post'>
+  <div class="form-group">
+    {% csrf_token %}
+    {{ form }}
+  <input type='submit' class="form-control" value='Submit' />
+  </div>
 </form>
 
 {% endblock %}

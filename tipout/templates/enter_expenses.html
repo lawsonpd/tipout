@@ -2,10 +2,14 @@
 
 {% block content %}
 
-<form action="/enter-expenses/" method="post">
+<h1>Enter an expense</h1>
+
+<form class="form-inline" action="/enter-expenses/" method="post">
+  <div class="form-group">
     {% csrf_token %}
     {{ form }}
-    <input type="submit" value="Submit">
+  <input type="submit" class="form-control" value="Submit">
+  </div>
 </form>
 
 {% endblock %}

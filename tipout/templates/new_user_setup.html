@@ -5,10 +5,10 @@
 <form action='/new-user-setup/' method='post'>
   {% if new_user %}
     {% csrf_token %}
-    <p>Let's get you setup!</p>
+    <h1>Let's get you setup!</h1>
     {{ form }}
     <input type='submit' class='btn btn-primary' value='Submit' />
   {% else %}
-    <p>You've already set your estimated daily tips amount.</p>
+    <h2>You've already set your estimated daily tips amount.</h2>
   {% endif %}
 {% endblock %}

@@ -2,7 +2,7 @@
 
 {% block content %}
 
-<p>Edit expense</p>
+<h1>Edit expense</h1>
 
 <form action="/edit-expense/{{ expense_name }}/" method="post">
     {% csrf_token %}

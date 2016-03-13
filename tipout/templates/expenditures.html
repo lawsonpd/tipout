@@ -3,7 +3,7 @@
 {% block content %}
 
 {% if exps %}
-  <p>Today's expenditures</p>
+  <h1>Today's expenditures</h1>
   
   <ul>
     {% for exp in exps %}
@@ -11,7 +11,7 @@
     {% endfor %}
   </ul>
 {% else %}
-  <p>No expenditures yet today.</p>
+  <h2>No expenditures yet today.</h2>
 {% endif %}
 
 <p><a href="/enter-expenditure/">Enter expenditures</a></p>

@@ -11,7 +11,7 @@ class EnterTipsForm(forms.Form):
 class EnterExpensesForm(forms.Form):
     cost = forms.IntegerField(label="expense amount", min_value=0, max_value=5000)
     expense_name = forms.CharField(label="expense name", max_length=100)
-    frequency = forms.CharField(label="frequency ('DAILY', 'WEEKLY', 'BI-WEEKLY', 'MONTHLY', OR 'YEARLY')", initial="MONTHLY")
+    frequency = forms.CharField(label="frequency", initial="MONTHLY")
 
 # class ViewExpensesForm(forms.Form):
 #     cost = None
