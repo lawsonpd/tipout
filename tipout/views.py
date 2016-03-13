@@ -100,15 +100,14 @@ def enter_expenses(request):
     if request.method == 'POST':
         form = EnterExpensesForm(request.POST)
         if form.is_valid():
-            expense_data = form.cleaned_data
             u = User.objects.get(username=request.user)
-            e = Expense(owner=u,
-                        cost=expense_data['cost'],
-                        expense_name=expense_data['expense_name'].lower(),
-                        frequency=expense_data['frequency'])
+            expense_data = form.cleaned_data
+            e = Expense(owner=u, cost=expense_data['cost'], expense_name=expense_data['expense_name'].lower(), frequency=expense_data['frequency'])
             e.save()
+
             return HttpResponseRedirect('/expenses/')
     else:
+
         form = EnterExpensesForm()
         return render(request, 'enter_expenses.html', {'form': form})
 
