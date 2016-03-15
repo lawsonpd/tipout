@@ -28,7 +28,9 @@ with open(os.path.join(BASE_DIR, 'secret_key.txt')) as f:
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ADMINS = [('Peter', 'lawsonpd@gmail.com')]
+ADMINS = [('Peter', 'lawsonpd@gmail.com'),]
+
+SERVER_EMAIL = 'poorman@localhost'
 
 ALLOWED_HOSTS = [
     'localhost',
