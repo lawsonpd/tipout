@@ -1,9 +1,9 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
-from .forms import EnterTipsForm, EnterExpensesForm
+from .forms import EnterTipsForm
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
-from tipout.models import Tip, Expense, Employee, Expenditure, EnterExpenditureForm, EditExpenseForm, NewUserSetupForm
+from tipout.models import Tip, Expense, Employee, Expenditure, EnterExpenditureForm, EnterExpenseForm, EditExpenseForm, NewUserSetupForm
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login
@@ -98,17 +98,20 @@ def enter_expenses(request):
     On GET request, show enter_expenses template/form.
     '''
     if request.method == 'POST':
-        form = EnterExpensesForm(request.POST)
+        form = EnterExpenseForm(request.POST)
         if form.is_valid():
             u = User.objects.get(username=request.user)
             expense_data = form.cleaned_data
-            e = Expense(owner=u, cost=expense_data['cost'], expense_name=expense_data['expense_name'].lower(), frequency=expense_data['frequency'])
+            e = Expense(owner=u,
+                        cost=expense_data['cost'],
+                        expense_name=expense_data['expense_name'].lower(),
+                        frequency=expense_data['frequency'])
             e.save()
 
             return HttpResponseRedirect('/expenses/')
     else:
 
-        form = EnterExpensesForm()
+        form = EnterExpenseForm()
         return render(request, 'enter_expenses.html', {'form': form})
 
 @login_required(login_url='/login/')

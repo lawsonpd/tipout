@@ -33,6 +33,7 @@ TODO:
 -add urlconf for (each of) expenditures, expenses, tips (to include in main urlconf)
 -issue with capital letters in expenditure/expense notes/names
 -get forms looking right
+-add check in data submission to prevent duplicates
 
 READ:
 urlconfs, passing in variables
