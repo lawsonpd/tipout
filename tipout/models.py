@@ -13,22 +13,34 @@ class Employee(models.Model):
     new_user = models.BooleanField()
     init_avg_daily_tips = models.IntegerField()
     signup_date = models.DateField(default=date.today)
+    # earns_tips will be used to determine what to show different types of users; e.g.,
+    # users who don't work for tips won't see tips links anywhere (ideally)
+    earns_tips = models.BooleanField(default=True)
 #     first_name = models.CharField(max_length=50)
 #     last_name = models.CharField(max_length=50)
-#
+
     def __str__(self):
         return self.user.username
 
 # @python_2_unicode_compatible
 class Tip(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='tips')
+    # should amount be FloatField?
     amount = models.IntegerField()
     # DEFAULT_HOURS_WORKED = 8
-    hours_worked = models.FloatField(default=8)
+    hours_worked = models.FloatField(default=8.0)
     date_earned = models.DateField(default=date.today)
 
-    # def __str__(self):
-    #     return str(self.amount)
+    def __str__(self):
+        return date_earned + ' ' + self.amount
+
+class Paycheck(models.Model):
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='paychecks')
+    # should amount be FloatField?
+    amount = models.IntegerField()
+    # need to represent overtime somehow (?)
+    hours_worked = models.FloatField(default=80.0)
+    date_earned = models.DateField(default=date.today)
 
 class Expense(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='expenses')
@@ -55,7 +67,7 @@ class Expenditure(models.Model):
     date = models.DateField(default=date.today)
 
     def __str__(self):
-        return self.owner.username + ' ' +  self.note + ' ' + str(self.date)
+        return self.owner.username + ' ' +  self.note + ' ' + self.date
 
     def get_absolute_url(self):
         return "/%s-%s-%s/" % (self.owner.username, self.note, slugify(self.date))

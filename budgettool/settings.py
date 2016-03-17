@@ -26,11 +26,11 @@ with open(os.path.join(BASE_DIR, 'secret_key.txt')) as f:
     SECRET_KEY = f.read().strip()
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ADMINS = [('Peter', 'lawsonpd@gmail.com'),]
+# ADMINS = [('Peter', 'lawsonpd@gmail.com'),]
 
-SERVER_EMAIL = 'poorman@localhost'
+# SERVER_EMAIL = 'poorman@localhost'
 
 ALLOWED_HOSTS = [
     'localhost',
