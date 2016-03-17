@@ -32,7 +32,7 @@ class Tip(models.Model):
     date_earned = models.DateField(default=date.today)
 
     def __str__(self):
-        return date_earned + ' ' + self.amount
+        return str(self.date_earned) + ' ' + str(self.amount)
 
 class Paycheck(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='paychecks')
@@ -67,7 +67,7 @@ class Expenditure(models.Model):
     date = models.DateField(default=date.today)
 
     def __str__(self):
-        return self.owner.username + ' ' +  self.note + ' ' + self.date
+        return self.owner.username + ' ' +  self.note + ' ' + str(self.date)
 
     def get_absolute_url(self):
         return "/%s-%s-%s/" % (self.owner.username, self.note, slugify(self.date))
