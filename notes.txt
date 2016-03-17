@@ -23,6 +23,8 @@ user should be able to see total income, YTD and MTD, summing tips and paycheck
 could one view for, e.g., expenditures handle all the parameters? perhaps they can be passed into the template and using template logic the right details can be shown. probably not, since the objects passed from the queries need to contain just the right info. test this in another app. could try using if/elif clauses to check for the presence of parameters (e.g. if args[2]:... elif args[1]...).
 
 
+** expenditures can be viewed by day or by month or... so the way they're queried for each changes. for now, assume you can only view expenditures from the current day. 
+
 
 TODO:
 -error messages
@@ -34,6 +36,7 @@ TODO:
 -issue with capital letters in expenditure/expense notes/names
 -get forms looking right
 -add check in data submission to prevent duplicates
+-*entering paychecks - if someone doesn't work for tips, then the tips views are unneeded, but we need views (and a separate category, in a sense) for those users. i.e., they don't even need to see the tips option. this could be done within base.html, probably, since the expenses and expenditures views would still be useful/necessary. instead of entering/editing/viewing tips, they would enter/edit/view paychecks, and all the rest would be based around that.
 
 READ:
 urlconfs, passing in variables

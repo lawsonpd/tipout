@@ -7,7 +7,13 @@
   
   <ul>
     {% for exp in exps %}
-    <li>{{ exp.note }} {{ exp.cost }}</li>
+    <form action='/delete-expenditure{{ exp.get_absolute_url }}' method='post'>
+        {% csrf_token %}
+        <li id="{{ exp.pk }}">
+            {{ exp.note }} {{ exp.cost }}
+        </li>
+        <input type='submit' class='btn btn-sm btn-danger' value='DELETE' />
+    </form>
     {% endfor %}
   </ul>
 {% else %}

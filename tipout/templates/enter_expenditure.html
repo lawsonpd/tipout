@@ -4,6 +4,8 @@
 
 <h1>Enter an expenditure</h1>
 
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
 <form class='form-inline' action='/enter-expenditure/' method='post'>
   <div class='form-group'>
     {% csrf_token %}

@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.utils.encoding import python_2_unicode_compatible
 from django.forms import ModelForm
 from django.utils.translation import ugettext_lazy as _
+from django.utils.text import slugify
 
 @python_2_unicode_compatible
 class Employee(models.Model):
@@ -50,8 +51,14 @@ class Expense(models.Model):
 class Expenditure(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='expenditures')
     cost = models.IntegerField()
-    note = models.CharField(max_length=100, default="Expenditure")
+    note = models.CharField(max_length=100, default="expenditure")
     date = models.DateField(default=date.today)
+
+    def __str__(self):
+        return self.owner.username + ' ' +  self.note + ' ' + str(self.date)
+
+    def get_absolute_url(self):
+        return "/%s-%s-%s/" % (self.owner.username, self.note, slugify(self.date))
 
 # not sure if Budget is needed. can we get the data insights we want
 # just by having the Tip and Expense models?

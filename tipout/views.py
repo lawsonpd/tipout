@@ -10,6 +10,7 @@ from django.contrib.auth import authenticate, login
 
 from tipout.budget import calc_tips_avg, calc_tips_avg_initial
 from datetime import date
+from string import strip
 # from string import lower
 
 # Create your views here.
@@ -102,13 +103,23 @@ def enter_expenses(request):
         if form.is_valid():
             u = User.objects.get(username=request.user)
             expense_data = form.cleaned_data
-            e = Expense(owner=u,
-                        cost=expense_data['cost'],
-                        expense_name=expense_data['expense_name'].lower(),
-                        frequency=expense_data['frequency'])
-            e.save()
-
-            return HttpResponseRedirect('/expenses/')
+            dupe = Expense.objects.filter(
+                       owner=u
+                   ).filter(
+                       expense_name=expense_data['expense_name'].lower()
+                   )
+            if dupe:
+                return render(request,
+                              'enter_expenses.html',
+                              {'form': EnterExpenseForm(),
+                               'error_message': 'An expense with that name already exists.'})
+            else:
+                e = Expense(owner=u,
+                            cost=expense_data['cost'],
+                            expense_name=expense_data['expense_name'].lower(),
+                            frequency=expense_data['frequency'])
+                e.save()
+                return HttpResponseRedirect('/expenses/')
     else:
 
         form = EnterExpenseForm()
@@ -133,8 +144,8 @@ def tips(request):
     tips = Tip.objects.filter(owner_id=request.user.id)
     return render(request, 'tips.html', {'tips': tips})
 
-def user_test(request):
-    return HttpResponse(request.user.id)
+# def user_test(request):
+#     return HttpResponse(request.user.id)
 
 @login_required(login_url='/login/')
 @require_http_methods(['GET'])
@@ -195,14 +206,68 @@ def enter_expenditure(request):
             # process form data
             u = User.objects.get(username=request.user)
             exp_data = form.cleaned_data
-            e = Expenditure(owner=u, cost=exp_data['cost'], date=exp_data['date'], note=exp_data['note'].lower())
-            e.save()
-
-            return HttpResponseRedirect('/budget/')
+            dupe = Expenditure.objects.filter(
+                       owner=u
+                   ).filter(
+                       date=date.today()
+                   ).filter(
+                       note=exp_data['note'].lower()
+                   )
+            if dupe:
+                return render(request,
+                              'enter_expenditure.html',
+                              {'form': EnterExpenditureForm(initial={'date': date.today()}),
+                               'error_message': 'An expenditure with that note already exists.'}
+                              )
+            else:
+                e = Expenditure(owner=u, cost=exp_data['cost'], date=exp_data['date'], note=exp_data['note'].lower())
+                e.save()
+                return HttpResponseRedirect('/expenditures/')
     else:
-        form = EnterExpenditureForm(initial={'date': date.today()})
+        return render(request,
+                      'enter_expenditure.html',
+                      {'form': EnterExpenditureForm(initial={'date': date.today()})}
+                      )
 
-    return render(request, 'enter_expenditure.html', {'form': form})
+# To edit an expenditure, you'll have to use pk to identify it, since the note and amount could change.
+# This would effectively be deleting an expenditure and creating a new one, which might be enough anyway.
+#
+# @login_required(login_url='/login/')
+# def edit_expenditure(request, *args):
+#     '''
+#     Currently, you can only edit *today's* expenditures, so /expenditures/ only
+#     queries for today's and that's all you can edit.
+#     '''
+#     # exp = args[0].replace('-', ' ')
+#
+#     u = User.objects.get(username=request.user)
+#     es = Expenditure.objects.filter(owner=u).filter(date=date.today())
+#
+#     e = [ e for e in es if str(e) == args[0] ]
+#
+#     if request.method == 'POST':
+#         form = EditExpenditureForm(request.POST)
+#         if form.is_valid():
+#             exp_data = form.cleaned_data
+#
+#
+#     else:
+#         pass
+
+@login_required(login_url='/login/')
+def delete_expenditure(request, *args):
+    # exp = args[0].replace('-', ' ')
+
+    if request.method == 'POST':
+        u = User.objects.get(username=request.user)
+        es = Expenditure.objects.filter(owner=u).filter(date=date.today())
+        e = None
+        test = None
+        for exp in es:
+            if strip(exp.get_absolute_url(), '/') == args[0]:
+                e = exp
+        e.delete()
+        return HttpResponseRedirect('/expenditures/')
 
 @login_required(login_url='/login/')
 @require_http_methods(['GET'])
@@ -229,6 +294,9 @@ def edit_expense(request, *args):
         form = EditExpenseForm(request.POST)
         if form.is_valid():
             exp_data = form.cleaned_data
+            ##
+            # Need to check for dupe here
+            ##
             exp = Expense.objects.get(owner=u, expense_name=e.expense_name)
             exp.cost = exp_data['cost']
             exp.save()

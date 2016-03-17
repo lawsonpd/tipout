@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>Edit expenditure</h1>
+
+<form action='/edit-expenditure/{{ str(exp) }}' method='post'>
+    {% csrf_token %}
+    <h3>{{ exp.note }} | {{ exp.date }}</h3>
+    {{ form }}
+</form>
