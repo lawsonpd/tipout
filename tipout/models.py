@@ -15,7 +15,7 @@ class Employee(models.Model):
     signup_date = models.DateField(default=date.today)
     # earns_tips will be used to determine what to show different types of users; e.g.,
     # users who don't work for tips won't see tips links anywhere (ideally)
-    earns_tips = models.BooleanField(default=True)
+    # earns_tips = models.BooleanField(default=True)
 #     first_name = models.CharField(max_length=50)
 #     last_name = models.CharField(max_length=50)
 
