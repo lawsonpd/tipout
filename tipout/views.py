@@ -95,7 +95,9 @@ def enter_tips(request):
 @login_required(login_url='/login/')
 @require_http_methods(['GET'])
 def paychecks(request):
-    paychecks = Paycheck.objects.filter(owner_id=request.user.id)
+    u = User.objects.get(username=request.user)
+
+    paychecks = Paycheck.objects.filter(owner=u)
     return render(request, 'paychecks.html', {'paychecks': paychecks})
 
 @login_required(login_url='/login/')
@@ -267,7 +269,7 @@ def budget(request):
     # daily_avg_from_paycheck = (sum(paycheck_amts) / len(paycheck_amts))
 
     if (date.today() - emp.signup_date).days <= 30:
-        budget = daily_tips_avg_initial(emp.init_avg_daily_tips, tip_values, emp.signup_date) + daily_avg_from_paycheck(u) - daily_expense_cost - expenditures_today
+        budget = avg_daily_tips_initial(emp.init_avg_daily_tips, tip_values, emp.signup_date) + daily_avg_from_paycheck(u) - daily_expense_cost - expenditures_today
 
         return render(request, 'budget.html', {'avg_daily_tips': emp.init_avg_daily_tips, 'budget': budget})
 
