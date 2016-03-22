@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>Edit paycheck</h1>
+
+<form action='/edit-paycheck/{{ paycheck.get_absolute_url }}/' method='post'>
+  {% csrf_token %}
+  <h3>Paycheck from <strong>{{ paycheck.date_earned }}</strong></h3>
+  {{ form }}
+  <input type='submit' class='btn btn-primary' value='Submit' />
+</form>
+
+<!-- Could have '/delete-paycheck/' here at some point, but why delete a paycheck? -->
+
+{% endblock %}

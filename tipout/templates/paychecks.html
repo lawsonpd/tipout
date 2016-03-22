@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% if paychecks %}
+  <h1>Your paychecks</h1>
+  <ul>
+    {% for paycheck in paychecks %}
+    <li>{{ paycheck.amount }} {{ paycheck.date_earned }} | <a href='/edit-paycheck/{{ paycheck.get_absolute_url }}/'>Edit</a></li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <h2>You don't have any paychecks yet.</h2>
+{% endif %}
+
+<p><a href='/enter-paycheck/'>Enter a paycheck</a></p>
+
+{% endblock %}

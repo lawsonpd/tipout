@@ -1,14 +1,13 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
-from .forms import EnterTipsForm
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
-from tipout.models import Tip, Expense, Employee, Expenditure, EnterExpenditureForm, EnterExpenseForm, EditExpenseForm, NewUserSetupForm
+from tipout.models import Tip, EnterTipsForm, Paycheck, EditPaycheckForm, Expense, Employee, Expenditure, EnterPaycheckForm, EnterExpenditureForm, EnterExpenseForm, EditExpenseForm, NewUserSetupForm
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login
 
-from tipout.budget import calc_tips_avg, calc_tips_avg_initial
+from tipout.budget import avg_daily_tips, avg_daily_tips_initial, daily_avg_from_paycheck
 from datetime import date
 from string import strip
 # from string import lower
@@ -92,6 +91,81 @@ def enter_tips(request):
 
     return render(request, 'enter_tips.html', {'form': form})
 
+# need to be able to view paychecks by month & year
+@login_required(login_url='/login/')
+@require_http_methods(['GET'])
+def paychecks(request):
+    paychecks = Paycheck.objects.filter(owner_id=request.user.id)
+    return render(request, 'paychecks.html', {'paychecks': paychecks})
+
+@login_required(login_url='/login/')
+def enter_paycheck(request):
+    if request.method == 'POST':
+        form = EnterPaycheckForm(request.POST)
+        if form.is_valid():
+            u = User.objects.get(username=request.user)
+            paycheck_data = form.cleaned_data
+            dupe = Paycheck.objects.filter(
+                      owner=u
+                   ).filter(
+                      date_earned=paycheck_data['date_earned']
+                   )
+            if dupe:
+                return render(request,
+                              'enter_paycheck.html',
+                              {'error_message': 'Paycheck from that date exists.'})
+            else:
+                p = Paycheck(owner=u,
+                             amount=paycheck_data['amount'],
+                             date_earned=paycheck_data['date_earned']
+                            )
+                p.save()
+                return HttpResponseRedirect('/paychecks/')
+        else:
+            # render template w/ error messages
+            pass
+
+    else:
+        return render(request,
+                      'enter_paycheck.html',
+                      {'form': EnterPaycheckForm()}
+                     )
+
+
+@login_required(login_url='/login/')
+def edit_paycheck(request, *args):
+    # split paycheck url into (username, 'paycheck', year, month, day)
+    u = User.objects.get(username=request.user)
+    paycheck_data_split = args[0].split('-')
+    paycheck = Paycheck.objects.get(owner=u,
+                                    date_earned__year=paycheck_data_split[2],
+                                    date_earned__month=paycheck_data_split[3],
+                                    date_earned__day=paycheck_data_split[4])
+
+    if request.method == 'GET':
+        form = EditPaycheckForm(initial={'paycheck': paycheck})
+        return render(request, 'edit_paycheck.html', {'form': form, 'paycheck': paycheck})
+
+    if request.method == 'POST':
+        form = EditPaycheckForm(request.POST)
+        if form.is_valid():
+            paycheck_data = form.cleaned_data
+            #
+            ## Don't need to check for dupe, since date isn't editable
+            #
+            p = Paycheck.objects.get(owner=u, date_earned=paycheck.date_earned)
+            p.amount = paycheck_data['amount']
+            p.save()
+            return HttpResponseRedirect('/paychecks/')
+        else:
+            # render template w/ error messages
+            pass
+
+# May not ever need to delete a paycheck
+@login_required(login_url='/login/')
+def delete_paycheck(request):
+    pass
+
 @login_required(login_url='/login/')
 def enter_expenses(request):
     '''
@@ -117,11 +191,14 @@ def enter_expenses(request):
                 e = Expense(owner=u,
                             cost=expense_data['cost'],
                             expense_name=expense_data['expense_name'].lower(),
-                            frequency=expense_data['frequency'])
+                            frequency=expense_data['frequency']
+                           )
                 e.save()
                 return HttpResponseRedirect('/expenses/')
+        else:
+            # render template with error messages
+            pass
     else:
-
         form = EnterExpenseForm()
         return render(request, 'enter_expenses.html', {'form': form})
 
@@ -184,16 +261,20 @@ def budget(request):
     tips = Tip.objects.filter(owner=u).order_by('date_earned')[:30]
     tip_values = [ tip.amount for tip in tips ]
 
+    # user's paychecks
+    # paychecks = Paycheck.objects.filter(owner=u)
+    # paycheck_amts = [ paycheck.amt for paycheck in paychecks ]
+    # daily_avg_from_paycheck = (sum(paycheck_amts) / len(paycheck_amts))
+
     if (date.today() - emp.signup_date).days <= 30:
-        budget = calc_tips_avg_initial(emp.init_avg_daily_tips, tip_values, emp.signup_date) - daily_expense_cost - expenditures_today
+        budget = daily_tips_avg_initial(emp.init_avg_daily_tips, tip_values, emp.signup_date) + daily_avg_from_paycheck(u) - daily_expense_cost - expenditures_today
 
         return render(request, 'budget.html', {'avg_daily_tips': emp.init_avg_daily_tips, 'budget': budget})
 
     else:
-        avg_daily_tips = calc_tips_avg(tips_value)
-        budget = avg_daily_tips - daily_expense_cost - expenditures_today
+        budget = avg_daily_tips(tip_values) + daily_avg_from_paycheck(u) - daily_expense_cost - expenditures_today
 
-        return render(request, 'budget.html', {'avg_daily_tips': avg_daily_tips, 'budget': budget})
+        return render(request, 'budget.html', {'avg_daily_tips': avg_daily_tips(tip_values), 'budget': budget})
 
 @login_required(login_url='/login/')
 def enter_expenditure(request):
@@ -300,7 +381,7 @@ def edit_expense(request, *args):
             exp = Expense.objects.get(owner=u, expense_name=e.expense_name)
             exp.cost = exp_data['cost']
             exp.save()
-        return HttpResponseRedirect('/expenses/')
+            return HttpResponseRedirect('/expenses/')
 
 @login_required(login_url='/login/')
 def delete_expense(request, *args):

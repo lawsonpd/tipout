@@ -6,13 +6,13 @@
     <h1>Your tips</h1>
     <ul>
     {% for tip in tips %}
-        <li> {{ tip.amount }} {{ tip.date_earned }} </li>
+        <li>{{ tip.amount }} {{ tip.date_earned }}</li>
     {% endfor %}
     </ul>
 {% else %}
     <h2>No tips yet.</h2>
 {% endif %}
 
-    <p><a href="/enter-tips/">Enter more tips</a> | <a href="/edit-tips/">Edit your tips</a> | <a href='/enter-expenditure/'>Enter expenditure</a></p>
+    <p><a href="/enter-tips/">Enter more tips</a> | <a href="/edit-tips/">Edit your tips</a></p>
 
 {% endblock %}

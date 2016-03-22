@@ -6,8 +6,8 @@
 
 <form class="form-inline" action="/enter-tips/" method="post">
     <div class="form-group">
-    {% csrf_token %}
-    {{ form }}
+      {% csrf_token %}
+      {{ form }}
     <input type="submit" class="form-control" value="Submit"/>
     </div>
 </form>

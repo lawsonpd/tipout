@@ -37,6 +37,11 @@ TODO:
 -get forms looking right
 -add check in data submission to prevent duplicates
 -*entering paychecks - if someone doesn't work for tips, then the tips views are unneeded, but we need views (and a separate category, in a sense) for those users. i.e., they don't even need to see the tips option. this could be done within base.html, probably, since the expenses and expenditures views would still be useful/necessary. instead of entering/editing/viewing tips, they would enter/edit/view paychecks, and all the rest would be based around that.
+-HOME: explain that paychecks' amounts are NET
+-budget.py must take into account paychecks
+-*should expenses, expenditures, tips, and paychecks be 'owned' by Users or Employees?
+-some views get objects by request.user and some by request.user.id. this should be consistent across views
+-need some 'history' view of expenditures - order by month
 
 READ:
 urlconfs, passing in variables

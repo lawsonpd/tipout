@@ -13,6 +13,8 @@ class Employee(models.Model):
     new_user = models.BooleanField()
     init_avg_daily_tips = models.IntegerField()
     signup_date = models.DateField(default=date.today)
+    # TIPOUT IS FOR TIP-EARNERS ONLY. SO ALL USERS EARN TIPS.
+    #
     # earns_tips will be used to determine what to show different types of users; e.g.,
     # users who don't work for tips won't see tips links anywhere (ideally)
     # earns_tips = models.BooleanField(default=True)
@@ -41,6 +43,10 @@ class Paycheck(models.Model):
     # need to represent overtime somehow (?)
     hours_worked = models.FloatField(default=80.0)
     date_earned = models.DateField(default=date.today)
+    # frequency = models.CharField(default='BW')
+
+    def get_absolute_url(self):
+        return '%s-paycheck-%s' % (self.owner.username, slugify(self.date_earned))
 
 class Expense(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='expenses')
@@ -78,10 +84,26 @@ class Budget(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='budget')
     daily_budget = models.FloatField()
 
+class EnterTipsForm(ModelForm):
+    class Meta:
+        model = Tip
+        exclude = ['owner', 'hours_worked']
+
 class EditTipsForm(ModelForm):
     class Meta:
         model = Tip
         exclude = ['owner', 'hours_worked']
+
+class EnterPaycheckForm(ModelForm):
+    class Meta:
+        model = Paycheck
+        # assume default hrs worked (80) for now
+        exclude = ['owner', 'hours_worked']
+
+class EditPaycheckForm(ModelForm):
+    class Meta:
+        model = Paycheck
+        exclude = ['owner', 'hours_worked', 'date_earned']
 
 class EnterExpenseForm(ModelForm):
     class Meta:
