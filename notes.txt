@@ -29,7 +29,10 @@ TODO:
 -*should expenses, expenditures, tips, and paychecks be 'owned' by Users or Employees?
 -some views get objects by request.user and some by request.user.id. this should be consistent across views
 -need some 'history' view of expenditures - order by month
--remove all users except test
+-remove all users except test (necessary?)
+* look at customizing bootstrap (getbootstrap.com/customize)
+* using admin site in production
+* 'income' view for seeing how much you've earned this month, year
 
 READ:
 urlconfs, passing in variables

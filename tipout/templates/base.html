@@ -20,6 +20,9 @@
 
     <!-- Custom styles for this template -->
     <link rel="stylesheet" type="text/css" href="{% static 'tipout/starter-template.css' %}" />
+ 
+    <!-- Custom font for 'tipout' -->
+    <link href='https://fonts.googleapis.com/css?family=Lobster' rel='stylesheet' type='text/css' />
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -39,7 +42,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="/">Tipout</a>
+          <a class="navbar-brand" style="font-family: 'Lobster', cursive;" href="/">Tipout</a>
         </div>
 
 	{% if user.is_authenticated %}
@@ -75,6 +78,8 @@
         {% block content %} {% endblock %}
 
       </div>
+
+      <hr />
 
       <div class="row">
         <div class="col-md-4 col-md-offset-4"><center><p>&copy; Overhauled Productions, Inc.</p></center></div>

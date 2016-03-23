@@ -2,7 +2,7 @@
 
 {% block content %}
 
-<h1>Edit paycheck</h1>
+<h1 style="font-family: 'Lobster', cursive">Edit paycheck</h1>
 
 <form action='/edit-paycheck/{{ paycheck.get_absolute_url }}/' method='post'>
   {% csrf_token %}

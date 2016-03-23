@@ -2,17 +2,32 @@
 
 {% block content %}
 
-    <h1>Tipout</h1>
-    
-    <h4>a daily budgeting tool</h4>
-    
+    <div class='jumbotron'>
+
+    <h1 style="font-family: 'Lobster', cursive">Tipout</h1>
+
+    <div>
+ 
+    <p class='lead'>a daily budgeting tool for anyone who earns tips</p>
+
+    </div>
+ 
     <a class="btn btn-lg btn-primary" href='/register/' role="button">Create an account</a>
 
-    <p><h3>Features</h3></p>
+    </div>
+
+    <hr />
+    <p><u><h2 style="font-family: 'Lobster', cursive">Features</h2></u></p>
     <div class='row'>
-      <div class='col-md-4'>Track your earnings</div>
-      <div class='col-md-4'>Manage your expenses</div>
-      <div class='col-md-4'>Manage daily spending</div>
+      <div class='col-md-4 col-md-offset-1'>
+          <p class='lead'>Track your earnings</p>
+          <p>Enter your tips each day. Every two weeks enter the income you earn from your paycheck. See how much you've earned for the month and year.</p>
+      </div>
+
+      <div class='col-md-4 col-md-offset-2'>
+          <p class='lead'>Manage your expenses</p>
+          <p>Make a list of what you spend money on each month. Each day enter your expidentures. Use this to determine your daily discretionary spending limit.</p>
+      </div>
     </div>
 
 {% endblock %}

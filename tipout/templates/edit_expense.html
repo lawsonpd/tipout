@@ -2,7 +2,7 @@
 
 {% block content %}
 
-<h1>Edit expense</h1>
+<h1 style="font-family: 'Lobster', cursive">Edit expense</h1>
 
 <form action="/edit-expense/{{ expense_name }}/" method="post">
     {% csrf_token %}
