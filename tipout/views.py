@@ -218,13 +218,17 @@ def expenses(request):
 @require_http_methods(['GET'])
 def tips(request):
     '''
-    Get tips that belong to current user and pass them to the template.
+    To template:
+    ALL tips that belong to current user.
+    Daily avg. tips based on ALL user's tips.
     '''
-    tips = Tip.objects.filter(owner_id=request.user.id)
-    return render(request, 'tips.html', {'tips': tips})
+    u = User.objects.get(username=request.user)
 
-# def user_test(request):
-#     return HttpResponse(request.user.id)
+    tips = Tip.objects.filter(owner=u).order_by('date_earned')
+    # tips = Tip.objects.filter(owner=u).order_by('date_earned')[:30]
+    tip_values = [ tip.amount for tip in tips ]
+
+    return render(request, 'tips.html', {'avg_daily_tips': avg_daily_tips(tip_values), 'tips': tips})
 
 @login_required(login_url='/login/')
 @require_http_methods(['GET'])

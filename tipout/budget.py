@@ -13,7 +13,10 @@ def avg_daily_tips_initial(init_avg_daily_tips, tips_so_far, signup_date):
 
 def avg_daily_tips(tips):
     # calculate tips for last 30 days
-    return sum(tips) / 20
+    '''
+    List -> Int
+    '''
+    return sum(tips) / len(tips)
 
 def daily_avg_from_paycheck(user):
     # assuming paychecks are bi-weekly (2/mo)
