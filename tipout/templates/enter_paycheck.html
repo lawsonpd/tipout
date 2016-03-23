@@ -4,11 +4,11 @@
 
 <h1 style="font-family: 'Lobster', cursive">Enter paycheck</h1>
 
-<form class='form-inline' action='/enter-paycheck/' method='post'>
-    <div class='form-group'>
+<form action='/enter-paycheck/' method='post'>
+    <div>
       {% csrf_token %}
       {{ form }}
-    <input type='submit' class='form-control' value='Submit' />
+    <input type='submit' value='Submit' />
     </div>
 </form>
 

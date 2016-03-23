@@ -4,11 +4,11 @@
 
 <h1 style="font-family: 'Lobster', cursive">Enter your tips for today</h1>
 
-<form class="form-inline" action="/enter-tips/" method="post">
-    <div class="form-group">
+<form action="/enter-tips/" method="post">
+    <div>
       {% csrf_token %}
       {{ form }}
-    <input type="submit" class="form-control" value="Submit"/>
+    <input type="submit" value="Submit"/>
     </div>
 </form>
 

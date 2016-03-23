@@ -6,11 +6,11 @@
 
 {% if error_message %}<p class="text-warning"><strong>{{ error_message }}</strong></p>{% endif %}
 
-<form class='form-inline' action='/enter-expenses/' method='post'>
-  <div class='form-group'>
+<form action='/enter-expenses/' method='post'>
+  <div>
     {% csrf_token %}
     {{ form }}
-  <input type='submit' class='form-control' value='Submit' />
+  <input type='submit' value='Submit' />
   </div>
 </form>
 
