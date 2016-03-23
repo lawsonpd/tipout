@@ -33,6 +33,7 @@ TODO:
 * look at customizing bootstrap (getbootstrap.com/customize)
 * using admin site in production
 * 'income' view for seeing how much you've earned this month, year
+* users need to enter an email address for resetting their password
 
 READ:
 urlconfs, passing in variables

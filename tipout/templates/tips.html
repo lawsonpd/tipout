@@ -5,6 +5,7 @@
 {% if tips %}
   <h1 style="font-family: 'Lobster', cursive">Your tips</h1>
   <p class='lead'>Average daily tips: ${{ avg_daily_tips }}</p>
+  <p><a href='/enter-tips/'>Enter tips</a> | <a href='/edit-tips/'>Edit your tips</a></p>
   <div class='row'>
     <div class='col-md-4 col-md-offset-4'>
       {% for tip in tips %}
@@ -14,8 +15,7 @@
   </div>
 {% else %}
     <h2>No tips yet.</h2>
+    <p><a href='/enter-tips/'>Enter tips</a></p>
 {% endif %}
-
-    <p><a href='/enter-tips/'>Enter more tips</a> | <a href='/edit-tips/'>Edit your tips</a></p>
 
 {% endblock %}
