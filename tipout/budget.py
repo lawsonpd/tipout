@@ -16,7 +16,10 @@ def avg_daily_tips(tips):
     '''
     List -> Int
     '''
-    return sum(tips) / len(tips)
+    if tips:
+        return sum(tips) / len(tips)
+    else:
+        return 0
 
 def daily_avg_from_paycheck(user):
     # assuming paychecks are bi-weekly (2/mo)
