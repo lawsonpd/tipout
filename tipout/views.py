@@ -79,7 +79,7 @@ def enter_tips(request):
 
             tip_owner = User.objects.get(username=request.user)
 
-            t = Tip(amount=tip_data['tips_amount'],
+            t = Tip(amount=tip_data['amount'],
                     date_earned=tip_data['date_earned'],
                     owner=tip_owner)
             t.save()
