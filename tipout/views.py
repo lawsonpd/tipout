@@ -224,7 +224,7 @@ def tips(request):
     '''
     u = User.objects.get(username=request.user)
 
-    tips = Tip.objects.filter(owner=u).order_by('date_earned')
+    tips = Tip.objects.filter(owner=u).order_by('date_earned')[::-1]
     # tips = Tip.objects.filter(owner=u).order_by('date_earned')[:30]
     tip_values = [ tip.amount for tip in tips ]
 
