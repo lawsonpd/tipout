@@ -34,6 +34,7 @@ TODO:
 * using admin site in production
 * 'income' view for seeing how much you've earned this month, year
 * users need to enter an email address for resetting their password
+** tip.hours_worked and paycheck.hours_worked will be useful if we want users to be able to see their avg hourly wage
 
 READ:
 urlconfs, passing in variables

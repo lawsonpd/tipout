@@ -231,6 +231,14 @@ def tips(request):
     return render(request, 'tips.html', {'avg_daily_tips': avg_daily_tips(tip_values), 'tips': tips})
 
 @login_required(login_url='/login/')
+def edit_tip(request, *args):
+    pass
+
+@login_required(login_url='/login/')
+def delete_tip(request, *args):
+    pass
+
+@login_required(login_url='/login/')
 @require_http_methods(['GET'])
 def budget(request):
     '''
