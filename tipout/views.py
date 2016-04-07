@@ -276,7 +276,7 @@ def budget(request):
     tip_values = [ tip.amount for tip in tips ]
 
     # user's paychecks
-    # paychecks = Paycheck.objects.filter(owner=u)
+    paychecks = Paycheck.objects.filter(owner=u)
     # paycheck_amts = [ paycheck.amt for paycheck in paychecks ]
     # daily_avg_from_paycheck = (sum(paycheck_amts) / len(paycheck_amts))
 
