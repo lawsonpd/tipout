@@ -44,7 +44,4 @@ def avg_hourly_wage(tips, paychecks, num_days):
     '''
     total_hours = sum([ tip.hours_worked for tip in tips ])
 
-    return ((avg_daily_tips(tips)
-          + daily_avg_from_paycheck(paychecks))
-          * days)
-          / total_hours
+    return ((avg_daily_tips(tips) + daily_avg_from_paycheck(paychecks)) * days) / total_hours
