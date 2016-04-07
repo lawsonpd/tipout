@@ -281,12 +281,12 @@ def budget(request):
     # daily_avg_from_paycheck = (sum(paycheck_amts) / len(paycheck_amts))
 
     if (date.today() - emp.signup_date).days <= 30:
-        budget = avg_daily_tips_initial(emp.init_avg_daily_tips, tip_values, emp.signup_date) + daily_avg_from_paycheck(u) - daily_expense_cost - expenditures_today
+        budget = avg_daily_tips_initial(emp.init_avg_daily_tips, tip_values, emp.signup_date) + daily_avg_from_paycheck(paychecks) - daily_expense_cost - expenditures_today
 
         return render(request, 'budget.html', {'avg_daily_tips': emp.init_avg_daily_tips, 'budget': budget})
 
     else:
-        budget = avg_daily_tips(tip_values) + daily_avg_from_paycheck(u) - daily_expense_cost - expenditures_today
+        budget = avg_daily_tips(tip_values) + daily_avg_from_paycheck(paychecks) - daily_expense_cost - expenditures_today
 
         return render(request, 'budget.html', {'avg_daily_tips': avg_daily_tips(tip_values), 'budget': budget})
 
