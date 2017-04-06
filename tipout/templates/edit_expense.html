@@ -4,7 +4,7 @@
 
 <h1 style="font-family: 'Lobster', cursive">Edit expense</h1>
 
-<form action="/edit-expense/{{ expense_name }}/" method="post">
+<form action="/edit-expense/{{ expense_name|slugify }}/" method="post">
     {% csrf_token %}
     <h3>{{ expense_name }}</h3>
     {{ form }}

@@ -38,3 +38,6 @@ TODO:
 
 READ:
 urlconfs, passing in variables
+
+admin:
+poorman:channel12OI&

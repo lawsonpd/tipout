@@ -4,11 +4,13 @@
 
 <h1 style="font-family: 'Lobster', cursive">Your expenses</h1>
 
-{% for exp in expenses %}
-<ul>
-    <li>{{ exp.expense_name }} {{ exp.cost }} {{ exp.frequency }} | <a href="/edit-expense/{{ exp.expense_name|slugify }}/">Edit</a></li>
-</ul>
-{% endfor %}
+<div class='row'>
+  <div class='col-md-4 col-md-offset-4'>
+    {% for exp in expenses %}
+    <p>{{ exp.expense_name }} {{ exp.cost }} {{ exp.frequency }} | <a href="/edit-expense/{{ exp.expense_name|slugify }}/">Edit</a></p>
+    {% endfor %}
+  </div>
+</div>
 
 <p><a href="/enter-expenses/">Enter more expenses</a>
 

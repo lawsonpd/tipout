@@ -65,6 +65,10 @@ class Expense(models.Model):
     frequency = models.CharField(max_length=2,
                                  choices=FREQ_CHOICES,
                                  default=MONTHLY)
+    def get_absolute_url(self):
+        expense_name_split = expense_name.split(' ')
+        url_name = '-'.join(expense_name_split)
+        return "/%s" % url_name
 
 class Expenditure(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='expenditures')
@@ -77,6 +81,26 @@ class Expenditure(models.Model):
 
     def get_absolute_url(self):
         return "/%s-%s-%s/" % (self.owner.username, self.note, slugify(self.date))
+
+    # dates = {'1': 'January',
+    #          '2': 'February',
+    #          '3': 'March',
+    #          '4': 'April',
+    #          '5': 'May',
+    #          '6': 'June',
+    #          '7': 'July',
+    #          '8': 'August',
+    #          '9': 'September',
+    #          '10': 'October',
+    #          '11': 'November',
+    #          '12': 'December'}
+
+    # def month_name(self):
+    #     mo = str(self.date.month)
+    #     return self.dates[mo]
+
+    def month_name(self):
+        return self.date.strftime("%B")
 
 # not sure if Budget is needed. can we get the data insights we want
 # just by having the Tip and Expense models?

@@ -408,17 +408,77 @@ def delete_expense(request, *args):
         return HttpResponseRedirect('/expenses/')
 
 @login_required(login_url='/login/')
-def expenditures_month_archive(request, *args):
-    pass
+@require_http_methods(['GET'])
+def expenditures_archive(request, *args):
+    '''
+    Shows a list of years
+    '''
+    u = User.objects.get(username=request.user)
+    all_years = [e.date.year for e in Expenditure.objects.filter(owner=u)]
+    years = set(all_years)
+    return render(request, 'expenditures_archive.html', {'years': years})
 
 @login_required(login_url='/login/')
-def expenditures_day_archive(request, *args):
-    pass
+@require_http_methods(['GET'])
+def expenditures_year_archive(request, year, *args):
+    '''
+    Shows a list of months
+    '''
+    u = User.objects.get(username=request.user)
+    # all_months = [e.month_name for e in Expenditure.objects.filter(owner=u)
+    #                            if e.date.year == year]
+    # months = set(all_months)
+    dates = Expenditure.objects.filter(owner=u,
+                                       date__year=year).dates('date', 'month')
+    months = [date.month for date in dates]
+    return render(request, 'expenditures_archive.html', {'year': year,
+                                                         'months': months})
 
 @login_required(login_url='/login/')
-def expenditures_year_archive(request, *args):
-    pass
+@require_http_methods(['GET'])
+def expenditures_month_archive(request, year, month, *args):
+    '''
+    Shows a list of days
+    '''
+    u = User.objects.get(username=request.user)
+    dates = Expenditure.objects.filter(owner=u,
+                                       date__year=year,
+                                       date__month=month).dates('date', 'day')
+    days = [date.day for date in dates]
+    return render(request, 'expenditures_archive.html', {'year': year,
+                                                         'month': month,
+                                                         'days': days})
 
 @login_required(login_url='/login/')
-def expenditure_detail(request, *args):
-    pass
+def expenditures_day_archive(request, year, month, day, *args):
+    '''
+    Shows a list of expenditures
+    '''
+    u = User.objects.get(username=request.user)
+    exps = Expenditure.objects.filter(owner=u,
+                                       date__year=year,
+                                       date__month=month,
+                                       date__day=day)
+    # exps_notes = [date.note for exp in exps]
+    return render(request, 'expenditures_archive.html', {'year': year,
+                                                         'month': month,
+                                                         'day': day,
+                                                         'exps': exps})
+
+@login_required(login_url='/login/')
+def expenditure_detail(request, year, month, day, exp, *args):
+    '''
+    Shows details about a particular expenditure
+    '''
+    exp_note = exp.replace('-', ' ')
+
+    u = User.objects.get(username=request.user)
+    exp = Expenditure.objects.get(owner=u,
+                                       date__year=year,
+                                       date__month=month,
+                                       date__day=day,
+                                       note=exp_note)
+    return render(request, 'expenditures_archive.html', {'year': year,
+                                                         'month': month,
+                                                         'day': day,
+                                                         'exp': exp})

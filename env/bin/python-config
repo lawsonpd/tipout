@@ -1,4 +1,4 @@
-#!/home/poorman/Prog/Python/budgettool/env/bin/python
+#!/Users/poorman/Prog/tipout-app/env/bin/python
 
 import sys
 import getopt
