@@ -224,7 +224,8 @@ def tips(request):
     '''
     u = User.objects.get(username=request.user)
 
-    tips = Tip.objects.filter(owner=u).order_by('date_earned')[::-1]
+    tips = Tip.objects.filter(owner=u,
+                              date_earned__month=date.today().month).order_by('date_earned')[::-1]
     # tips = Tip.objects.filter(owner=u).order_by('date_earned')[:30]
     tip_values = [ tip.amount for tip in tips ]
 
@@ -235,8 +236,13 @@ def edit_tip(request, *args):
     pass
 
 @login_required(login_url='/login/')
-def delete_tip(request, *args):
-    pass
+def delete_tip(request, tip_id, *args):
+
+    if request.method == 'POST':
+        u = User.objects.get(username=request.user)
+        t = Tip.objects.get(owner=u, pk=tip_id)
+        t.delete()
+        return HttpResponseRedirect('/tips/')
 
 @login_required(login_url='/login/')
 @require_http_methods(['GET'])
@@ -456,9 +462,9 @@ def expenditures_day_archive(request, year, month, day, *args):
     '''
     u = User.objects.get(username=request.user)
     exps = Expenditure.objects.filter(owner=u,
-                                       date__year=year,
-                                       date__month=month,
-                                       date__day=day)
+                                      date__year=year,
+                                      date__month=month,
+                                      date__day=day)
     # exps_notes = [date.note for exp in exps]
     return render(request, 'expenditures_archive.html', {'year': year,
                                                          'month': month,
@@ -474,11 +480,51 @@ def expenditure_detail(request, year, month, day, exp, *args):
 
     u = User.objects.get(username=request.user)
     exp = Expenditure.objects.get(owner=u,
-                                       date__year=year,
-                                       date__month=month,
-                                       date__day=day,
-                                       note=exp_note)
+                                  date__year=year,
+                                  date__month=month,
+                                  date__day=day,
+                                  note=exp_note)
     return render(request, 'expenditures_archive.html', {'year': year,
                                                          'month': month,
                                                          'day': day,
                                                          'exp': exp})
+
+@login_required(login_url='/login/')
+def tips_archive(request, year=None, month=None, day=None, *args):
+    '''
+    See past tips.
+
+    Render the same template but send different data depending on the
+    parameters that are past in.
+    '''
+
+    u = User.objects.get(username=request.user)
+
+    if not year:
+        all_years = [tip.date_earned.year for tip in Tip.objects.filter(owner=u)]
+        years = set(all_years)
+        return render(request, 'tips_archive.html', {'years': years})
+
+    elif not month:
+        dates = Tip.objects.filter(owner=u,
+                                   date_earned__year=year).dates('date_earned', 'month')
+        months = [date.month for date in dates]
+        return render(request, 'tips_archive.html', {'year': year,
+                                                     'months': months})
+    elif not day:
+        dates = Tip.objects.filter(owner=u,
+                                   date_earned__year=year,
+                                   date_earned__month=month).dates('date_earned', 'day')
+        days = [date.day for date in dates]
+        return render(request, 'tips_archive.html', {'year': year,
+                                                     'month': month,
+                                                     'days': days})
+    else:
+        tips = Tip.objects.filter(owner=u,
+                                  date_earned__year=year,
+                                  date_earned__month=month,
+                                  date_earned__day=day)
+        return render(request, 'tips_archive.html', {'year': year,
+                                                     'month': month,
+                                                     'day': day,
+                                                     'tips': tips})
