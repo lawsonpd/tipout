@@ -1,15 +1,20 @@
 from __future__ import unicode_literals
 from datetime import date
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, AbstractBaseUser
+from django.contrib.auth.forms import UserCreationForm
 from django.utils.encoding import python_2_unicode_compatible
 from django.forms import ModelForm
 from django.utils.translation import ugettext_lazy as _
 from django.utils.text import slugify
 
+class TipoutUser(AbstractBaseUser):
+    username = models.EmailField(unique=True)
+    USERNAME_FIELD = 'email'
+
 @python_2_unicode_compatible
 class Employee(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='employees')
+    user = models.ForeignKey(TipoutUser, on_delete=models.CASCADE, related_name='employees')
     new_user = models.BooleanField()
     init_avg_daily_tips = models.IntegerField()
     signup_date = models.DateField(default=date.today)
@@ -18,8 +23,8 @@ class Employee(models.Model):
     # earns_tips will be used to determine what to show different types of users; e.g.,
     # users who don't work for tips won't see tips links anywhere (ideally)
     # earns_tips = models.BooleanField(default=True)
-#     first_name = models.CharField(max_length=50)
-#     last_name = models.CharField(max_length=50)
+    # first_name = models.CharField(max_length=50)
+    # last_name = models.CharField(max_length=50)
 
     def __str__(self):
         return self.user.username
@@ -151,3 +156,8 @@ class NewUserSetupForm(ModelForm):
         labels = {
             'init_avg_daily_tips': _('Estimated daily tips'),
         }
+
+class TipoutUserCreationForm(UserCreationForm):
+    class Meta(UserCreationForm.Meta):
+        model = TipoutUser
+        fields = UserCreationForm.Meta.fields
