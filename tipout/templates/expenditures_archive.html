@@ -5,7 +5,7 @@
   <h1 style="font-family: 'Lobster', cursive">Expenditures archive</h1>
 
   {% if years %}
-    <h3>Select a year</h3>
+    <h3 class='lead'>Select a year</h3>
 
     {% for year in years %}
       <p><a href='/expenditures/archive/{{year}}'>{{year}}</a></p>
@@ -13,7 +13,7 @@
   {% endif %}
 
   {% if months %}
-    <h3>Select a month</h3>
+    <h3 class='lead'>Select a month</h3>
 
     {% for month in months %}
       <p><a href='/expenditures/archive/{{year}}/{{month}}'>{{month}}/{{year}}</a></p>
@@ -21,7 +21,7 @@
   {% endif %}
 
   {% if days %}
-    <h3>Select a day</h3>
+    <h3 class='lead'>Select a day</h3>
 
     {% for day in days %}
       <p><a href='/expenditures/archive/{{year}}/{{month}}/{{day}}'>{{month}}/{{day}}/{{year}}</a></p>
@@ -29,7 +29,7 @@
   {% endif %}
 
   {% if exps %}
-    <h3>Select an expediture</h3>
+    <h3 class='lead'>Select an expediture</h3>
 
     {% for exp in exps %}
       <p><a href='/expenditures/archive/{{year}}/{{month}}/{{day}}/{{exp.note|slugify}}'>{{exp.note}}</a></p>
@@ -37,7 +37,7 @@
   {% endif %}
 
   {% if exp %}
-    <h3>Delete or edit this expenditure</h3>
+    <h3 class='lead'>Delete or edit this expenditure</h3>
 
     <p>You spent <strong>${{exp.cost}}</strong> on <strong>{{exp.note}}</strong> on {{exp.date}}</p>
   {% endif %}

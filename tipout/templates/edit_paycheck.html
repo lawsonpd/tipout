@@ -6,7 +6,7 @@
 
 <form action='/edit-paycheck/{{ paycheck.get_absolute_url }}/' method='post'>
   {% csrf_token %}
-  <h3>Paycheck from <strong>{{ paycheck.date_earned }}</strong></h3>
+  <h3 class='lead'>Paycheck from {{ paycheck.date_earned }}</h3>
   {{ form }}
   <input type='submit' class='btn btn-primary' value='Submit' />
 </form>
