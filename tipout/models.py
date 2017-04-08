@@ -9,7 +9,7 @@ from django.utils.text import slugify
 
 @python_2_unicode_compatible
 class Employee(models.Model):
-    user = models.ForeignKey(TipoutUser, on_delete=models.CASCADE, related_name='employees')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='employees')
     new_user = models.BooleanField()
     init_avg_daily_tips = models.IntegerField()
     signup_date = models.DateField(default=date.today)
