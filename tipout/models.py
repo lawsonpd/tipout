@@ -1,16 +1,11 @@
 from __future__ import unicode_literals
 from datetime import date
 from django.db import models
-from django.contrib.auth.models import User, AbstractBaseUser
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
 from django.utils.encoding import python_2_unicode_compatible
 from django.forms import ModelForm
 from django.utils.translation import ugettext_lazy as _
 from django.utils.text import slugify
-
-class TipoutUser(AbstractBaseUser):
-    username = models.EmailField(unique=True)
-    USERNAME_FIELD = 'email'
 
 @python_2_unicode_compatible
 class Employee(models.Model):
@@ -156,8 +151,3 @@ class NewUserSetupForm(ModelForm):
         labels = {
             'init_avg_daily_tips': _('Estimated daily tips'),
         }
-
-class TipoutUserCreationForm(UserCreationForm):
-    class Meta(UserCreationForm.Meta):
-        model = TipoutUser
-        fields = UserCreationForm.Meta.fields
