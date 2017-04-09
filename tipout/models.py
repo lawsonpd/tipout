@@ -15,7 +15,7 @@ class Customer(models.Model):
         primary_key=True,
     )
     id = models.CharField(max_length=50)
-    email = self.user.username
+    plan = models.CharField(max_length=16)
 
 @python_2_unicode_compatible
 class Employee(models.Model):
