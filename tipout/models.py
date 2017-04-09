@@ -8,6 +8,15 @@ from django.forms import ModelForm
 from django.utils.translation import ugettext_lazy as _
 from django.utils.text import slugify
 
+class Customer(models.Model):
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        primary_key=True,
+    )
+    id = models.CharField(max_length=50)
+    email = self.user.username
+
 @python_2_unicode_compatible
 class Employee(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='employees')
@@ -108,6 +117,10 @@ class Expenditure(models.Model):
 class Budget(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='budget')
     daily_budget = models.FloatField()
+
+#########
+# FORMS #
+#########
 
 class EnterTipsForm(ModelForm):
     class Meta:
