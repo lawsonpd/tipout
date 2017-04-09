@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
 from tipout.models import Tip, EnterTipsForm, Paycheck, EditPaycheckForm, Expense, Employee, Expenditure, EnterPaycheckForm, EnterExpenditureForm, EnterExpenseForm, EditExpenseForm, NewUserSetupForm
 from django.contrib.auth.models import User
+from models import CustomUserCreationForm
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login
 
@@ -34,7 +35,8 @@ def register(request, template_name):
             user_data = form.cleaned_data
 
             # create_user automatically saves entry to db
-            user = User.objects.create_user(user_data['username'], password=user_data['password1'])
+            user = User.objects.create_user(username=user_data['username'],
+                                            password=user_data['password1'])
 
             # create new Employee
             emp = Employee(user=user, new_user=True, init_avg_daily_tips=0, signup_date=date.today())
