@@ -17,6 +17,7 @@ class Customer(models.Model):
     )
     id = models.CharField(max_length=50)
     plan = models.CharField(max_length=16)
+    is_subscribed = models.BooleanField(default=False)
 
 @python_2_unicode_compatible
 class Employee(models.Model):

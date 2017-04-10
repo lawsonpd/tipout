@@ -2,9 +2,8 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
-from tipout.models import Tip, EnterTipsForm, Paycheck, EditPaycheckForm, Expense, Employee, Expenditure, EnterPaycheckForm, EnterExpenditureForm, EnterExpenseForm, EditExpenseForm, NewUserSetupForm
+from tipout.models import Customer, Tip, EnterTipsForm, Paycheck, EditPaycheckForm, Expense, Employee, Expenditure, EnterPaycheckForm, EnterExpenditureForm, EnterExpenseForm, EditExpenseForm, NewUserSetupForm
 from django.contrib.auth.models import User
-from models import Customer
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login
 
@@ -13,32 +12,33 @@ from datetime import date
 from string import strip
 # from string import lower
 
-# import logging
-# logger = logging.getLogger(__name__)
+from django.conf import settings
 
 import stripe
-stripe_keys = {
-    'secret_key': 'sk_test_GVCFYxcWaAZq3zBnEifLXeJd',
-    'publishable_key': 'pk_test_p5rrucKiZvMX19wKoUGVDbRd'
-}
+stripe.api_key = settings.STRIPE_KEYS['secret_key']
+
 
 def home(request):
     '''
-    If user is logged in, redirect to '/budget/'. Else, show basic info and provide
-    link to registration.
+    If user is paid customer, redirect to '/budget/'. Else, show basic info and provide
+    link to subscription page.
     '''
-    if request.user.is_authenticated():
-        return HttpResponseRedirect('/budget/')
+    if not request.user.is_authenticated:
+        return render(request, 'home.html')
 
     else:
-        return render(request, 'registration/subscribe.html')
+        u = User.objects.get(username=request.user)
+        # custom authentication
+        if u.customer.is_subscribed:
+            return HttpResponseRedirect('/budget/')
+        else:
+            return render(request, 'registration/subscribe.html')
 
 @require_http_methods(['GET', 'POST'])
 def register(request, template_name):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
-            # create new User
             user_data = form.cleaned_data
 
             # create_user automatically saves entry to db
@@ -50,6 +50,12 @@ def register(request, template_name):
                            init_avg_daily_tips=0)
             emp.save()
 
+            # create new Customer with default is_subscribed=False
+            customer = Customer(user=user,
+                                id='',
+                                plan='')
+            customer.save()
+
             return HttpResponseRedirect('/login/')
         else:
             return render(request, template_name, {'form': form})
@@ -60,68 +66,81 @@ def register(request, template_name):
 @require_http_methods(['GET', 'POST'])
 def subscribe(request, template_name):
     if request.method == 'POST':
-        u = User.objects.get(username=request.user)
-        if request.POST['stripeEmail'] == u.username:
+        if request.POST['stripeEmail'] == request.user:
             customer = stripe.Customer.create(
-                email = user_data['username'],
+                email = request.POST['stripeEmail'],
                 source = request.POST['stripeToken'],
             )
-            tipoutCustomer = Customer(id=customer.id,
-                                      plan='paid plan')
 
             stripe.Subscription.create(
                 customer=customer.id,
                 plan='paid-plan',
             )
 
+            u = User.objects.get(username=request.user)
+
+            tipoutCustomer = Customer.objects.get(user=u).update_or_create(id=customer.id,
+                                                                           plan='paid-plan',
+                                                                           is_subscribed=True)
+
             return HttpResponseRedirect('/budget/')
 
-    else:
-        return render(request, template_name)
+    return render(request, template_name)
 
+@login_required(login_url='/login/')
 @require_http_methods(['GET', 'POST'])
 def new_user_setup(request):
     u = User.objects.get(username=request.user)
-    emp = Employee.objects.get(user=u)
-    if request.method == 'GET':
-        if not emp.new_user:
-            return render(request, 'new_user_setup.html', {'new_user': False})
-        else:
-            form = NewUserSetupForm()
-            return render(request, 'new_user_setup.html', {'new_user': True, 'form': form})
 
+    # custom authentication
+    if u.customer.is_subscribed:
+        emp = Employee.objects.get(user=u)
+        if request.method == 'GET':
+            if not emp.new_user:
+                return render(request, 'new_user_setup.html', {'new_user': False})
+            else:
+                form = NewUserSetupForm()
+                return render(request, 'new_user_setup.html', {'new_user': True, 'form': form})
+
+        else:
+            form = NewUserSetupForm(request.POST)
+            if form.is_valid():
+                form_data = form.cleaned_data
+                emp.init_avg_daily_tips = form_data['init_avg_daily_tips']
+                emp.new_user = False
+                emp.save()
+                return HttpResponseRedirect('/expenses/')
     else:
-        form = NewUserSetupForm(request.POST)
-        if form.is_valid():
-            form_data = form.cleaned_data
-            emp.init_avg_daily_tips = form_data['init_avg_daily_tips']
-            emp.new_user = False
-            emp.save()
-            return HttpResponseRedirect('/expenses/')
+        return HttpResponseRedirect('/subscribe/')
 
 @login_required(login_url='/login/')
 def enter_tips(request):
-    # if this is a POST request, we need to process the form data
-    if request.method == 'POST':
-        # create a form instance and populate it with data from the request
-        form = EnterTipsForm(request.POST)
-        # check whether it's valid
-        if form.is_valid():
-            tip_data = form.cleaned_data
+    # custom authentication
+    u = User.objects.get(username=request.user)
+    if u.customer.is_subscribed:
+        # if this is a POST request, we need to process the form data
+        if request.method == 'POST':
+            # create a form instance and populate it with data from the request
+            form = EnterTipsForm(request.POST)
+            # check whether it's valid
+            if form.is_valid():
+                tip_data = form.cleaned_data
 
-            tip_owner = User.objects.get(username=request.user)
+                tip_owner = User.objects.get(username=request.user)
 
-            t = Tip(amount=tip_data['amount'],
-                    date_earned=tip_data['date_earned'],
-                    owner=tip_owner)
-            t.save()
-            return HttpResponseRedirect('/tips/')
+                t = Tip(amount=tip_data['amount'],
+                        date_earned=tip_data['date_earned'],
+                        owner=tip_owner)
+                t.save()
+                return HttpResponseRedirect('/tips/')
 
-    # if a GET (or any other method), we'll create a blank form
+        # if a GET (or any other method), we'll create a blank form
+        else:
+            form = EnterTipsForm()
+
+        return render(request, 'enter_tips.html', {'form': form})
     else:
-        form = EnterTipsForm()
-
-    return render(request, 'enter_tips.html', {'form': form})
+        return HttpResponseRedirect('/subscribe/')
 
 # need to be able to view paychecks by month & year
 @login_required(login_url='/login/')
