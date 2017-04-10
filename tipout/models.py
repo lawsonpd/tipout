@@ -1,23 +1,29 @@
 from __future__ import unicode_literals
 from datetime import date
 from django.db import models
-from django.contrib.auth.models import User, AbstractBaseUser
+from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from django.utils.encoding import python_2_unicode_compatible
 from django.forms import ModelForm
 from django.utils.translation import ugettext_lazy as _
 from django.utils.text import slugify
+from django.utils.timezone import now
 
-class TipoutUser(AbstractBaseUser):
-    username = models.EmailField(unique=True)
-    USERNAME_FIELD = 'email'
+class Customer(models.Model):
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        primary_key=True,
+    )
+    id = models.CharField(max_length=50)
+    plan = models.CharField(max_length=16)
 
 @python_2_unicode_compatible
 class Employee(models.Model):
-    user = models.ForeignKey(TipoutUser, on_delete=models.CASCADE, related_name='employees')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='employees')
     new_user = models.BooleanField()
-    init_avg_daily_tips = models.IntegerField()
-    signup_date = models.DateField(default=date.today)
+    init_avg_daily_tips = models.FloatField()
+    signup_date = models.DateField(default=now)
     # TIPOUT IS FOR TIP-EARNERS ONLY. SO ALL USERS EARN TIPS.
     #
     # earns_tips will be used to determine what to show different types of users; e.g.,
@@ -33,7 +39,7 @@ class Employee(models.Model):
 class Tip(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='tips')
     # should amount be FloatField?
-    amount = models.IntegerField()
+    amount = models.FloatField()
     # DEFAULT_HOURS_WORKED = 8
     hours_worked = models.FloatField(default=8.0)
     date_earned = models.DateField(default=date.today)
@@ -44,7 +50,7 @@ class Tip(models.Model):
 class Paycheck(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='paychecks')
     # should amount be FloatField?
-    amount = models.IntegerField()
+    amount = models.FloatField()
     # need to represent overtime somehow (?)
     hours_worked = models.FloatField(default=80.0)
     date_earned = models.DateField(default=date.today)
@@ -56,7 +62,7 @@ class Paycheck(models.Model):
 class Expense(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='expenses')
     expense_name = models.CharField(max_length=100)
-    cost = models.IntegerField()
+    cost = models.FloatField()
     DAILY = 'DA'
     BI_WEEKLY = 'BW'
     MONTHLY = 'MO'
@@ -77,7 +83,7 @@ class Expense(models.Model):
 
 class Expenditure(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='expenditures')
-    cost = models.IntegerField()
+    cost = models.FloatField()
     note = models.CharField(max_length=100, default="expenditure")
     date = models.DateField(default=date.today)
 
@@ -112,6 +118,10 @@ class Expenditure(models.Model):
 class Budget(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='budget')
     daily_budget = models.FloatField()
+
+#########
+# FORMS #
+#########
 
 class EnterTipsForm(ModelForm):
     class Meta:
@@ -156,8 +166,3 @@ class NewUserSetupForm(ModelForm):
         labels = {
             'init_avg_daily_tips': _('Estimated daily tips'),
         }
-
-class TipoutUserCreationForm(UserCreationForm):
-    class Meta(UserCreationForm.Meta):
-        model = TipoutUser
-        fields = UserCreationForm.Meta.fields
