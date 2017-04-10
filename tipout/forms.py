@@ -2,7 +2,7 @@ from django import forms
 from datetime import date
 
 class SignupForm(forms.Form):
-    pass
+    email = forms.EmailField()
 
 # class EnterTipsForm(forms.Form):
 #     tips_amount = forms.IntegerField(label="tips amount", min_value=0, max_value=5000)

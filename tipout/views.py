@@ -3,8 +3,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
 from tipout.models import Tip, EnterTipsForm, Paycheck, EditPaycheckForm, Expense, Employee, Expenditure, EnterPaycheckForm, EnterExpenditureForm, EnterExpenseForm, EditExpenseForm, NewUserSetupForm
-from django.contrib.auth.models import User, Customer
-from models import CustomUserCreationForm
+from django.contrib.auth.models import User
+from models import CustomUserCreationForm, Customer
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login
 
@@ -13,8 +13,11 @@ from datetime import date
 from string import strip
 # from string import lower
 
+import logging
+logger = logging.getLogger(__name__)
+
 import stripe
-from subscription import stripe.api_key as stripe_key
+stripe.api_key = 'sk_test_GVCFYxcWaAZq3zBnEifLXeJd'
 
 def home(request):
     '''
@@ -25,7 +28,7 @@ def home(request):
         return HttpResponseRedirect('/budget/')
 
     else:
-        return render(request, 'home.html')
+        return render(request, 'registration/subscribe.html')
 
 @require_http_methods(['GET', 'POST'])
 def register(request, template_name):
@@ -39,20 +42,10 @@ def register(request, template_name):
             user = User.objects.create_user(username=user_data['username'],
                                             password=user_data['password1'])
             # create new Employee
-            emp = Employee(user=user, new_user=True, init_avg_daily_tips=0, signup_date=date.today())
+            emp = Employee(user=user,
+                           new_user=True,
+                           init_avg_daily_tips=0)
             emp.save()
-
-            customer = stripe.Customer.create(
-                email = user_data['username'],
-            )
-
-            tipoutCustomer = Customer(id=customer.id,
-                                      plan='paid plan')
-
-            stripe.Subscription.create(
-                customer=customer.id,
-                plan='paid-plan',
-            )
 
             return HttpResponseRedirect('/login/')
         else:
@@ -60,6 +53,27 @@ def register(request, template_name):
     else:
         form = UserCreationForm()
         return render(request, template_name, {'form': form})
+
+@require_http_methods(['GET', 'POST'])
+def subscribe(request, template_name):
+    if request.method == 'POST':
+        u = User.objects.get(username=request.user)
+        if request.POST['stripeEmail'] == u.username:
+            customer = stripe.Customer.create(
+                email = user_data['username'],
+            )
+            token = request.POST['stripeToken']
+            tipoutCustomer = Customer(id=customer.id,
+                                      plan='paid plan')
+
+            stripe.Subscription.create(
+                customer=customer.id,
+                plan='paid-plan',
+            )
+            return HttpResponseRedirect('/login/')
+
+    else:
+        return render(request, template_name)
 
 @require_http_methods(['GET', 'POST'])
 def new_user_setup(request):

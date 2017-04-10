@@ -7,6 +7,7 @@ from django.utils.encoding import python_2_unicode_compatible
 from django.forms import ModelForm
 from django.utils.translation import ugettext_lazy as _
 from django.utils.text import slugify
+from django.utils.timezone import now
 
 class Customer(models.Model):
     user = models.OneToOneField(
@@ -22,7 +23,7 @@ class Employee(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='employees')
     new_user = models.BooleanField()
     init_avg_daily_tips = models.FloatField()
-    signup_date = models.DateField(default=date.today)
+    signup_date = models.DateField(default=now)
     # TIPOUT IS FOR TIP-EARNERS ONLY. SO ALL USERS EARN TIPS.
     #
     # earns_tips will be used to determine what to show different types of users; e.g.,

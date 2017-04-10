@@ -2,6 +2,14 @@
 
 {% block content %}
 
+<h1><em>Chive on!</em></h1>
+
+<p class='lead'>Currently we're only offering a premium (paid) plan for $5.00 per month.</p>
+<p class='lead'>You can cancel at anytime if you don't like it!</p>
+<h4>Register below and enter your payment information on the next page.</h4>
+
+<hr style='width: 50%'/>
+
 <form action='/register/' method='post'>
   {% csrf_token %}
   {{ form.non_field_errors }}
