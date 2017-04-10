@@ -17,11 +17,15 @@ class Customer(models.Model):
     )
     id = models.CharField(max_length=50)
     plan = models.CharField(max_length=16)
-    is_subscribed = models.BooleanField(default=False)
+    # is_subscribed = models.BooleanField(default=False)
 
 @python_2_unicode_compatible
 class Employee(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='employees')
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        primary_key=True,
+    )
     new_user = models.BooleanField()
     init_avg_daily_tips = models.FloatField()
     signup_date = models.DateField(default=now)

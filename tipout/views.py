@@ -3,7 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
 from tipout.models import Customer, Tip, EnterTipsForm, Paycheck, EditPaycheckForm, Expense, Employee, Expenditure, EnterPaycheckForm, EnterExpenditureForm, EnterExpenseForm, EditExpenseForm, NewUserSetupForm
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Permission
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login
 
@@ -23,16 +23,16 @@ def home(request):
     If user is paid customer, redirect to '/budget/'. Else, show basic info and provide
     link to subscription page.
     '''
-    if not request.user.is_authenticated:
-        return render(request, 'home.html')
-
-    else:
+    if request.user.is_authenticated:
         u = User.objects.get(username=request.user)
         # custom authentication
         if u.customer.is_subscribed:
             return HttpResponseRedirect('/budget/')
         else:
             return render(request, 'registration/subscribe.html')
+
+    else:
+        return render(request, 'home.html')
 
 @require_http_methods(['GET', 'POST'])
 def register(request, template_name):
@@ -51,10 +51,10 @@ def register(request, template_name):
             emp.save()
 
             # create new Customer with default is_subscribed=False
-            customer = Customer(user=user,
-                                id='',
-                                plan='')
-            customer.save()
+            # customer = Customer(user=user,
+            #                     id='',
+            #                     plan='')
+            # customer.save()
 
             return HttpResponseRedirect('/login/')
         else:
@@ -72,16 +72,18 @@ def subscribe(request, template_name):
                 source = request.POST['stripeToken'],
             )
 
-            stripe.Subscription.create(
-                customer=customer.id,
-                plan='paid-plan',
-            )
-
+            try:
+                stripe_sub = stripe.Subscription.create(
+                    customer=customer.id,
+                    plan='paid-plan',
+                )
+            # For brevity, this call gives user *ALL* permissions
+            permissions = Permission.objects.all()
             u = User.objects.get(username=request.user)
+            u.user_permissions.add(permissions)
 
-            tipoutCustomer = Customer.objects.get(user=u).update_or_create(id=customer.id,
-                                                                           plan='paid-plan',
-                                                                           is_subscribed=True)
+            except Exception as e:
+                return HttpResponse("There was an error: ", e)
 
             return HttpResponseRedirect('/budget/')
 
