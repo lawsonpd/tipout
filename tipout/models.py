@@ -27,7 +27,7 @@ class Employee(models.Model):
         primary_key=True,
     )
     new_user = models.BooleanField()
-    init_avg_daily_tips = models.FloatField()
+    init_avg_daily_tips = models.DecimalField(max_digits=9, decimal_places=2)
     signup_date = models.DateField(default=now)
     # TIPOUT IS FOR TIP-EARNERS ONLY. SO ALL USERS EARN TIPS.
     #
@@ -44,9 +44,9 @@ class Employee(models.Model):
 class Tip(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='tips')
     # should amount be FloatField?
-    amount = models.FloatField()
+    amount = models.DecimalField(max_digits=9, decimal_places=2)
     # DEFAULT_HOURS_WORKED = 8
-    hours_worked = models.FloatField(default=8.0)
+    hours_worked = models.DecimalField(default=8.0, max_digits=9, decimal_places=2)
     date_earned = models.DateField(default=date.today)
 
     def __str__(self):
@@ -55,9 +55,9 @@ class Tip(models.Model):
 class Paycheck(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='paychecks')
     # should amount be FloatField?
-    amount = models.FloatField()
+    amount = models.DecimalField(max_digits=9, decimal_places=2)
     # need to represent overtime somehow (?)
-    hours_worked = models.FloatField(default=80.0)
+    hours_worked = models.DecimalField(default=80.0, max_digits=9, decimal_places=2)
     date_earned = models.DateField(default=date.today)
     # frequency = models.CharField(default='BW')
 
@@ -67,7 +67,7 @@ class Paycheck(models.Model):
 class Expense(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='expenses')
     expense_name = models.CharField(max_length=100)
-    cost = models.FloatField()
+    cost = models.DecimalField(max_digits=9, decimal_places=2)
     DAILY = 'DA'
     BI_WEEKLY = 'BW'
     MONTHLY = 'MO'
@@ -88,7 +88,7 @@ class Expense(models.Model):
 
 class Expenditure(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='expenditures')
-    cost = models.FloatField()
+    cost = models.DecimalField(max_digits=9, decimal_places=2)
     note = models.CharField(max_length=100, default="expenditure")
     date = models.DateField(default=date.today)
 
@@ -122,7 +122,7 @@ class Expenditure(models.Model):
 # just by having the Tip and Expense models?
 class Budget(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='budget')
-    daily_budget = models.FloatField()
+    daily_budget = models.DecimalField(max_digits=9, decimal_places=2)
 
 #########
 # FORMS #
