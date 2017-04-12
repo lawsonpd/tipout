@@ -27,7 +27,7 @@ def home(request):
         return render(request, 'home.html')
 
 @require_http_methods(['GET', 'POST'])
-def register(request, template_name):
+def signup(request, template_name):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():

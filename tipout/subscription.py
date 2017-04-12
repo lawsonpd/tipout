@@ -1,7 +1,5 @@
 import stripe
 
-stripe.api_key = 'sk_test_GVCFYxcWaAZq3zBnEifLXeJd'
-
 basic_plan = stripe.Plan.create(
     name='Free Plan',
     id='free-plan',

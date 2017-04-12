@@ -38,9 +38,13 @@ urlpatterns = [
     # url(r'^delete-paycheck/$', views.delete_paycheck, name='delete-paycheck'),
     #
     url(r'^new-user-setup/$', views.new_user_setup, name='new-user-setup'),
-    url(r'^register/$',
-        views.register,
-        {'template_name': 'registration/register.html'}
+    # url(r'^register/$',
+    #     views.register,
+    #     {'template_name': 'registration/register.html'}
+    # ),
+    url(r'^signup/$',
+        views.signup,
+        {'template_name': 'registration/signup.html'}
     ),
     url(
         r'^login/$',
