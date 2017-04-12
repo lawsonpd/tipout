@@ -1,6 +1,4 @@
 from tipout.models import Tip, Expenditure, Expense, Paycheck, Budget
-from django.contrib.auth.models import Permission, Group
-from django.contrib.contenttypes.models import ContentType
 
 tip_content_type = ContentType.objects.get_for_model(Tip)
 tip_permission = Permission.objects.create(
@@ -35,12 +33,4 @@ budget_permission = Permission.objects.create(
     codename='use_budget',
     name='Can access budget',
     content_type=budget_content_type,
-)
-
-subscribers = Group.objects.create(name='subscribers')
-subscribers.permissions.add('use_tips',
-                            'use_expenditures',
-                            'use_expenses',
-                            'use_paychecks',
-                            'use_budget',
 )
