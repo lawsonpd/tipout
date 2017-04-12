@@ -14,7 +14,7 @@ from datetime import date
 from string import strip
 # from string import lower
 
-from budgettool.settings import STRIPE_PUBLISHABLE_KEY, STRIPE_SECRET_KEY
+from budgettool.settings import STRIPE_KEYS
 
 # Create your views here.
 from django.conf import settings
@@ -112,7 +112,7 @@ def signup(request, template_name):
 
             return HttpResponseRedirect('/budget/')
     else:
-        return render(request, template_name)
+        return render(request, template_name, {'key': STRIPE_KEYS['publishable_key']})
 
 @login_required(login_url='/login/')
 @require_http_methods(['GET', 'POST'])
