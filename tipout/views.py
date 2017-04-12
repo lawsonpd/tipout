@@ -3,7 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
 from tipout.models import Customer, Tip, EnterTipsForm, Paycheck, EditPaycheckForm, Expense, Employee, Expenditure, EnterPaycheckForm, EnterExpenditureForm, EnterExpenseForm, EditExpenseForm, NewUserSetupForm
-from django.contrib.auth.models import User, Permission
+from django.contrib.auth.models import User, Group
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import permission_required
@@ -33,7 +33,7 @@ def home(request):
         return render(request, 'home.html')
 
 @require_http_methods(['GET', 'POST'])
-def signup(request, template_name):
+def register(request, template_name):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
@@ -46,8 +46,13 @@ def signup(request, template_name):
 
             user = User.objects.create_user(username=user_data['username'],
                                             password=user_data['password1'])
-<<<<<<< HEAD
 
+            subs = Group.objects.get(name='subscribers')
+            user.groups.add(subs)
+
+            u = User.objects.get(username=request.user)
+
+            return HttpResponse(u.has_perm('tipout.use_tips'))
             # emp = Employee.objects.create(user=user,
             #                               new_user=True,
             #                               init_avg_daily_tips=0,
@@ -63,22 +68,20 @@ def signup(request, template_name):
         #           csrfmiddlewaretoken
         # else:
         #     return render(request, template_name, {'form': form})
-=======
             # create new Employee
-            emp = Employee.objects.create(user=user,
-                                          new_user=True,
-                                          init_avg_daily_tips=0)
-
-            return HttpResponseRedirect('/login/')
+            # emp = Employee.objects.create(user=user,
+            #                               new_user=True,
+            #                               init_avg_daily_tips=0)
+            #
+            # return HttpResponseRedirect('/login/')
         else:
             return render(request, template_name, {'form': form})
->>>>>>> permissions
     else:
         form = UserCreationForm()
-        return render(request, template_name, {'form': form, 'key': STRIPE_PUBLISHABLE_KEY})
+        return render(request, template_name, {'form': form})
 
 @require_http_methods(['GET', 'POST'])
-def subscribe(request, template_name):
+def signup(request, template_name):
     if request.method == 'POST':
         u = User.objects.get(username=request.user)
         if request.POST['stripeEmail'] == u.username:
