@@ -6,8 +6,8 @@ from . import views
 urlpatterns = [
     url(r'^$', views.home, name='home'),
     url(r'^enter-tips/$', views.enter_tips, name='enter-tips'),
-    url(r'^edit-tips/(?P<tip_id>)[0-9]+/$', views.edit_tip, name='edit-tip'),
-    url(r'^delete-tip/(?P<tip_id>)[0-9]+/$', views.delete_tip, name='delete-tip'),
+    # url(r'^edit-tips/(?P<tip_id>[0-9]+)/$', views.edit_tip, name='edit-tip'),
+    url(r'^delete-tip/(?P<tip_id>[0-9]+)/$', views.delete_tip, name='delete-tip'),
     url(r'^tips/$', views.tips, name='tips'),
     url(r'^tips/archive/$', views.tips_archive, name='tips-archive'),
     url(r'^tips/archive/(?P<year>[0-9]{4})/$', views.tips_archive, name='tips-archive'),

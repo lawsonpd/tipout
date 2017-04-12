@@ -2,11 +2,12 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
-from tipout.models import Tip, EnterTipsForm, Paycheck, EditPaycheckForm, Expense, Employee, Expenditure, EnterPaycheckForm, EnterExpenditureForm, EnterExpenseForm, EditExpenseForm, NewUserSetupForm
-from django.contrib.auth.models import User
-from models import CustomUserCreationForm
+from tipout.models import Customer, Tip, EnterTipsForm, Paycheck, EditPaycheckForm, Expense, Employee, Expenditure, EnterPaycheckForm, EnterExpenditureForm, EnterExpenseForm, EditExpenseForm, NewUserSetupForm
+from django.contrib.auth.models import User, Permission
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.decorators import permission_required
+
 
 from tipout.budget import avg_daily_tips, avg_daily_tips_initial, daily_avg_from_paycheck
 from datetime import date
@@ -16,15 +17,18 @@ from string import strip
 from budgettool.settings import STRIPE_PUBLISHABLE_KEY, STRIPE_SECRET_KEY
 
 # Create your views here.
+from django.conf import settings
 
+import stripe
+stripe.api_key = settings.STRIPE_KEYS['secret_key']
+
+@require_http_methods(['GET'])
 def home(request):
     '''
-    If user is logged in, redirect to '/budget/'. Else, show basic info and provide
-    link to registration.
+    If user is logged in, redirect to '/budget/', else send to home page.
     '''
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         return HttpResponseRedirect('/budget/')
-
     else:
         return render(request, 'home.html')
 
@@ -42,6 +46,7 @@ def signup(request, template_name):
 
             user = User.objects.create_user(username=user_data['username'],
                                             password=user_data['password1'])
+<<<<<<< HEAD
 
             # emp = Employee.objects.create(user=user,
             #                               new_user=True,
@@ -58,13 +63,59 @@ def signup(request, template_name):
         #           csrfmiddlewaretoken
         # else:
         #     return render(request, template_name, {'form': form})
+=======
+            # create new Employee
+            emp = Employee.objects.create(user=user,
+                                          new_user=True,
+                                          init_avg_daily_tips=0)
+
+            return HttpResponseRedirect('/login/')
+        else:
+            return render(request, template_name, {'form': form})
+>>>>>>> permissions
     else:
         form = UserCreationForm()
         return render(request, template_name, {'form': form, 'key': STRIPE_PUBLISHABLE_KEY})
 
 @require_http_methods(['GET', 'POST'])
+def subscribe(request, template_name):
+    if request.method == 'POST':
+        u = User.objects.get(username=request.user)
+        if request.POST['stripeEmail'] == u.username:
+            customer = stripe.Customer.create(
+                email = request.POST['stripeEmail'],
+                source = request.POST['stripeToken'],
+            )
+
+            try:
+                stripe_sub = stripe.Subscription.create(
+                    customer=customer.id,
+                    plan='paid-plan',
+                )
+
+            except Exception as e:
+                return HttpResponse("There was an error: ", e)
+
+            u = User.objects.get(username=request.user)
+            u.user_permissions.add('use_tips',
+                                   'use_budget',
+                                   'use_paychecks',
+                                   'use_expenses',
+                                   'use_expenditures',)
+
+            customer = Customer.objects.create(user=u,
+                                               id=customer.id,
+                                               plan='paid-plan')
+
+            return HttpResponseRedirect('/budget/')
+    else:
+        return render(request, template_name)
+
+@login_required(login_url='/login/')
+@require_http_methods(['GET', 'POST'])
 def new_user_setup(request):
     u = User.objects.get(username=request.user)
+
     emp = Employee.objects.get(user=u)
     if request.method == 'GET':
         if not emp.new_user:
@@ -83,6 +134,7 @@ def new_user_setup(request):
             return HttpResponseRedirect('/expenses/')
 
 @login_required(login_url='/login/')
+@permission_required('tipout.use_tips', login_url='/subscribe/')
 def enter_tips(request):
     # if this is a POST request, we need to process the form data
     if request.method == 'POST':
@@ -103,11 +155,11 @@ def enter_tips(request):
     # if a GET (or any other method), we'll create a blank form
     else:
         form = EnterTipsForm()
-
-    return render(request, 'enter_tips.html', {'form': form})
+        return render(request, 'enter_tips.html', {'form': form})
 
 # need to be able to view paychecks by month & year
 @login_required(login_url='/login/')
+@permission_required('use_paychecks', login_url='/subscribe/')
 @require_http_methods(['GET'])
 def paychecks(request):
     u = User.objects.get(username=request.user)
@@ -116,6 +168,7 @@ def paychecks(request):
     return render(request, 'paychecks.html', {'paychecks': paychecks})
 
 @login_required(login_url='/login/')
+@permission_required('use_paychecks', login_url='/subscribe/')
 def enter_paycheck(request):
     if request.method == 'POST':
         form = EnterPaycheckForm(request.POST)
@@ -150,6 +203,7 @@ def enter_paycheck(request):
 
 
 @login_required(login_url='/login/')
+@permission_required('use_paychecks', login_url='/subscribe/')
 def edit_paycheck(request, *args):
     # split paycheck url into (username, 'paycheck', year, month, day)
     u = User.objects.get(username=request.user)
@@ -180,10 +234,12 @@ def edit_paycheck(request, *args):
 
 # May not ever need to delete a paycheck
 @login_required(login_url='/login/')
+@permission_required('use_paychecks', login_url='/subscribe/')
 def delete_paycheck(request):
     pass
 
 @login_required(login_url='/login/')
+@permission_required('use_expenses', login_url='/subscribe/')
 def enter_expenses(request):
     '''
     On POST request, get expenses data from form and update db.
@@ -220,6 +276,7 @@ def enter_expenses(request):
         return render(request, 'enter_expenses.html', {'form': form})
 
 @login_required(login_url='/login/')
+@permission_required('use_expenses', login_url='/subscribe/')
 @require_http_methods(['GET'])
 def expenses(request):
     '''
@@ -230,6 +287,7 @@ def expenses(request):
     return render(request, 'expenses.html', {'expenses': expenses})
 
 @login_required(login_url='/login/')
+@permission_required('use_tips', login_url='/subscribe/')
 @require_http_methods(['GET'])
 def tips(request):
     '''
@@ -283,33 +341,37 @@ def budget(request):
     if emp.new_user:
         return HttpResponseRedirect('/new-user-setup/')
 
-    # expenses, daily expense cost - assuming every expense is paid monthly
-    expenses = Expense.objects.filter(owner=u)
-    daily_expense_cost = sum([ exp.cost for exp in expenses ]) / 30
-
-    # expenditures for the day
-    expenditures_today_query = Expenditure.objects.filter(owner=u, date=date.today())
-    expenditures_today = sum([ exp.cost for exp in expenditures_today_query ])
-
-    # get tips for last 30 days
-    # not sure if order_by is ascending or descending
-    tips = Tip.objects.filter(owner=u).order_by('date_earned')[:30]
-    tip_values = [ tip.amount for tip in tips ]
-
-    # user's paychecks
-    paychecks = Paycheck.objects.filter(owner=u)
-    # paycheck_amts = [ paycheck.amt for paycheck in paychecks ]
-    # daily_avg_from_paycheck = (sum(paycheck_amts) / len(paycheck_amts))
-
-    if (date.today() - emp.signup_date).days <= 30:
-        budget = avg_daily_tips_initial(emp.init_avg_daily_tips, tip_values, emp.signup_date) + daily_avg_from_paycheck(paychecks) - daily_expense_cost - expenditures_today
-
-        return render(request, 'budget.html', {'avg_daily_tips': emp.init_avg_daily_tips, 'budget': budget})
-
     else:
-        budget = avg_daily_tips(tip_values) + daily_avg_from_paycheck(paychecks) - daily_expense_cost - expenditures_today
+        # expenses, daily expense cost - assuming every expense is paid monthly
+        expenses = Expense.objects.filter(owner=u)
+        daily_expense_cost = sum([ exp.cost for exp in expenses ]) / 30
 
-        return render(request, 'budget.html', {'avg_daily_tips': avg_daily_tips(tip_values), 'budget': budget})
+        # expenditures for the day
+        expenditures_today_query = Expenditure.objects.filter(owner=u, date=date.today())
+        expenditures_today = sum([ exp.cost for exp in expenditures_today_query ])
+
+        # get tips for last 30 days
+        # not sure if order_by is ascending or descending
+        tips = Tip.objects.filter(owner=u).order_by('date_earned')[:30]
+        tip_values = [ tip.amount for tip in tips ]
+
+        # user's paychecks
+        paychecks = Paycheck.objects.filter(owner=u)
+        # paycheck_amts = [ paycheck.amt for paycheck in paychecks ]
+        # daily_avg_from_paycheck = (sum(paycheck_amts) / len(paycheck_amts))
+
+        def pretty_dollar_amount(budget):
+            pass
+
+        if (date.today() - emp.signup_date).days <= 30:
+            budget = avg_daily_tips_initial(emp.init_avg_daily_tips, tip_values, emp.signup_date) + daily_avg_from_paycheck(paychecks) - daily_expense_cost - expenditures_today
+
+            return render(request, 'budget.html', {'avg_daily_tips': emp.init_avg_daily_tips, 'budget': budget})
+
+        else:
+            budget = avg_daily_tips(tip_values) + daily_avg_from_paycheck(paychecks) - daily_expense_cost - expenditures_today
+
+            return render(request, 'budget.html', {'avg_daily_tips': avg_daily_tips(tip_values), 'budget': budget})
 
 @login_required(login_url='/login/')
 def enter_expenditure(request):
@@ -386,6 +448,7 @@ def delete_expenditure(request, *args):
         return HttpResponseRedirect('/expenditures/')
 
 @login_required(login_url='/login/')
+@permission_required('use_expenditures', login_url='/subscribe/')
 @require_http_methods(['GET'])
 def expenditures(request):
     '''

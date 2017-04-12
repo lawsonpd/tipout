@@ -203,3 +203,8 @@ DATABASES['default'].update(db_from_env)
 #         },
 #     },
 # }
+
+STRIPE_KEYS = {
+    'secret_key': 'sk_test_GVCFYxcWaAZq3zBnEifLXeJd',
+    'publishable_key': 'pk_test_p5rrucKiZvMX19wKoUGVDbRd'
+}

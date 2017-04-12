@@ -6,7 +6,7 @@
 
 <form action="/edit-expense/{{ expense_name|slugify }}/" method="post">
     {% csrf_token %}
-    <h3>{{ expense_name }}</h3>
+    <h3 class='lead'>{{ expense_name }}</h3>
     {{ form }}
     <input type="submit" class="btn btn-primary" value="Submit" />
 </form>
