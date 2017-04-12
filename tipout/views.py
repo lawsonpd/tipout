@@ -13,6 +13,8 @@ from datetime import date
 from string import strip
 # from string import lower
 
+from budgettool.settings import STRIPE_PUBLISHABLE_KEY, STRIPE_SECRET_KEY
+
 # Create your views here.
 
 def home(request):
@@ -31,23 +33,34 @@ def signup(request, template_name):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
-            # create new User
             user_data = form.cleaned_data
 
-            # create_user automatically saves entry to db
+            # if user_data['username'] != request.POST['stripeEmail']:
+            #     raise forms.ValidationError('Email fields must match.')
+            # else:
+            #     return HttpResponse(user_data['username'])
+
             user = User.objects.create_user(username=user_data['username'],
                                             password=user_data['password1'])
 
-            # create new Employee
-            emp = Employee(user=user, new_user=True, init_avg_daily_tips=0, signup_date=date.today())
-            emp.save()
+            # emp = Employee.objects.create(user=user,
+            #                               new_user=True,
+            #                               init_avg_daily_tips=0,
+            #                               signup_date=date.today())
 
-            return HttpResponseRedirect('/login/')
-        else:
-            return render(request, template_name, {'form': form})
+            # return HttpResponseRedirect('/login/')
+        # RESPONSE: username
+        #           password1
+        #           password2
+        #           stripeEmail
+        #           stripeToken
+        #           stripeTokenType
+        #           csrfmiddlewaretoken
+        # else:
+        #     return render(request, template_name, {'form': form})
     else:
         form = UserCreationForm()
-        return render(request, template_name, {'form': form})
+        return render(request, template_name, {'form': form, 'key': STRIPE_PUBLISHABLE_KEY})
 
 @require_http_methods(['GET', 'POST'])
 def new_user_setup(request):

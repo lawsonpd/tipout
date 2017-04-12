@@ -10,13 +10,28 @@
 
 <form action="/signup/" method="POST">
   {% csrf_token %}
+  {{ form.non_field_errors }}
+  <div class="form-group">
+    {{ form.username.errors }}
+    {{ form.username.label_tag }}
+    {{ form.username }}
+  </div>
+  <div class="form-group">
+    {{ form.password1.errors }}
+    {{ form.password1.label_tag }}
+    {{ form.password1 }}
+  </div>
+  <div class="form-group">
+    {{ form.password2.errors }}
+    {{ form.password2.label_tag }}
+    {{ form.password2 }}
+  </div>
   <script
     src="https://checkout.stripe.com/checkout.js" class="stripe-button"
-    data-key="pk_test_p5rrucKiZvMX19wKoUGVDbRd"
+    data-key="{{ key }}"
     data-amount="500"
     data-name="Tipout Subscription"
-    data-description="Email address must match the one you used to register"
-    data-image="../static/tipout/tipout_logo-no_text.png"
+    data-image="../../static/tipout/tipout-logo.png"
     data-locale="auto"
     data-zip-code="true">
   </script>

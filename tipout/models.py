@@ -14,13 +14,6 @@ class Employee(models.Model):
     new_user = models.BooleanField()
     init_avg_daily_tips = models.FloatField()
     signup_date = models.DateField(default=date.today)
-    # TIPOUT IS FOR TIP-EARNERS ONLY. SO ALL USERS EARN TIPS.
-    #
-    # earns_tips will be used to determine what to show different types of users; e.g.,
-    # users who don't work for tips won't see tips links anywhere (ideally)
-    # earns_tips = models.BooleanField(default=True)
-    # first_name = models.CharField(max_length=50)
-    # last_name = models.CharField(max_length=50)
 
     def __str__(self):
         return self.user.username
@@ -82,23 +75,6 @@ class Expenditure(models.Model):
 
     def get_absolute_url(self):
         return "/%s-%s-%s/" % (self.owner.username, self.note, slugify(self.date))
-
-    # dates = {'1': 'January',
-    #          '2': 'February',
-    #          '3': 'March',
-    #          '4': 'April',
-    #          '5': 'May',
-    #          '6': 'June',
-    #          '7': 'July',
-    #          '8': 'August',
-    #          '9': 'September',
-    #          '10': 'October',
-    #          '11': 'November',
-    #          '12': 'December'}
-
-    # def month_name(self):
-    #     mo = str(self.date.month)
-    #     return self.dates[mo]
 
     def month_name(self):
         return self.date.strftime("%B")

@@ -29,7 +29,7 @@ STRIPE_SECRET_KEY = 'sk_test_GVCFYxcWaAZq3zBnEifLXeJd'
 STRIPE_PUBLISHABLE_KEY = 'pk_test_p5rrucKiZvMX19wKoUGVDbRd'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 # ADMINS = [('Peter', 'lawsonpd@gmail.com'),
 #          ]
