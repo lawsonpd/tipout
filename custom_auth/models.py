@@ -2,12 +2,12 @@ from __future__ import unicode_literals
 
 from django.db import models
 from django.contrib.auth.models import (
-    BaseUserManager, AbstractBaseUser
+    BaseUserManager, AbstractBaseUser, PermissionsMixin
 )
 
 
 class TipoutUserManager(BaseUserManager):
-    def create_user(self, email, password=None):
+    def create_user(self, email, stripe_email, password=None):
         """
         Creates and saves a User with the given email, date of
         birth and password.
@@ -17,6 +17,7 @@ class TipoutUserManager(BaseUserManager):
 
         user = self.model(
             email=self.normalize_email(email),
+            stripe_email=self.normalize_email(stripe_email),
         )
 
         user.set_password(password)
@@ -37,7 +38,7 @@ class TipoutUserManager(BaseUserManager):
         return user
 
 
-class TipoutUser(AbstractBaseUser):
+class TipoutUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(
         verbose_name='email address',
         max_length=255,
@@ -45,7 +46,8 @@ class TipoutUser(AbstractBaseUser):
     )
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
-    stripe_id = models.EmailField(max_length=255)
+    stripe_id = models.CharField(max_length=127)
+    stripe_email = models.CharField(max_length=255)
     plan = 'paid-plan'
 
     objects = TipoutUserManager()

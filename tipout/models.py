@@ -17,12 +17,12 @@ class Employee(models.Model):
         on_delete=models.CASCADE,
         primary_key=True,
     )
-    new_user = models.BooleanField()
-    init_avg_daily_tips = models.DecimalField(max_digits=9, decimal_places=2)
+    new_user = models.BooleanField(default=True)
+    init_avg_daily_tips = models.DecimalField(default=0, max_digits=9, decimal_places=2)
     signup_date = models.DateField(default=now)
 
     def __str__(self):
-        return self.user.username
+        return self.user.email
 
 # @python_2_unicode_compatible
 class Tip(models.Model):
