@@ -7,7 +7,7 @@ from django.contrib.auth.models import (
 
 
 class TipoutUserManager(BaseUserManager):
-    def create_user(self, email, date_of_birth, password=None):
+    def create_user(self, email, password=None):
         """
         Creates and saves a User with the given email, date of
         birth and password.
@@ -23,7 +23,7 @@ class TipoutUserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, date_of_birth, password):
+    def create_superuser(self, email, password):
         """
         Creates and saves a superuser with the given email, date of
         birth and password.
@@ -45,7 +45,7 @@ class TipoutUser(AbstractBaseUser):
     )
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
-    stripe_id = models.CharField(max_length=127)
+    stripe_id = models.EmailField(max_length=255)
     plan = 'paid-plan'
 
     objects = TipoutUserManager()
