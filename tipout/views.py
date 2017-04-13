@@ -2,9 +2,11 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
-from tipout.models import Customer, Tip, EnterTipsForm, Paycheck, EditPaycheckForm, Expense, Employee, Expenditure, EnterPaycheckForm, EnterExpenditureForm, EnterExpenseForm, EditExpenseForm, NewUserSetupForm
-from django.contrib.auth.models import User, Group
-from django.contrib.auth.forms import UserCreationForm
+from tipout.models import Tip, EnterTipsForm, Paycheck, EditPaycheckForm, Expense, Employee, Expenditure, EnterPaycheckForm, EnterExpenditureForm, EnterExpenseForm, EditExpenseForm, NewUserSetupForm
+from django.contrib.auth.models import Group
+# from django.contrib.auth.forms import UserCreationForm
+from custom_auth.admin import UserCreationForm
+from custom_auth.models import TipoutUser
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import permission_required
 
@@ -44,13 +46,13 @@ def register(request, template_name):
             # else:
             #     return HttpResponse(user_data['username'])
 
-            user = User.objects.create_user(username=user_data['username'],
+            user = TipoutUser.objects.create_user(username=user_data['username'],
                                             password=user_data['password1'])
 
             subs = Group.objects.get(name='subscribers')
             user.groups.add(subs)
 
-            u = User.objects.get(username=request.user)
+            u = TipoutUser.objects.get(username=request.user)
 
             return HttpResponse(u.has_perm('tipout.use_tips'))
             # emp = Employee.objects.create(user=user,
@@ -83,7 +85,7 @@ def register(request, template_name):
 @require_http_methods(['GET', 'POST'])
 def signup(request, template_name):
     if request.method == 'POST':
-        u = User.objects.get(username=request.user)
+        u = TipoutUser.objects.get(username=request.user)
         if request.POST['stripeEmail'] == u.username:
             customer = stripe.Customer.create(
                 email = request.POST['stripeEmail'],
@@ -99,16 +101,16 @@ def signup(request, template_name):
             except Exception as e:
                 return HttpResponse("There was an error: ", e)
 
-            u = User.objects.get(username=request.user)
+            u = TipoutUser.objects.get(username=request.user)
             u.user_permissions.add('use_tips',
                                    'use_budget',
                                    'use_paychecks',
                                    'use_expenses',
                                    'use_expenditures',)
 
-            customer = Customer.objects.create(user=u,
-                                               id=customer.id,
-                                               plan='paid-plan')
+            # customer = Customer.objects.create(user=u,
+            #                                    id=customer.id,
+            #                                    plan='paid-plan')
 
             return HttpResponseRedirect('/budget/')
     else:
@@ -117,7 +119,7 @@ def signup(request, template_name):
 @login_required(login_url='/login/')
 @require_http_methods(['GET', 'POST'])
 def new_user_setup(request):
-    u = User.objects.get(username=request.user)
+    u = TipoutUser.objects.get(username=request.user)
 
     emp = Employee.objects.get(user=u)
     if request.method == 'GET':
@@ -147,7 +149,7 @@ def enter_tips(request):
         if form.is_valid():
             tip_data = form.cleaned_data
 
-            tip_owner = User.objects.get(username=request.user)
+            tip_owner = TipoutUser.objects.get(username=request.user)
 
             t = Tip(amount=tip_data['amount'],
                     date_earned=tip_data['date_earned'],
@@ -165,7 +167,7 @@ def enter_tips(request):
 @permission_required('use_paychecks', login_url='/subscribe/')
 @require_http_methods(['GET'])
 def paychecks(request):
-    u = User.objects.get(username=request.user)
+    u = TipoutUser.objects.get(username=request.user)
 
     paychecks = Paycheck.objects.filter(owner=u)
     return render(request, 'paychecks.html', {'paychecks': paychecks})
@@ -176,7 +178,7 @@ def enter_paycheck(request):
     if request.method == 'POST':
         form = EnterPaycheckForm(request.POST)
         if form.is_valid():
-            u = User.objects.get(username=request.user)
+            u = TipoutUser.objects.get(username=request.user)
             paycheck_data = form.cleaned_data
             dupe = Paycheck.objects.filter(
                       owner=u
@@ -209,7 +211,7 @@ def enter_paycheck(request):
 @permission_required('use_paychecks', login_url='/subscribe/')
 def edit_paycheck(request, *args):
     # split paycheck url into (username, 'paycheck', year, month, day)
-    u = User.objects.get(username=request.user)
+    u = TipoutUser.objects.get(username=request.user)
     paycheck_data_split = args[0].split('-')
     paycheck = Paycheck.objects.get(owner=u,
                                     date_earned__year=paycheck_data_split[2],
@@ -251,7 +253,7 @@ def enter_expenses(request):
     if request.method == 'POST':
         form = EnterExpenseForm(request.POST)
         if form.is_valid():
-            u = User.objects.get(username=request.user)
+            u = TipoutUser.objects.get(username=request.user)
             expense_data = form.cleaned_data
             dupe = Expense.objects.filter(
                        owner=u
@@ -285,7 +287,7 @@ def expenses(request):
     '''
     Get expenses that belong to current user and pass them to the template.
     '''
-    u = User.objects.get(username=request.user)
+    u = TipoutUser.objects.get(username=request.user)
     expenses = Expense.objects.filter(owner=u)
     return render(request, 'expenses.html', {'expenses': expenses})
 
@@ -298,7 +300,7 @@ def tips(request):
     ALL tips that belong to current user.
     Daily avg. tips based on ALL user's tips.
     '''
-    u = User.objects.get(username=request.user)
+    u = TipoutUser.objects.get(username=request.user)
 
     tips = Tip.objects.filter(owner=u,
                               date_earned__month=date.today().month).order_by('date_earned')[::-1]
@@ -315,7 +317,7 @@ def edit_tip(request, *args):
 def delete_tip(request, tip_id, *args):
 
     if request.method == 'POST':
-        u = User.objects.get(username=request.user)
+        u = TipoutUser.objects.get(username=request.user)
         t = Tip.objects.get(owner=u, pk=tip_id)
         t.delete()
         return HttpResponseRedirect('/tips/')
@@ -324,7 +326,7 @@ def delete_tip(request, tip_id, *args):
 @require_http_methods(['GET'])
 def budget(request):
     '''
-    Get User from request context, then get tips belonging to that user
+    Get TipoutUser from request context, then get tips belonging to that user
     and pass the daily average for past 30 days to template.
 
     Since budget is first view upon login, check to see if user is 'new'.
@@ -337,7 +339,7 @@ def budget(request):
     '''
 
     # get user, employee
-    u = User.objects.get(username=request.user)
+    u = TipoutUser.objects.get(username=request.user)
     emp = Employee.objects.get(user=u)
 
     # if user is new, send to new-user-setup
@@ -385,7 +387,7 @@ def enter_expenditure(request):
         form = EnterExpenditureForm(request.POST)
         if form.is_valid():
             # process form data
-            u = User.objects.get(username=request.user)
+            u = TipoutUser.objects.get(username=request.user)
             exp_data = form.cleaned_data
             dupe = Expenditure.objects.filter(
                        owner=u
@@ -421,7 +423,7 @@ def enter_expenditure(request):
 #     '''
 #     # exp = args[0].replace('-', ' ')
 #
-#     u = User.objects.get(username=request.user)
+#     u = TipoutUser.objects.get(username=request.user)
 #     es = Expenditure.objects.filter(owner=u).filter(date=date.today())
 #
 #     e = [ e for e in es if str(e) == args[0] ]
@@ -440,7 +442,7 @@ def delete_expenditure(request, *args):
     # exp = args[0].replace('-', ' ')
 
     if request.method == 'POST':
-        u = User.objects.get(username=request.user)
+        u = TipoutUser.objects.get(username=request.user)
         es = Expenditure.objects.filter(owner=u).filter(date=date.today())
         e = None
         test = None
@@ -457,7 +459,7 @@ def expenditures(request):
     '''
     Default expenditures page show TODAY'S expenditures.
     '''
-    u = User.objects.get(username=request.user)
+    u = TipoutUser.objects.get(username=request.user)
     exps = Expenditure.objects.filter(owner=u).filter(date=date.today())
     return render(request, 'expenditures.html', {'exps': exps})
 
@@ -465,7 +467,7 @@ def expenditures(request):
 def edit_expense(request, *args):
     exp_name = args[0].replace('-', ' ')
 
-    u = User.objects.get(username=request.user)
+    u = TipoutUser.objects.get(username=request.user)
     e = Expense.objects.filter(owner=u).get(expense_name=exp_name)
 
     if request.method == 'GET':
@@ -489,7 +491,7 @@ def delete_expense(request, *args):
     exp_name = args[0].replace('-', ' ')
 
     if request.method == 'POST':
-        u = User.objects.get(username=request.user)
+        u = TipoutUser.objects.get(username=request.user)
         e = Expense.objects.get(owner=u, expense_name=exp_name)
         e.delete()
         return HttpResponseRedirect('/expenses/')
@@ -500,7 +502,7 @@ def expenditures_archive(request, *args):
     '''
     Shows a list of years
     '''
-    u = User.objects.get(username=request.user)
+    u = TipoutUser.objects.get(username=request.user)
     all_years = [e.date.year for e in Expenditure.objects.filter(owner=u)]
     years = set(all_years)
     return render(request, 'expenditures_archive.html', {'years': years})
@@ -511,7 +513,7 @@ def expenditures_year_archive(request, year, *args):
     '''
     Shows a list of months
     '''
-    u = User.objects.get(username=request.user)
+    u = TipoutUser.objects.get(username=request.user)
     # all_months = [e.month_name for e in Expenditure.objects.filter(owner=u)
     #                            if e.date.year == year]
     # months = set(all_months)
@@ -527,7 +529,7 @@ def expenditures_month_archive(request, year, month, *args):
     '''
     Shows a list of days
     '''
-    u = User.objects.get(username=request.user)
+    u = TipoutUser.objects.get(username=request.user)
     dates = Expenditure.objects.filter(owner=u,
                                        date__year=year,
                                        date__month=month).dates('date', 'day')
@@ -541,7 +543,7 @@ def expenditures_day_archive(request, year, month, day, *args):
     '''
     Shows a list of expenditures
     '''
-    u = User.objects.get(username=request.user)
+    u = TipoutUser.objects.get(username=request.user)
     exps = Expenditure.objects.filter(owner=u,
                                       date__year=year,
                                       date__month=month,
@@ -559,7 +561,7 @@ def expenditure_detail(request, year, month, day, exp, *args):
     '''
     exp_note = exp.replace('-', ' ')
 
-    u = User.objects.get(username=request.user)
+    u = TipoutUser.objects.get(username=request.user)
     exp = Expenditure.objects.get(owner=u,
                                   date__year=year,
                                   date__month=month,
@@ -579,7 +581,7 @@ def tips_archive(request, year=None, month=None, day=None, *args):
     parameters that are past in.
     '''
 
-    u = User.objects.get(username=request.user)
+    u = TipoutUser.objects.get(username=request.user)
 
     if not year:
         all_years = [tip.date_earned.year for tip in Tip.objects.filter(owner=u)]

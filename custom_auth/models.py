@@ -45,11 +45,12 @@ class TipoutUser(AbstractBaseUser):
     )
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
+    stripe_id = models.CharField(max_length=127)
+    plan = 'paid-plan'
 
-    objects = MyUserManager()
+    objects = TipoutUserManager()
 
     USERNAME_FIELD = 'email'
-    # REQUIRED_FIELDS = ['date_of_birth']
 
     def get_full_name(self):
         # The user is identified by their email address
