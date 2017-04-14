@@ -123,11 +123,18 @@ def signup(request, template_name):
             # subs = Group.objects.get(name='subscribers')
             # user.groups.add(subs)
 
-            return HttpResponseRedirect('/login/')
+            return HttpResponseRedirect(request, '/thankyou/')
 
     else:
         form = UserCreationForm()
         return render(request, template_name, {'form': form, 'key': STRIPE_KEYS['publishable_key']})
+
+@require_http_methods(['GET'])
+def thank_you(request):
+    if request.POST['stripeToken']:
+        return render(request, 'charge.html', {'amount': '5.00'})
+    else:
+        return render(request, 'thankyou.html')
 
 @login_required(login_url='/login/')
 @require_http_methods(['GET', 'POST'])

@@ -45,6 +45,7 @@ urlpatterns = [
         views.signup,
         {'template_name': 'registration/signup.html'}
     ),
+    url(r'^thankyou/$', views.thank_you, name='thank-you'),
     url(
         r'^login/$',
         auth_views.login,
