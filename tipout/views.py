@@ -113,8 +113,8 @@ def signup(request, template_name):
             #     return HttpResponse("There was an error: ", e)
 
             new_user = TipoutUser.objects.create_user(email=user_data['email'],
-                                           stripe_email=customer.email,
-                                           password=user_data['password1'],)
+                                                      stripe_email=customer.email,
+                                                      password=user_data['password1'],)
 
             Employee.objects.create(user=new_user)
 
@@ -123,7 +123,7 @@ def signup(request, template_name):
             # subs = Group.objects.get(name='subscribers')
             # user.groups.add(subs)
 
-            return HttpResponseRedirect(request, '/thankyou/')
+            return HttpResponseRedirect('/thankyou/')
 
     else:
         form = UserCreationForm()
@@ -131,10 +131,7 @@ def signup(request, template_name):
 
 @require_http_methods(['GET'])
 def thank_you(request):
-    if request.POST['stripeToken']:
-        return render(request, 'charge.html', {'amount': '5.00'})
-    else:
-        return render(request, 'thankyou.html')
+        return render(request, 'registration/charge.html', {'amount': '5.00'})
 
 @login_required(login_url='/login/')
 @require_http_methods(['GET', 'POST'])
@@ -403,13 +400,13 @@ def budget(request):
 
         if (date.today() - emp.signup_date).days <= 30:
             budget = avg_daily_tips_initial(emp.init_avg_daily_tips, tip_values, emp.signup_date) + daily_avg_from_paycheck(paychecks) - daily_expense_cost - expenditures_today
-
-            return render(request, 'budget.html', {'avg_daily_tips': emp.init_avg_daily_tips, 'budget': budget})
+            budget_formatted = '{0:.4g}'.format(budget)
+            return render(request, 'budget.html', {'avg_daily_tips': emp.init_avg_daily_tips, 'budget': budget_formatted})
 
         else:
             budget = avg_daily_tips(tip_values) + daily_avg_from_paycheck(paychecks) - daily_expense_cost - expenditures_today
-
-            return render(request, 'budget.html', {'avg_daily_tips': avg_daily_tips(tip_values), 'budget': budget})
+            budget_formatted = '{0:.4g}'.format(budget)
+            return render(request, 'budget.html', {'avg_daily_tips': avg_daily_tips(tip_values), 'budget': budget_formatted})
 
 @login_required(login_url='/login/')
 def enter_expenditure(request):
