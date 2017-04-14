@@ -93,19 +93,24 @@ def signup(request, template_name):
             # except:
             #     return HttpResponse('Email fields must match.')
 
-            customer = stripe.Customer.create(
-                email = request.POST['stripeEmail'],
-                source = request.POST['stripeToken'],
-            )
-
             try:
-                stripe_sub = stripe.Subscription.create(
-                    customer=customer.id,
+                customer = stripe.Customer.create(
+                    email = request.POST['stripeEmail'],
+                    source = request.POST['stripeToken'],
                     plan='paid-plan',
                 )
 
             except Exception as e:
                 return HttpResponse("There was an error: ", e)
+
+            # try:
+            #     stripe_sub = stripe.Subscription.create(
+            #         customer=customer.id,
+            #         plan='paid-plan',
+            #     )
+            #
+            # except Exception as e:
+            #     return HttpResponse("There was an error: ", e)
 
             new_user = TipoutUser.objects.create_user(email=user_data['email'],
                                            stripe_email=customer.email,
