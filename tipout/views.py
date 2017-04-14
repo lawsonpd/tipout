@@ -25,14 +25,14 @@ import stripe
 stripe.api_key = settings.STRIPE_KEYS['secret_key']
 
 @require_http_methods(['GET'])
-def home(request):
+def home(request, template_name):
     '''
     If user is logged in, redirect to '/budget/', else send to home page.
     '''
-    if request.user.is_authenticated:
+    if request.user.has_module_perms('tipout'):
         return HttpResponseRedirect('/budget/')
     else:
-        return render(request, 'home.html')
+        return render(request, template_name)
 
 @require_http_methods(['GET', 'POST'])
 def register(request, template_name):

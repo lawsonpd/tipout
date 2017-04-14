@@ -4,7 +4,6 @@ from django.contrib.auth import views as auth_views
 from . import views
 
 urlpatterns = [
-    url(r'^$', views.home, name='home'),
     url(r'^enter-tips/$', views.enter_tips, name='enter-tips'),
     # url(r'^edit-tips/(?P<tip_id>[0-9]+)/$', views.edit_tip, name='edit-tip'),
     url(r'^delete-tip/(?P<tip_id>[0-9]+)/$', views.delete_tip, name='delete-tip'),
@@ -57,4 +56,9 @@ urlpatterns = [
         {'template_name': 'registration/logout.html'}
     ),
     url('^', include('django.contrib.auth.urls')),
+    url(
+        r'^$',
+        views.home,
+        {'template_name': 'home.html'}
+    ),
 ]
