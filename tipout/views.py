@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
@@ -30,7 +30,7 @@ def home(request, template_name):
     If user is logged in, redirect to '/budget/', else send to home page.
     '''
     if request.user.has_module_perms('tipout'):
-        return HttpResponseRedirect('/budget/')
+        return redirect('/budget/')
     else:
         return render(request, template_name)
 
@@ -88,10 +88,6 @@ def signup(request, template_name):
         form = UserCreationForm(request.POST)
         if form.is_valid():
             user_data = form.cleaned_data
-            # try:
-            #     user_data['email'] == request.POST['stripeEmail']
-            # except:
-            #     return HttpResponse('Email fields must match.')
 
             try:
                 customer = stripe.Customer.create(
@@ -108,9 +104,6 @@ def signup(request, template_name):
             #         customer=customer.id,
             #         plan='paid-plan',
             #     )
-            #
-            # except Exception as e:
-            #     return HttpResponse("There was an error: ", e)
 
             new_user = TipoutUser.objects.create_user(email=user_data['email'],
                                                       stripe_email=customer.email,
@@ -120,14 +113,14 @@ def signup(request, template_name):
 
             user = authenticate(email=user_data['email'], password=user_data['password1'])
             if user is not None:
-                login(user)
+                login(request, user)
 
             # u = TipoutUser.objects.get(email=request.user,
             #                            stripe_id=customer.id,)
             # subs = Group.objects.get(name='subscribers')
             # user.groups.add(subs)
 
-            return HttpResponseRedirect('/thankyou/')
+            return redirect('/thankyou/')
 
     else:
         form = UserCreationForm()
@@ -137,11 +130,16 @@ def signup(request, template_name):
 def thank_you(request):
     if request.user.has_module_perms('tipout'):
         u = TipoutUser.objects.get(email=request.user)
-        emp = Employee.objects.get(owner=u)
+        emp = Employee.objects.get(user=u)
         if emp.new_user:
             return render(request, 'registration/charge.html', {'amount': '5.00'})
     else:
         return render(request, 'thankyou.html')
+
+@login_required(login_url='/login/')
+@require_http_methods(['GET'], ['POST'])
+def subscription(request):
+    pass
 
 @login_required(login_url='/login/')
 @require_http_methods(['GET', 'POST'])
