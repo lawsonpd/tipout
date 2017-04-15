@@ -118,6 +118,10 @@ def signup(request, template_name):
 
             Employee.objects.create(user=new_user)
 
+            user = authenticate(email=user_data['email'], password=user_data['password1'])
+            if user is not None:
+                login(user)
+
             # u = TipoutUser.objects.get(email=request.user,
             #                            stripe_id=customer.id,)
             # subs = Group.objects.get(name='subscribers')
@@ -131,7 +135,13 @@ def signup(request, template_name):
 
 @require_http_methods(['GET'])
 def thank_you(request):
-        return render(request, 'registration/charge.html', {'amount': '5.00'})
+    if request.user.has_module_perms('tipout'):
+        u = TipoutUser.objects.get(email=request.user)
+        emp = Employee.objects.get(owner=u)
+        if emp.new_user:
+            return render(request, 'registration/charge.html', {'amount': '5.00'})
+    else:
+        return render(request, 'thankyou.html')
 
 @login_required(login_url='/login/')
 @require_http_methods(['GET', 'POST'])
