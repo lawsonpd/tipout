@@ -18,7 +18,6 @@ from string import strip
 
 from budgettool.settings import STRIPE_KEYS
 
-# Create your views here.
 from django.conf import settings
 
 import stripe
@@ -107,6 +106,7 @@ def signup(request, template_name):
 
             new_user = TipoutUser.objects.create_user(email=user_data['email'],
                                                       stripe_email=customer.email,
+                                                      stripe_id=customer.id,
                                                       password=user_data['password1'],)
 
             Employee.objects.create(user=new_user)
@@ -121,6 +121,8 @@ def signup(request, template_name):
             # user.groups.add(subs)
 
             return redirect('/thankyou/')
+        else:
+            return render('500.html')
 
     else:
         form = UserCreationForm()
@@ -139,7 +141,9 @@ def thank_you(request):
 @login_required(login_url='/login/')
 @require_http_methods(['GET'], ['POST'])
 def subscription(request):
-    pass
+    u = TipoutUser.objects.get(email=request.user)
+    user_stripe_email = u.stripe_email
+    customer =
 
 @login_required(login_url='/login/')
 @require_http_methods(['GET', 'POST'])
