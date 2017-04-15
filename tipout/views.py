@@ -140,7 +140,7 @@ def thank_you(request):
         return render(request, 'thankyou.html')
 
 @login_required(login_url='/login/')
-@require_http_methods(['GET'], ['POST'])
+@require_http_methods(['GET', 'POST'])
 def subscription(request):
     u = TipoutUser.objects.get(email=request.user)
     customer = stripe.Customer.retrieve(u.stripe_id)
@@ -151,7 +151,7 @@ def subscription(request):
     customer_invoices = filter(lambda invoice: invoice.customer == customer.id, invoices)
     invoice_data = [(pretty_date(invoice.date), pretty_dollar_amount(invoice.amount_due)) for invoice in customer_invoices]
 
-    return render(request, 'subscription.html', {'invoice_data': invoice_date})
+    return render(request, 'subscription.html', {'invoice_data': invoice_data})
 
 @login_required(login_url='/login/')
 @require_http_methods(['GET', 'POST'])
