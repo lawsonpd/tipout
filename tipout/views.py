@@ -400,12 +400,12 @@ def budget(request):
 
         if (date.today() - emp.signup_date).days <= 30:
             budget = avg_daily_tips_initial(emp.init_avg_daily_tips, tip_values, emp.signup_date) + daily_avg_from_paycheck(paychecks) - daily_expense_cost - expenditures_today
-            budget_formatted = '{0:.4g}'.format(budget)
+            budget_formatted = '{0:.2f}'.format(budget)
             return render(request, 'budget.html', {'avg_daily_tips': emp.init_avg_daily_tips, 'budget': budget_formatted})
 
         else:
             budget = avg_daily_tips(tip_values) + daily_avg_from_paycheck(paychecks) - daily_expense_cost - expenditures_today
-            budget_formatted = '{0:.4g}'.format(budget)
+            budget_formatted = '{0:.2f}'.format(budget)
             return render(request, 'budget.html', {'avg_daily_tips': avg_daily_tips(tip_values), 'budget': budget_formatted})
 
 @login_required(login_url='/login/')
