@@ -10,7 +10,6 @@ from custom_auth.models import TipoutUser
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import permission_required
 
-
 from tipout.budget import avg_daily_tips, avg_daily_tips_initial, daily_avg_from_paycheck
 from datetime import date
 from string import strip
@@ -19,6 +18,8 @@ from string import strip
 from budgettool.settings import STRIPE_KEYS
 
 from django.conf import settings
+
+from stripe_utils import pretty_date, pretty_dollar_amount
 
 import stripe
 stripe.api_key = settings.STRIPE_KEYS['secret_key']
@@ -142,8 +143,15 @@ def thank_you(request):
 @require_http_methods(['GET'], ['POST'])
 def subscription(request):
     u = TipoutUser.objects.get(email=request.user)
-    user_stripe_email = u.stripe_email
-    customer =
+    customer = stripe.Customer.retrieve(u.stripe_id)
+    # sub_id = customer.subscriptions.data[0].id
+    # invoices = stripe.Invoice.list(customer) # this doesn't seem to work
+    invoices = stripe.Invoice.list()
+
+    customer_invoices = filter(lambda invoice: invoice.customer == customer.id, invoices)
+    invoice_data = [(pretty_date(invoice.date), pretty_dollar_amount(invoice.amount_due)) for invoice in customer_invoices]
+
+    return render(request, 'subscription.html', {'invoice_data': invoice_date})
 
 @login_required(login_url='/login/')
 @require_http_methods(['GET', 'POST'])
