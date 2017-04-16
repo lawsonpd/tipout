@@ -48,6 +48,7 @@ urlpatterns = [
     url(r'^thankyou/$', views.thank_you, name='thank-you'),
     url(r'^subscription/$', views.subscription, name='subscription'),
     url(r'^cancel-subscription/$', views.cancel_subscription, name='cancel-subscription'),
+    url(r'^feedback/$', views.feedback, name='feedback'),
     url(
         r'^login/$',
         auth_views.login,
