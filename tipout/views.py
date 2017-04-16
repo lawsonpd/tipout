@@ -164,7 +164,7 @@ def cancel_subscription(request):
     if request.method == 'POST':
         u = TipoutUser.objects.get(email=request.user)
         customer = stripe.Customer.retrieve(u.stripe_id)
-        sub = stripe.Subscription.retrieve({customer.subscriptions.data[0].id})
+        sub = stripe.Subscription.retrieve(customer.subscriptions.data[0].id)
         sub.delete()
         u.delete()
         # redirect to feedback page
