@@ -175,15 +175,15 @@ def feedback(request):
     if request.method == 'GET':
         return render(request, 'feedback.html')
     if request.method == 'POST':
-        if form.is_valid():
-            form_data = form.cleaned_data
-            send_mail(
-                'Cancel/feedback',
-                form_data['feedback'],
-                form_data['email'],
-                ['support@tipoutapp.com']
-            )
-            return redirect('/thankyou/')
+        # could use request.META['HTTP_REFERER'] to get referring page
+        # form_data = form.cleaned_data
+        send_mail(
+            'Feedback',
+            request.POST['feedback'],
+            request.POST['email'],
+            ['support@tipoutapp.com']
+        )
+        return redirect('/thankyou/')
 
 @login_required(login_url='/login/')
 @require_http_methods(['GET', 'POST'])
