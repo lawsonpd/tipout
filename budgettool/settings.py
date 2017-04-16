@@ -26,7 +26,7 @@ with open(os.path.join(BASE_DIR, 'secret_key.txt')) as f:
     SECRET_KEY = f.read().strip()
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 # ADMINS = [('Peter', 'lawsonpd@gmail.com'),
 #          ]
@@ -90,23 +90,26 @@ WSGI_APPLICATION = 'budgettool.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': os.path.join(BASE_DIR, 'db/db.sqlite3'),
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db/db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'budgettool',
+        'USER': 'poorman',
+        'PASSWORD': 'channel12OI&',
+        'HOST': '',
+        'PORT': '',
     }
 }
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'budgettool',
-#         'USER': 'poorman',
-#         'PASSWORD': '612077pl',
-#         'HOST': '',
-#         'PORT': '',
-#     }
-# }
+db_from_env = dj_database_url.config(conn_max_age=500)
+DATABASES['default'].update(db_from_env)
 
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
@@ -180,9 +183,6 @@ LOGIN_REDIRECT_URL = '/budget/'
 # CACHE_MIDDLEWARE_SECONDS = 60
 
 # CACHE_MIDDLEWARE_KEY_PREFIX = ''
-
-db_from_env = dj_database_url.config()
-DATABASES['default'].update(db_from_env)
 
 # LOGGING = {
 #     'version': 1,
