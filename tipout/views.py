@@ -181,7 +181,8 @@ def feedback(request):
             'Feedback',
             request.POST['feedback'],
             request.POST['email'],
-            ['support@tipoutapp.com']
+            ['support@tipoutapp.com'],
+            fail_silently=True,
         )
         return redirect('/thankyou/')
 
