@@ -99,7 +99,7 @@ WSGI_APPLICATION = 'budgettool.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'budgettool',
         'USER': 'poorman',
         'PASSWORD': 'channel12OI&',
