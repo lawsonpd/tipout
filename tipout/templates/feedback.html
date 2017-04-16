@@ -5,9 +5,9 @@
 <h1 style="font-family: 'Lobster', cursive">Leave some feedback, please!</h1>
 
 <p class="lead">We'd love to know what you think about Tipout!</p>
-<p class="lead">If there's anything we could add or remove that <em>would</em> make Tipout useful for you, please tell us!</p>
+<p class="lead">If there's anything we could add or remove that would make Tipout useful for you, please tell us!</p>
 
-<form action="/feedback/" method="post">
+<form action="/feedback/" method="post" class="form-horizontal">
   {% csrf_token %}
   <div class="form-group">
     <label for="email">Email address</label>
