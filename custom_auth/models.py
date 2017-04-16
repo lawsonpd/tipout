@@ -18,7 +18,7 @@ class TipoutUserManager(BaseUserManager):
         user = self.model(
             email=self.normalize_email(email),
             stripe_email=self.normalize_email(stripe_email),
-            stripe_id=self.stripe_id,
+            stripe_id=stripe_id,
         )
 
         user.set_password(password)
