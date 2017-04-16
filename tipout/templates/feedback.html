@@ -7,14 +7,14 @@
 <p class="lead">We'd love to know what you think about Tipout!</p>
 <p class="lead">If there's anything we could add or remove that would make Tipout useful for you, please tell us!</p>
 
-<form action="/feedback/" method="post" class="form-horizontal">
+<form action="/feedback/" method="post">
   {% csrf_token %}
   <div class="form-group">
-    <label for="email" style="text-align: left">Email address</label>
+    <label for="email">Email address</label>
     <input type="email" class="form-control" id="email" placeholder="Email">
   </div>
   <div class="form-group">
-    <label for="feedback" style="text-align: left">Feedback</label>
+    <label for="feedback">Feedback</label>
     <textarea class="form-control" rows="3" id="feedback" placeholder="Your feedback"></textarea>
   </div>
   <div class="radio">
