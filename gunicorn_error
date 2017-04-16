@@ -390,3 +390,88 @@
 [2017-04-16 09:44:52 -0500] [83578] [INFO] Handling signal: int
 [2017-04-16 14:44:53 +0000] [83581] [INFO] Worker exiting (pid: 83581)
 [2017-04-16 09:44:53 -0500] [83578] [INFO] Shutting down: Master
+[2017-04-16 12:52:05 -0500] [92253] [DEBUG] Current configuration:
+  proxy_protocol: False
+  worker_connections: 1000
+  statsd_host: None
+  max_requests_jitter: 0
+  post_fork: <function post_fork at 0x110986668>
+  pythonpath: None
+  enable_stdio_inheritance: False
+  worker_class: sync
+  ssl_version: 3
+  suppress_ragged_eofs: True
+  syslog: False
+  syslog_facility: user
+  when_ready: <function when_ready at 0x110986398>
+  pre_fork: <function pre_fork at 0x110986500>
+  cert_reqs: 0
+  preload_app: False
+  keepalive: 2
+  accesslog: None
+  group: 20
+  graceful_timeout: 30
+  do_handshake_on_connect: False
+  spew: False
+  workers: 1
+  proc_name: None
+  sendfile: None
+  pidfile: None
+  umask: 0
+  on_reload: <function on_reload at 0x110986230>
+  pre_exec: <function pre_exec at 0x110986c08>
+  worker_tmp_dir: None
+  post_worker_init: <function post_worker_init at 0x1109867d0>
+  limit_request_fields: 100
+  on_exit: <function on_exit at 0x11098c320>
+  config: None
+  secure_scheme_headers: {'X-FORWARDED-PROTOCOL': 'ssl', 'X-FORWARDED-PROTO': 'https', 'X-FORWARDED-SSL': 'on'}
+  proxy_allow_ips: ['127.0.0.1']
+  pre_request: <function pre_request at 0x110986d70>
+  post_request: <function post_request at 0x110986e60>
+  user: 502
+  forwarded_allow_ips: ['127.0.0.1']
+  worker_int: <function worker_int at 0x110986938>
+  threads: 1
+  max_requests: 0
+  limit_request_line: 4094
+  access_log_format: %(h)s %(l)s %(u)s %(t)s "%(r)s" %(s)s %(b)s "%(f)s" "%(a)s"
+  certfile: None
+  worker_exit: <function worker_exit at 0x11098c050>
+  chdir: /Users/poorman/Prog/tipout-app
+  paste: None
+  default_proc_name: budgettool.wsgi
+  errorlog: gunicorn_error
+  loglevel: debug
+  logconfig: None
+  syslog_addr: unix:///var/run/syslog
+  syslog_prefix: None
+  daemon: False
+  ciphers: TLSv1
+  on_starting: <function on_starting at 0x1109860c8>
+  worker_abort: <function worker_abort at 0x110986aa0>
+  bind: ['0.0.0.0:5000']
+  raw_env: ['DJANGO_SETTINGS_MODULE=budgettool.settings']
+  reload: False
+  check_config: False
+  limit_request_field_size: 8190
+  nworkers_changed: <function nworkers_changed at 0x11098c1b8>
+  timeout: 30
+  ca_certs: None
+  django_settings: None
+  tmp_upload_dir: None
+  keyfile: None
+  backlog: 2048
+  logger_class: gunicorn.glogging.Logger
+  statsd_prefix: 
+[2017-04-16 12:52:05 -0500] [92253] [INFO] Starting gunicorn 19.4.5
+[2017-04-16 12:52:05 -0500] [92253] [DEBUG] Arbiter booted
+[2017-04-16 12:52:05 -0500] [92253] [INFO] Listening at: http://0.0.0.0:5000 (92253)
+[2017-04-16 12:52:05 -0500] [92253] [INFO] Using worker: sync
+[2017-04-16 12:52:05 -0500] [92256] [INFO] Booting worker with pid: 92256
+[2017-04-16 12:52:05 -0500] [92253] [DEBUG] 1 workers
+[2017-04-16 17:52:15 +0000] [92256] [DEBUG] GET /
+[2017-04-16 17:52:30 +0000] [92256] [DEBUG] Closing connection. 
+[2017-04-16 13:08:05 -0500] [92253] [INFO] Handling signal: int
+[2017-04-16 18:08:06 +0000] [92256] [INFO] Worker exiting (pid: 92256)
+[2017-04-16 13:08:06 -0500] [92253] [INFO] Shutting down: Master

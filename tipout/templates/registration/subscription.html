@@ -10,7 +10,7 @@
   <tr>
     <td><strong>Date</strong></td>
     <td><strong>Amount</strong></td>
-  {% for date, amount in invoice_data %}
+    {% for date, amount in invoice_data %}
     <tr>
       <td>{{ date }}</td>
       <td>{{ amount }}</td>
@@ -18,9 +18,6 @@
   {% endfor %}
 </table>
 
-<form action="/unsubscribe/" method="post">
-    {% csrf_token %}
-    <input type="submit" class="btn btn-sm btn-danger" value="Unsubscribe" />
-</form>
+<a href="/cancel-subscription/">Cancel subscription</a>
 
 {% endblock %}

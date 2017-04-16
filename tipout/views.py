@@ -10,19 +10,22 @@ from custom_auth.models import TipoutUser
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import permission_required
 
+from django.views.generic.edit import DeleteView
+
 from tipout.budget import avg_daily_tips, avg_daily_tips_initial, daily_avg_from_paycheck
 from datetime import date
 from string import strip
 # from string import lower
 
 from budgettool.settings import STRIPE_KEYS
-
 from django.conf import settings
 
 from stripe_utils import pretty_date, pretty_dollar_amount
 
 import stripe
 stripe.api_key = settings.STRIPE_KEYS['secret_key']
+
+from django.core.mail import send_mail
 
 @require_http_methods(['GET'])
 def home(request, template_name):
@@ -151,7 +154,36 @@ def subscription(request):
     customer_invoices = filter(lambda invoice: invoice.customer == customer.id, invoices)
     invoice_data = [(pretty_date(invoice.date), pretty_dollar_amount(invoice.amount_due)) for invoice in customer_invoices]
 
-    return render(request, 'subscription.html', {'invoice_data': invoice_data})
+    return render(request, 'registration/subscription.html', {'invoice_data': invoice_data})
+
+@login_required(login_url='/login/')
+@require_http_methods(['GET', 'POST'])
+def cancel_subscription(request):
+    if request.method == 'GET':
+        return render(request, 'registration/cancel.html')
+    if request.method == 'POST':
+        u = TipoutUser.objects.get(email=request.user)
+        customer = stripe.Customer.retrieve(u.stripe_id)
+        sub = stripe.Subscription.retrieve({customer.subscriptions.data[0].id})
+        sub.delete()
+        u.delete()
+        # redirect to feedback page
+        return redirect('/feedback/')
+
+@require_http_methods(['GET', 'POST'])
+def feedback(request):
+    if request.method == 'GET':
+        return render(request, 'feedback.html')
+    if request.method == 'POST':
+        if form.is_valid():
+            form_data = form.cleaned_data
+            send_mail(
+                'Cancel/feedback',
+                form_data['feedback'],
+                form_data['email'],
+                ['support@tipoutapp.com']
+            )
+            return redirect('/thankyou/')
 
 @login_required(login_url='/login/')
 @require_http_methods(['GET', 'POST'])

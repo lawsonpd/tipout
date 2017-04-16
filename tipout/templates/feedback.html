@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1 style="font-family: 'Lobster', cursive">Leave some feedback, please!</h1>
+
+<p class="lead">Since you canceled your subscription to Tipout, we'd like to know why! Was it the design? Was it simply not useful for you?</p>
+<p class="lead">If there's anything we could add or remove that <em>would</em> make Tipout useful for you, please tell us!</p>
+
+<form action="/feedback/" method="post">
+  {% csrf_token %}
+  <div class="form-group">
+    <label for="email">Email address</label>
+    <input type="email" class="form-control" id="email" placeholder="Email">
+  </div>
+  <div class="form-group">
+    <label for="feedback">Feedback</label>
+    <textarea class="form-control" rows="3" id="feedback" placeholder="Your feedback"></textarea>
+  </div>
+  <div class="radio">
+    <p>How likely are you to recommend Tipout to a friend or co-worker?</p>
+    <label class="radio-inline">
+      <input type="radio" name="inlineRadioOptions" id="inlineRadio1" value="1"> 1
+    </label>
+    <label class="radio-inline">
+      <input type="radio" name="inlineRadioOptions" id="inlineRadio2" value="2"> 2
+    </label>
+    <label class="radio-inline">
+      <input type="radio" name="inlineRadioOptions" id="inlineRadio3" value="3"> 3
+    </label>
+    <label class="radio-inline">
+      <input type="radio" name="inlineRadioOptions" id="inlineRadio4" value="4"> 4
+    </label>
+    <label class="radio-inline">
+      <input type="radio" name="inlineRadioOptions" id="inlineRadio5" value="5"> 5
+    </label>
+  </div>
+  <button type="submit" class="btn btn-default">Submit</button>
+</form>
+
+{% endblock %}
