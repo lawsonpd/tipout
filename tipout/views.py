@@ -98,9 +98,19 @@ def signup(request, template_name):
                     source = request.POST['stripeToken'],
                     plan='paid-plan',
                 )
-
+            except stripe.error.CardError as e:
+                return render('registration/signup_error.html', {'message': e['message']})
+            except stripe.error.RateLimitError as e:
+                return render('registration/signup_error.html', {'message': e['message']})
+            except stripe.error.InvalidRequestError as e:
+                return render('registration/signup_error.html', {'message': e['message']})
+            except stripe.error.APIConnectionError as e:
+                return render('registration/signup_error.html', {'message': e['message']})
+            except stripe.error.StripeError as e:
+                # maybe also send an email to admin@
+                return render('registration/signup_error.html', {'message': e['message']})
             except Exception as e:
-                return HttpResponse("There was an error: ", e)
+                return render('registration/signup_error.html', {'message': "We're not exactly sure what happened, but you're welcome to try signing up again."})
 
             # try:
             #     stripe_sub = stripe.Subscription.create(
