@@ -98,7 +98,7 @@ class Budget(models.Model):
 class EnterTipsForm(ModelForm):
     class Meta:
         model = Tip
-        exclude = ['owner', 'hours_worked']
+        exclude = ['owner']
 
 class EditTipForm(ModelForm):
     class Meta:
@@ -109,7 +109,7 @@ class EnterPaycheckForm(ModelForm):
     class Meta:
         model = Paycheck
         # assume default hrs worked (80) for now
-        exclude = ['owner', 'hours_worked']
+        exclude = ['owner']
 
 class EditPaycheckForm(ModelForm):
     class Meta:

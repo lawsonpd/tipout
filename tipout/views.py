@@ -111,7 +111,10 @@ def signup(request, template_name):
             new_user = TipoutUser.objects.create_user(email=user_data['email'],
                                                       stripe_email=customer.email,
                                                       stripe_id=customer.id,
-                                                      password=user_data['password1'],)
+                                                      password=user_data['password1'],
+                                                      city=user_data['city'],
+                                                      state=user_data['state']
+            )
 
             Employee.objects.create(user=new_user)
 

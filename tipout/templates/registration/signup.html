@@ -29,6 +29,16 @@
     {{ form.password2.label_tag }}
     {{ form.password2 }}
   </div>
+  <div class="form-group">
+    {{ form.city.errors }}
+    {{ form.city.label_tag }}
+    {{ form.city }}
+  </div>
+  <div class="form-group">
+    {{ form.state.errors }}
+    {{ form.state.label_tag }}
+    {{ form.state }}
+  </div>
   <script
     src="https://checkout.stripe.com/checkout.js" class="stripe-button"
     data-key="{{ key }}"
