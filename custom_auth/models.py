@@ -7,7 +7,7 @@ from django.contrib.auth.models import (
 
 
 class TipoutUserManager(BaseUserManager):
-    def create_user(self, email, stripe_email, stripe_id, password=None):
+    def create_user(self, email, stripe_email, stripe_id, city, state, password=None):
         """
         Creates and saves a User with the given email, date of
         birth and password.
@@ -19,6 +19,8 @@ class TipoutUserManager(BaseUserManager):
             email=self.normalize_email(email),
             stripe_email=self.normalize_email(stripe_email),
             stripe_id=stripe_id,
+            city=city,
+            state=state,
         )
 
         user.set_password(password)
@@ -45,6 +47,8 @@ class TipoutUser(AbstractBaseUser, PermissionsMixin):
         max_length=255,
         unique=True,
     )
+    city = models.CharField(max_length=127)
+    state = models.CharField(max_length=40)
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
     stripe_id = models.CharField(max_length=127)
