@@ -20,7 +20,7 @@ from string import strip
 from budgettool.settings import STRIPE_KEYS
 from django.conf import settings
 
-from stripe_utils import pretty_date, pretty_dollar_amount
+from stripe_utils import pretty_date, pretty_dollar_amount, refund_approved, most_recent_invoice
 
 import stripe
 stripe.api_key = settings.STRIPE_KEYS['secret_key']
@@ -112,12 +112,6 @@ def signup(request, template_name):
             except Exception as e:
                 return render('registration/signup_error.html', {'message': "We're not exactly sure what happened, but you're welcome to try signing up again."})
 
-            # try:
-            #     stripe_sub = stripe.Subscription.create(
-            #         customer=customer.id,
-            #         plan='paid-plan',
-            #     )
-
             new_user = TipoutUser.objects.create_user(email=user_data['email'],
                                                       stripe_email=customer.email,
                                                       stripe_id=customer.id,
@@ -132,18 +126,11 @@ def signup(request, template_name):
             if user is not None:
                 login(request, user)
 
-            # u = TipoutUser.objects.get(email=request.user,
-            #                            stripe_id=customer.id,)
-            # subs = Group.objects.get(name='subscribers')
-            # user.groups.add(subs)
-
             return redirect('/thankyou/')
-        else:
-            return render('500.html')
 
     else:
         form = UserCreationForm()
-        return render(request, template_name, {'form': form, 'key': STRIPE_KEYS['publishable_key']})
+    return render(request, template_name, {'form': form, 'key': STRIPE_KEYS['publishable_key']})
 
 @require_http_methods(['GET'])
 def thank_you(request):
@@ -176,9 +163,17 @@ def cancel_subscription(request):
         return render(request, 'registration/cancel.html')
     if request.method == 'POST':
         u = TipoutUser.objects.get(email=request.user)
+
         customer = stripe.Customer.retrieve(u.stripe_id)
         sub = stripe.Subscription.retrieve(customer.subscriptions.data[0].id)
         sub.delete()
+
+        customer_next_invoice = stripe.Invoice.upcoming(customer=customer.id)
+        if refund_approved(customer_next_invoice.date):
+            customer_invoices = filter(lambda invoice: invoice.customer == customer.id, invoices)
+            invoice_to_refund = most_recent_invoice(customer_invoices)
+            re = stripe.Refund.create(charge=invoice_to_refund.charge)
+
         u.delete()
         # redirect to feedback page
         return redirect('/feedback/')
