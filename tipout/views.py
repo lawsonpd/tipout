@@ -163,6 +163,7 @@ def cancel_subscription(request):
         return render(request, 'registration/cancel.html')
     if request.method == 'POST':
         u = TipoutUser.objects.get(email=request.user)
+        u.delete()
 
         customer = stripe.Customer.retrieve(u.stripe_id)
         sub = stripe.Subscription.retrieve(customer.subscriptions.data[0].id)
@@ -174,7 +175,6 @@ def cancel_subscription(request):
             invoice_to_refund = most_recent_invoice(customer_invoices)
             re = stripe.Refund.create(charge=invoice_to_refund.charge)
 
-        u.delete()
         # redirect to feedback page
         return redirect('/feedback/')
 
