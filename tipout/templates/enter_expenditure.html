@@ -9,7 +9,7 @@
 <form class='form-horizontal' action='/enter-expenditure/' method='post'>
   <div class='form-group'>
     {% csrf_token %}
-    {{ form }}
+    {{ form.as_p }}
   <input type='submit' class="btn btn-primary" value='Submit' />
   </div>
 </form>
