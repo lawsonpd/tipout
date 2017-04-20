@@ -104,33 +104,33 @@ def signup(request, template_name):
             except stripe.error.CardError as e:
                 body = e.json_body
                 err = body['error']
-                logger.error("Status is: %s; Type is: %s; Code is: %s; Param is %s" % (err['status'], err['type'], err['code'], err['param']))
+                logger.error("Type is: %s; Param is %s" % (err['type'], err['param']))
                 return render('registration/signup_error.html', {'message': err['message']})
             except stripe.error.RateLimitError as e:
                 body = e.json_body
                 err = body['error']
-                logger.error("Status is: %s; Type is: %s; Code is: %s; Param is %s" % (err['status'], err['type'], err['code'], err['param']))
+                logger.error("Type is: %s; Param is %s" % (err['type'], err['param']))
                 return render('registration/signup_error.html', {'message': err['message']})
             except stripe.error.InvalidRequestError as e:
                 body = e.json_body
                 err = body['error']
-                logger.error("Status is: %s; Type is: %s; Code is: %s; Param is %s" % (err['status'], err['type'], err['code'], err['param']))
+                logger.error("Type is: %s; Param is %s" % (err['type'], err['param']))
                 return render('registration/signup_error.html', {'message': err['message']})
             except stripe.error.APIConnectionError as e:
                 body = e.json_body
                 err = body['error']
-                logger.error("Status is: %s; Type is: %s; Code is: %s; Param is %s" % (err['status'], err['type'], err['code'], err['param']))
+                logger.error("Type is: %s; Param is %s" % (err['type'], err['param']))
                 return render('registration/signup_error.html', {'message': err['message']})
             except stripe.error.StripeError as e:
                 # maybe also send an email to admin@
                 body = e.json_body
                 err = body['error']
-                logger.error("Status is: %s; Type is: %s; Code is: %s; Param is %s" % (err['status'], err['type'], err['code'], err['param']))
+                logger.error("Type is: %s; Param is %s" % (err['type'], err['param']))
                 return render('registration/signup_error.html', {'message': err['message']})
             except Exception as e:
                 body = e.json_body
                 err = body['error']
-                logger.error("Status is: %s; Type is: %s; Code is: %s; Param is %s" % (err['status'], err['type'], err['code'], err['param']))
+                logger.error("Type is: %s; Param is %s" % (err['type'], err['param']))
                 return render('registration/signup_error.html', {'message': "We're not exactly sure what happened, but you're welcome to try signing up again."})
 
             new_user = TipoutUser.objects.create_user(email=user_data['email'],
