@@ -22,9 +22,10 @@ class Employee(models.Model):
     signup_date = models.DateField(default=now)
 
     def __str__(self):
-        return self.user.email
+        email_name = self.user.email.split('@')
+        return email_name[0]
 
-# @python_2_unicode_compatible
+@python_2_unicode_compatible
 class Tip(models.Model):
     owner = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='tips')
     # should amount be FloatField?
@@ -46,7 +47,7 @@ class Paycheck(models.Model):
     # frequency = models.CharField(default='BW')
 
     def get_absolute_url(self):
-        return '%s-paycheck-%s' % (self.owner.email, slugify(self.date_earned))
+        return '%s-paycheck-%s' % (str(self.owner), slugify(self.date_earned))
 
 class Expense(models.Model):
     owner = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='expenses')
@@ -70,6 +71,7 @@ class Expense(models.Model):
         url_name = '-'.join(expense_name_split)
         return "/%s" % url_name
 
+@python_2_unicode_compatible
 class Expenditure(models.Model):
     owner = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='expenditures')
     cost = models.DecimalField(max_digits=9, decimal_places=2)
@@ -77,10 +79,10 @@ class Expenditure(models.Model):
     date = models.DateField(default=now)
 
     def __str__(self):
-        return self.owner.email + ' ' +  self.note + ' ' + str(self.date)
+        return str(self.owner) + ' ' +  self.note + ' ' + str(self.date)
 
     def get_absolute_url(self):
-        return "/%s-%s-%s/" % (self.owner.email, self.note, slugify(self.date))
+        return "/%s-%s-%s/" % (str(self.owner), self.note, slugify(self.date))
 
     def month_name(self):
         return self.date.strftime("%B")
