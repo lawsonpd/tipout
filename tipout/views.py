@@ -66,7 +66,7 @@ def register(request, template_name):
             # emp = Employee.objects.create(user=user,
             #                               new_user=True,
             #                               init_avg_daily_tips=0,
-            #                               signup_date=date.today())
+            #                               signup_date=now())
 
             # return HttpResponseRedirect('/login/')
         # RESPONSE: email
@@ -241,6 +241,7 @@ def new_user_setup(request):
 
 @login_required(login_url='/login/')
 @permission_required('tipout.use_tips', login_url='/signup/')
+@require_http_methods(['GET', 'POST'])
 def enter_tips(request):
     # if this is a POST request, we need to process the form data
     if request.method == 'POST':
@@ -255,7 +256,8 @@ def enter_tips(request):
 
             t = Tip(amount=tip_data['amount'],
                     date_earned=tip_data['date_earned'],
-                    owner=emp)
+                    owner=emp,
+                    hours_worked=tip_data['hours_worked'])
             t.save()
             return HttpResponseRedirect('/tips/')
 
@@ -312,6 +314,7 @@ def enter_paycheck(request):
 
 @login_required(login_url='/login/')
 @permission_required('use_paychecks', login_url='/signup/')
+@require_http_methods(['GET', 'POST'])
 def edit_paycheck(request, *args):
     u = TipoutUser.objects.get(email=request.user)
     emp = Employee.objects.get(user=u)
@@ -322,10 +325,6 @@ def edit_paycheck(request, *args):
                                     date_earned__year=paycheck_data_split[2],
                                     date_earned__month=paycheck_data_split[3],
                                     date_earned__day=paycheck_data_split[4])
-
-    if request.method == 'GET':
-        form = EditPaycheckForm(initial={'paycheck': paycheck})
-        return render(request, 'edit_paycheck.html', {'form': form, 'paycheck': paycheck})
 
     if request.method == 'POST':
         form = EditPaycheckForm(request.POST)
@@ -338,9 +337,10 @@ def edit_paycheck(request, *args):
             p.amount = paycheck_data['amount']
             p.save()
             return HttpResponseRedirect('/paychecks/')
-        else:
-            # render template w/ error messages
-            pass
+
+    form = EditPaycheckForm(initial={'paycheck': paycheck})
+    return render(request, 'edit_paycheck.html', {'form': form, 'paycheck': paycheck})
+
 
 # May not ever need to delete a paycheck
 @login_required(login_url='/login/')
@@ -350,6 +350,7 @@ def delete_paycheck(request):
 
 @login_required(login_url='/login/')
 @permission_required('use_expenses', login_url='/signup/')
+@require_http_methods(['GET', 'POST'])
 def enter_expenses(request):
     '''
     On POST request, get expenses data from form and update db.
@@ -380,9 +381,6 @@ def enter_expenses(request):
                            )
                 e.save()
                 return HttpResponseRedirect('/expenses/')
-        else:
-            # render template with error messages
-            pass
     else:
         form = EnterExpenseForm()
         return render(request, 'enter_expenses.html', {'form': form})
@@ -409,15 +407,16 @@ def tips(request):
     ALL tips that belong to current user.
     Daily avg. tips based on ALL user's tips.
     '''
-    u = TipoutUser.objects.get(email=request.user)
-    emp = Employee.objects.get(user=u)
+    if request.method == 'GET':
+        u = TipoutUser.objects.get(email=request.user)
+        emp = Employee.objects.get(user=u)
 
-    tips = Tip.objects.filter(owner=emp,
-                              date_earned__month=date.today().month).order_by('date_earned')[::-1]
-    # tips = Tip.objects.filter(owner=u).order_by('date_earned')[:30]
-    tip_values = [ tip.amount for tip in tips ]
+        tips = Tip.objects.filter(owner=emp,
+                                  date_earned__month=now().month).order_by('date_earned')[::-1]
+        # tips = Tip.objects.filter(owner=u).order_by('date_earned')[:30]
+        tip_values = [ tip.amount for tip in tips ]
 
-    return render(request, 'tips.html', {'avg_daily_tips': avg_daily_tips(tip_values), 'tips': tips})
+        return render(request, 'tips.html', {'avg_daily_tips': avg_daily_tips(tip_values), 'tips': tips})
 
 @login_required(login_url='/login/')
 def edit_tip(request, *args):
@@ -464,7 +463,7 @@ def budget(request):
         daily_expense_cost = sum([ exp.cost for exp in expenses ]) / 30
 
         # expenditures for the day
-        expenditures_today_query = Expenditure.objects.filter(owner=emp, date=date.today())
+        expenditures_today_query = Expenditure.objects.filter(owner=emp, date=now()())
         expenditures_today = sum([ exp.cost for exp in expenditures_today_query ])
 
         # get tips for last 30 days
@@ -480,7 +479,7 @@ def budget(request):
         def pretty_dollar_amount(budget):
             pass
 
-        if (date.today() - emp.signup_date).days <= 30:
+        if (now() - emp.signup_date).days <= 30:
             budget = avg_daily_tips_initial(emp.init_avg_daily_tips, tip_values, emp.signup_date) + daily_avg_from_paycheck(paychecks) - daily_expense_cost - expenditures_today
             budget_formatted = '{0:.2f}'.format(budget)
             return render(request, 'budget.html', {'avg_daily_tips': emp.init_avg_daily_tips, 'budget': budget_formatted})
@@ -505,14 +504,14 @@ def enter_expenditure(request):
             dupe = Expenditure.objects.filter(
                        owner=emp
                    ).filter(
-                       date=date.today()
+                       date=now()
                    ).filter(
                        note=exp_data['note'].lower()
                    )
             if dupe:
                 return render(request,
                               'enter_expenditure.html',
-                              {'form': EnterExpenditureForm(initial={'date': date.today()}),
+                              {'form': EnterExpenditureForm(initial={'date': now()}),
                                'error_message': 'An expenditure with that note already exists.'}
                               )
             else:
@@ -522,7 +521,7 @@ def enter_expenditure(request):
     else:
         return render(request,
                       'enter_expenditure.html',
-                      {'form': EnterExpenditureForm(initial={'date': date.today()})}
+                      {'form': EnterExpenditureForm(initial={'date': now()})}
                       )
 
 # To edit an expenditure, you'll have to use pk to identify it, since the note and amount could change.
@@ -537,7 +536,7 @@ def enter_expenditure(request):
 #     # exp = args[0].replace('-', ' ')
 #
 #     u = TipoutUser.objects.get(email=request.user)
-#     es = Expenditure.objects.filter(owner=u).filter(date=date.today())
+#     es = Expenditure.objects.filter(owner=u).filter(date=now())
 #
 #     e = [ e for e in es if str(e) == args[0] ]
 #
@@ -558,7 +557,7 @@ def delete_expenditure(request, *args):
         u = TipoutUser.objects.get(email=request.user)
         emp = Employee.objects.get(user=u)
 
-        es = Expenditure.objects.filter(owner=emp).filter(date=date.today())
+        es = Expenditure.objects.filter(owner=emp).filter(date=now())
         e = None
         test = None
         for exp in es:
@@ -577,7 +576,7 @@ def expenditures(request):
     u = TipoutUser.objects.get(email=request.user)
     emp = Employee.objects.get(user=u)
 
-    exps = Expenditure.objects.filter(owner=emp).filter(date=date.today())
+    exps = Expenditure.objects.filter(owner=emp).filter(date=now())
     return render(request, 'expenditures.html', {'exps': exps})
 
 @login_required(login_url='/login/')
