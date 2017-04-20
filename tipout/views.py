@@ -27,6 +27,9 @@ stripe.api_key = settings.STRIPE_KEYS['secret_key']
 
 from django.core.mail import send_mail
 
+import logging
+logger = logging.getLogger(__name__)
+
 @require_http_methods(['GET'])
 def home(request, template_name):
     '''
@@ -99,17 +102,35 @@ def signup(request, template_name):
                     plan='paid-plan',
                 )
             except stripe.error.CardError as e:
-                return render('registration/signup_error.html', {'message': e['message']})
+                body = e.json_body
+                err = body['error']
+                logger.error("Status is: %s; Type is: %s; Code is: %s; Param is %s" % (err['status'], err['type'], err['code'], err['param']))
+                return render('registration/signup_error.html', {'message': err['message']})
             except stripe.error.RateLimitError as e:
-                return render('registration/signup_error.html', {'message': e['message']})
+                body = e.json_body
+                err = body['error']
+                logger.error("Status is: %s; Type is: %s; Code is: %s; Param is %s" % (err['status'], err['type'], err['code'], err['param']))
+                return render('registration/signup_error.html', {'message': err['message']})
             except stripe.error.InvalidRequestError as e:
-                return render('registration/signup_error.html', {'message': e['message']})
+                body = e.json_body
+                err = body['error']
+                logger.error("Status is: %s; Type is: %s; Code is: %s; Param is %s" % (err['status'], err['type'], err['code'], err['param']))
+                return render('registration/signup_error.html', {'message': err['message']})
             except stripe.error.APIConnectionError as e:
-                return render('registration/signup_error.html', {'message': e['message']})
+                body = e.json_body
+                err = body['error']
+                logger.error("Status is: %s; Type is: %s; Code is: %s; Param is %s" % (err['status'], err['type'], err['code'], err['param']))
+                return render('registration/signup_error.html', {'message': err['message']})
             except stripe.error.StripeError as e:
                 # maybe also send an email to admin@
-                return render('registration/signup_error.html', {'message': e['message']})
+                body = e.json_body
+                err = body['error']
+                logger.error("Status is: %s; Type is: %s; Code is: %s; Param is %s" % (err['status'], err['type'], err['code'], err['param']))
+                return render('registration/signup_error.html', {'message': err['message']})
             except Exception as e:
+                body = e.json_body
+                err = body['error']
+                logger.error("Status is: %s; Type is: %s; Code is: %s; Param is %s" % (err['status'], err['type'], err['code'], err['param']))
                 return render('registration/signup_error.html', {'message': "We're not exactly sure what happened, but you're welcome to try signing up again."})
 
             new_user = TipoutUser.objects.create_user(email=user_data['email'],
