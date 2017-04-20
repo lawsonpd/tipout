@@ -14,6 +14,8 @@ from django.views.generic.edit import DeleteView
 
 from tipout.budget import avg_daily_tips, avg_daily_tips_initial, daily_avg_from_paycheck
 from datetime import date
+from django.utils.timezone import now
+# whatever is using strip should be moved into utils
 from string import strip
 # from string import lower
 
@@ -267,11 +269,12 @@ def enter_tips(request):
 @permission_required('use_paychecks', login_url='/signup/')
 @require_http_methods(['GET'])
 def paychecks(request):
-    u = TipoutUser.objects.get(email=request.user)
-    emp = Employee.objects.get(user=u)
+    if request.method == 'GET':
+        u = TipoutUser.objects.get(email=request.user)
+        emp = Employee.objects.get(user=u)
 
-    paychecks = Paycheck.objects.filter(owner=emp)
-    return render(request, 'paychecks.html', {'paychecks': paychecks})
+        paychecks = Paycheck.objects.filter(owner=emp)
+        return render(request, 'paychecks.html', {'paychecks': paychecks})
 
 @login_required(login_url='/login/')
 @permission_required('use_paychecks', login_url='/signup/')
@@ -295,14 +298,11 @@ def enter_paycheck(request):
             else:
                 p = Paycheck(owner=emp,
                              amount=paycheck_data['amount'],
-                             date_earned=paycheck_data['date_earned']
+                             date_earned=paycheck_data['date_earned'],
+                             hours_worked=paycheck_data['hours_worked'],
                             )
                 p.save()
                 return HttpResponseRedirect('/paychecks/')
-        else:
-            # render template w/ error messages
-            pass
-
     else:
         return render(request,
                       'enter_paycheck.html',
