@@ -26,7 +26,7 @@ with open(os.path.join(BASE_DIR, 'secret_key.txt')) as f:
     SECRET_KEY = f.read().strip()
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 # ADMINS = [('Peter', 'lawsonpd@gmail.com'),
 #          ]
@@ -36,6 +36,8 @@ DEBUG = True
 ALLOWED_HOSTS = [
     'localhost',
     'tipout-app.herokuapp.com',
+    'tipoutapp.com',
+    'www.tipoutapp.com',
 ]
 
 
@@ -90,23 +92,23 @@ WSGI_APPLICATION = 'budgettool.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db/db.sqlite3'),
-    }
-}
-
 # DATABASES = {
 #     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'NAME': 'budgettool',
-#         'USER': 'poorman',
-#         'PASSWORD': 'channel12OI&',
-#         'HOST': '',
-#         'PORT': '',
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': os.path.join(BASE_DIR, 'db/db.sqlite3'),
 #     }
 # }
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'budgettool',
+        'USER': 'poorman',
+        'PASSWORD': 'channel12OI&',
+        'HOST': '',
+        'PORT': '',
+    }
+}
 
 db_from_env = dj_database_url.config(conn_max_age=500)
 DATABASES['default'].update(db_from_env)
@@ -204,8 +206,8 @@ LOGIN_REDIRECT_URL = '/budget/'
 # }
 
 STRIPE_KEYS = {
-    'secret_key': 'sk_test_GVCFYxcWaAZq3zBnEifLXeJd',
-    'publishable_key': 'pk_test_p5rrucKiZvMX19wKoUGVDbRd'
+    'secret_key': 'sk_live_VZuuKr51mjqssdIYBtNWU0nq',
+    'publishable_key': 'pk_live_WLB0pXGykT9BM5tJ1EixjZF1'
 }
 
 EMAIL_HOST = 'tipoutapp.com'
