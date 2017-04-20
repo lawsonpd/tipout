@@ -6,10 +6,10 @@
 
 {% if error_message %}<p class="text-warning"><strong>{{ error_message }}</strong></p>{% endif %}
 
-<form action='/enter-expenses/' method='post'>
+<form class='form-horizontal' action='/enter-expenses/' method='post'>
   <div>
     {% csrf_token %}
-    {{ form }}
+    {{ form.as_p }}
   <input type='submit' class="btn btn-primary" value='Submit' />
   </div>
 </form>
