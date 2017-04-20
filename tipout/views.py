@@ -66,7 +66,7 @@ def register(request, template_name):
             # emp = Employee.objects.create(user=user,
             #                               new_user=True,
             #                               init_avg_daily_tips=0,
-            #                               signup_date=now())
+            #                               signup_date=now
 
             # return HttpResponseRedirect('/login/')
         # RESPONSE: email
@@ -412,7 +412,7 @@ def tips(request):
         emp = Employee.objects.get(user=u)
 
         tips = Tip.objects.filter(owner=emp,
-                                  date_earned__month=now().month).order_by('date_earned')[::-1]
+                                  date_earned__month=now.month).order_by('date_earned')[::-1]
         # tips = Tip.objects.filter(owner=u).order_by('date_earned')[:30]
         tip_values = [ tip.amount for tip in tips ]
 
@@ -463,7 +463,7 @@ def budget(request):
         daily_expense_cost = sum([ exp.cost for exp in expenses ]) / 30
 
         # expenditures for the day
-        expenditures_today_query = Expenditure.objects.filter(owner=emp, date=now()())
+        expenditures_today_query = Expenditure.objects.filter(owner=emp, date=now)
         expenditures_today = sum([ exp.cost for exp in expenditures_today_query ])
 
         # get tips for last 30 days
@@ -479,7 +479,7 @@ def budget(request):
         def pretty_dollar_amount(budget):
             pass
 
-        if (now() - emp.signup_date).days <= 30:
+        if (now - emp.signup_date).days <= 30:
             budget = avg_daily_tips_initial(emp.init_avg_daily_tips, tip_values, emp.signup_date) + daily_avg_from_paycheck(paychecks) - daily_expense_cost - expenditures_today
             budget_formatted = '{0:.2f}'.format(budget)
             return render(request, 'budget.html', {'avg_daily_tips': emp.init_avg_daily_tips, 'budget': budget_formatted})
@@ -504,14 +504,14 @@ def enter_expenditure(request):
             dupe = Expenditure.objects.filter(
                        owner=emp
                    ).filter(
-                       date=now()
+                       date=now
                    ).filter(
                        note=exp_data['note'].lower()
                    )
             if dupe:
                 return render(request,
                               'enter_expenditure.html',
-                              {'form': EnterExpenditureForm(initial={'date': now()}),
+                              {'form': EnterExpenditureForm(initial={'date': now}),
                                'error_message': 'An expenditure with that note already exists.'}
                               )
             else:
@@ -521,7 +521,7 @@ def enter_expenditure(request):
     else:
         return render(request,
                       'enter_expenditure.html',
-                      {'form': EnterExpenditureForm(initial={'date': now()})}
+                      {'form': EnterExpenditureForm(initial={'date': now})}
                       )
 
 # To edit an expenditure, you'll have to use pk to identify it, since the note and amount could change.
@@ -536,7 +536,7 @@ def enter_expenditure(request):
 #     # exp = args[0].replace('-', ' ')
 #
 #     u = TipoutUser.objects.get(email=request.user)
-#     es = Expenditure.objects.filter(owner=u).filter(date=now())
+#     es = Expenditure.objects.filter(owner=u).filter(date=now)
 #
 #     e = [ e for e in es if str(e) == args[0] ]
 #
@@ -557,7 +557,7 @@ def delete_expenditure(request, *args):
         u = TipoutUser.objects.get(email=request.user)
         emp = Employee.objects.get(user=u)
 
-        es = Expenditure.objects.filter(owner=emp).filter(date=now())
+        es = Expenditure.objects.filter(owner=emp).filter(date=now)
         e = None
         test = None
         for exp in es:
@@ -576,7 +576,7 @@ def expenditures(request):
     u = TipoutUser.objects.get(email=request.user)
     emp = Employee.objects.get(user=u)
 
-    exps = Expenditure.objects.filter(owner=emp).filter(date=now())
+    exps = Expenditure.objects.filter(owner=emp).filter(date=now)
     return render(request, 'expenditures.html', {'exps': exps})
 
 @login_required(login_url='/login/')
