@@ -82,7 +82,8 @@ class Expenditure(models.Model):
         return str(self.owner) + ' ' +  self.note + ' ' + str(self.date)
 
     def get_absolute_url(self):
-        return "/%s-%s-%s/" % (str(self.owner), self.note, slugify(self.date))
+        note_slugified = self.note.replace(' ', '-')
+        return "/%s-%s-%s/" % (str(self.owner), note_slugified, slugify(self.date))
 
     def month_name(self):
         return self.date.strftime("%B")

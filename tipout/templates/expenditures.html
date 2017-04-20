@@ -9,13 +9,11 @@
     <form action='/delete-expenditure{{ exp.get_absolute_url }}' method='post'>
         {% csrf_token %}
         <p id="{{ exp.pk }}">
-            {{ exp.note }} ${{ exp.cost }}
+            {{ exp.note }} cost ${{ exp.cost }}
         <input type='submit' class='btn btn-sm btn-danger' value='DELETE' />
         </p>
     </form>
     {% endfor %}
-
-    <p>See <a href="/expenditures/archive/">past expenditures</a></p>
 
 {% else %}
   <h2 style="font-family: 'Lobster', cursive">No expenditures yet today.</h2>

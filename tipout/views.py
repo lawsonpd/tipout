@@ -512,7 +512,7 @@ def enter_expenditure(request):
                 return render(request,
                               'enter_expenditure.html',
                               {'form': EnterExpenditureForm(initial={'date': now().date()}),
-                               'error_message': 'An expenditure with that note already exists.'}
+                               'error_message': 'An expenditure with that note already exists. Change the note slightly (e.g. "Coffee with Tom" instead of "Coffee") and try again.'}
                               )
             else:
                 e = Expenditure(owner=emp, cost=exp_data['cost'], date=exp_data['date'], note=exp_data['note'].lower())
@@ -551,15 +551,13 @@ def enter_expenditure(request):
 
 @login_required(login_url='/login/')
 def delete_expenditure(request, *args):
-    # exp = args[0].replace('-', ' ')
+    exp = args[0].replace('-', ' ')
 
     if request.method == 'POST':
         u = TipoutUser.objects.get(email=request.user)
         emp = Employee.objects.get(user=u)
 
         es = Expenditure.objects.filter(owner=emp).filter(date=now().date())
-        e = None
-        test = None
         for exp in es:
             if strip(exp.get_absolute_url(), '/') == args[0]:
                 e = exp
