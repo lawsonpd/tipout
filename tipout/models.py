@@ -46,7 +46,7 @@ class Paycheck(models.Model):
     # frequency = models.CharField(default='BW')
 
     def get_absolute_url(self):
-        return '%s-paycheck-%s' % (self.owner.username, slugify(self.date_earned))
+        return '%s-paycheck-%s' % (self.owner.email, slugify(self.date_earned))
 
 class Expense(models.Model):
     owner = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='expenses')
@@ -77,10 +77,10 @@ class Expenditure(models.Model):
     date = models.DateField(default=now)
 
     def __str__(self):
-        return self.owner.username + ' ' +  self.note + ' ' + str(self.date)
+        return self.owner.email + ' ' +  self.note + ' ' + str(self.date)
 
     def get_absolute_url(self):
-        return "/%s-%s-%s/" % (self.owner.username, self.note, slugify(self.date))
+        return "/%s-%s-%s/" % (self.owner.email, self.note, slugify(self.date))
 
     def month_name(self):
         return self.date.strftime("%B")
