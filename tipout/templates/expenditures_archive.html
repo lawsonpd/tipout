@@ -26,18 +26,18 @@
     {% endfor %}
 
   {% elif exps %}
-    <h2 class='lead'>{{ month }} {{ day }}, {{ year }}</h2>
-
-    <h4>Select an expediture</h4>
+    <h2 class='lead'>Expenditures from {{ month }}/{{ day }}/{{ year }}</h2>
 
     {% for exp in exps %}
-      <p><a href='/expenditures/archive/{{year}}/{{month}}/{{day}}/{{exp.note|slugify}}'>{{exp.note}}</a></p>
+      {# <p><a href='/expenditures/archive/{{year}}/{{month}}/{{day}}/{{exp.note|slugify}}'>{{exp.note}}</a></p> #}
+      <p>You spent <strong>${{exp.cost}}</strong> on <strong>{{exp.note}}</strong></p>
     {% endfor %}
 
-  {% elif exp %}
+  {# {% elif exp %}
     <h3 class='lead'>Delete or edit this expenditure</h3>
 
     <p>You spent <strong>${{exp.cost}}</strong> on <strong>{{exp.note}}</strong> on {{exp.date}}</p>
+  #}
 
   {% else %}
     <h3 class='lead'>You haven't entered any expenditures yet.</h3>
