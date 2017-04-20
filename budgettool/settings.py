@@ -36,6 +36,7 @@ DEBUG = False
 ALLOWED_HOSTS = [
     'localhost',
     'tipout-app.herokuapp.com',
+    'tipoutapp.com',
 ]
 
 
