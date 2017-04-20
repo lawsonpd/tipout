@@ -138,7 +138,7 @@ AUTH_USER_MODEL = 'custom_auth.TipoutUser'
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+# TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
