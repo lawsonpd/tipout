@@ -19,7 +19,7 @@ class Employee(models.Model):
     )
     new_user = models.BooleanField(default=True)
     init_avg_daily_tips = models.DecimalField(default=0, max_digits=9, decimal_places=2)
-    signup_date = models.DateField(default=now())
+    signup_date = models.DateField(default=now)
 
     def __str__(self):
         return self.user.email
@@ -31,7 +31,7 @@ class Tip(models.Model):
     amount = models.DecimalField(max_digits=9, decimal_places=2)
     # DEFAULT_HOURS_WORKED = 8
     hours_worked = models.DecimalField(default=8.0, max_digits=9, decimal_places=2)
-    date_earned = models.DateField(default=now())
+    date_earned = models.DateField(default=now)
 
     def __str__(self):
         return str(self.date_earned) + ' ' + str(self.amount)
@@ -42,7 +42,7 @@ class Paycheck(models.Model):
     amount = models.DecimalField(max_digits=9, decimal_places=2)
     # need to represent overtime somehow (?)
     hours_worked = models.DecimalField(default=80.0, max_digits=9, decimal_places=2)
-    date_earned = models.DateField(default=now())
+    date_earned = models.DateField(default=now)
     # frequency = models.CharField(default='BW')
 
     def get_absolute_url(self):
@@ -74,7 +74,7 @@ class Expenditure(models.Model):
     owner = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='expenditures')
     cost = models.DecimalField(max_digits=9, decimal_places=2)
     note = models.CharField(max_length=100, default="expenditure")
-    date = models.DateField(default=now())
+    date = models.DateField(default=now)
 
     def __str__(self):
         return self.owner.username + ' ' +  self.note + ' ' + str(self.date)
