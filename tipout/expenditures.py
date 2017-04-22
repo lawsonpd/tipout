@@ -84,7 +84,7 @@ def delete_expenditure(request, exp, *args):
         #     if strip(exp.get_absolute_url(), '/') == args[0]:
         #         e = exp
         exp_to_delete.delete()
-        return redirect(request.META['HTTP_REFERER'])
+        return redirect('/expenditures')
 
 # To edit an expenditure, you'll have to use pk to identify it, since the note and amount could change.
 # This would effectively be deleting an expenditure and creating a new one, which might be enough anyway.
@@ -100,7 +100,7 @@ def edit_expenditure(request, exp, *args):
         form = EditExpenditureForm(request.POST)
         if form.is_valid():
             exp_data = form.cleaned_data
-            
+
             exp_to_edit.cost = exp_data['cost']
             exp_to_edit.note = exp_data['note']
             exp_to_edit.date = exp_data['date']
