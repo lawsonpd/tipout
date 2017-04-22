@@ -14,7 +14,7 @@ from django.views.generic.edit import DeleteView
 
 from tipout.budget import avg_daily_tips, avg_daily_tips_initial, daily_avg_from_paycheck
 from datetime import date
-from django.utils.timezone import now
+from django.utils.timezone import now, timedelta
 # whatever is using strip should be moved into utils
 from string import strip
 # from string import lower
@@ -410,13 +410,26 @@ def tips(request):
     if request.method == 'GET':
         u = TipoutUser.objects.get(email=request.user)
         emp = Employee.objects.get(user=u)
-
-        tips = Tip.objects.filter(owner=emp,
-                                  date_earned__month=now().date().month).order_by('date_earned')[::-1]
-        # tips = Tip.objects.filter(owner=u).order_by('date_earned')[:30]
-        tip_values = [ tip.amount for tip in tips ]
-
-        return render(request, 'tips.html', {'avg_daily_tips': avg_daily_tips(tip_values), 'tips': tips})
+        t = now().date()
+        # tips = Tip.objects.filter(owner=emp,
+        #                           date_earned__month=now().date().month).order_by('date_earned')[::-1]
+        if (now().date() - emp.signup_date).days <= 30:
+            tips = Tip.objects.filter(owner=emp).order_by('-date_earned')
+            tip_values = [ tip.amount for tip in tips ]
+            return render(request, 'tips.html', {'avg_daily_tips': avg_daily_tips_earned_initial(emp.init_avg_daily_tips, tip_values, emp.signup_date),
+                                                 'tips': tips,
+                                                 'month': t.strftime('%B')
+                                                }
+                         )
+        else:
+            tips = Tip.objects.filter(owner=emp,
+                                      date_earned__month=now().date().month).order_by('-date_earned')
+            tip_values = [ tip.amount for tip in tips ]
+            return render(request, 'tips.html', {'avg_daily_tips': avg_daily_tips_earned(tip_values),
+                                                 'tips': tips,
+                                                 'month': t.strftime('%B')
+                                                }
+                         )
 
 @login_required(login_url='/login/')
 def edit_tip(request, *args):
@@ -442,7 +455,7 @@ def budget(request):
 
     Since budget is first view upon login, check to see if user is 'new'.
     If so, and it has been less than 30 days since signup, calculate tips
-    based on init_daily_avg_tips. Otherwise, calculate based on actual tips.
+    based on init_avg_daily_tips. Otherwise, calculate based on actual tips.
     '''
 
     '''
@@ -468,25 +481,23 @@ def budget(request):
 
         # get tips for last 30 days
         # not sure if order_by is ascending or descending
-        tips = Tip.objects.filter(owner=emp).order_by('date_earned')[:30]
+        # --> '-date_earned' is descending (newest first)
+        tips = Tip.objects.filter(owner=emp).order_by('-date_earned')[:30]
         tip_values = [ tip.amount for tip in tips ]
 
-        # user's paychecks
-        paychecks = Paycheck.objects.filter(owner=emp)
-        # paycheck_amts = [ paycheck.amt for paycheck in paychecks ]
+        # user's paychecks from last 30 days
+        recent_paychecks = Paycheck.objects.filter(owner=emp, date_earned__gt=(now().date()-timedelta(30)))
+        paycheck_amts = [ paycheck.amount for paycheck in recent_paychecks ]
         # daily_avg_from_paycheck = (sum(paycheck_amts) / len(paycheck_amts))
 
-        def pretty_dollar_amount(budget):
-            pass
-
         if (now().date() - emp.signup_date).days <= 30:
-            budget = avg_daily_tips_initial(emp.init_avg_daily_tips, tip_values, emp.signup_date) + daily_avg_from_paycheck(paychecks) - daily_expense_cost - expenditures_today
-            budget_formatted = '{0:.2f}'.format(budget)
+            budget = tips_available_per_day_initial(emp.init_avg_daily_tips, tip_values, emp.signup_date) + daily_avg_from_paycheck(paycheck_amts) - daily_expense_cost - expenditures_today
+            budget_formatted = pretty_dollar_amount(budget)
             return render(request, 'budget.html', {'avg_daily_tips': emp.init_avg_daily_tips, 'budget': budget_formatted})
 
         else:
-            budget = avg_daily_tips(tip_values) + daily_avg_from_paycheck(paychecks) - daily_expense_cost - expenditures_today
-            budget_formatted = '{0:.2f}'.format(budget)
+            budget = tips_available_per_day(tip_values) + daily_avg_from_paycheck(paycheck_amts) - daily_expense_cost - expenditures_today
+            budget_formatted = pretty_dollar_amount(budget)
             return render(request, 'budget.html', {'avg_daily_tips': avg_daily_tips(tip_values), 'budget': budget_formatted})
 
 @login_required(login_url='/login/')

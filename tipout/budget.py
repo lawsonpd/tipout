@@ -1,39 +1,51 @@
-from datetime import date
+from django.utils.timezone import now
 from tipout.models import Paycheck
 
-def avg_daily_tips_initial(init_avg_daily_tips, tips_so_far, signup_date):
-    # assume 1 month period before using actual tips to calculate average
-    #
-    # avg = (init_avg * (today_date - signup_date)
-    #                 + sum(tips_so_far))
-    #                 / 20
-    # using 20 days because i'm assuming 5 work days per week (so 20 per mo.)
-    days_so_far = (date.today() - signup_date).days
-    return (init_avg_daily_tips * (20 - days_so_far) + sum(tips_so_far)) / 20
+def avg_daily_tips_earned_initial(init_avg_daily_tips, tips_so_far, signup_date):
+    '''
+    This calculates what a user makes on average from tips *on the days they work*,
+    so we're dividing by 21.3 assuming 21.3 work days per month.
+    '''
+    days_so_far = (now().date() - signup_date).days
+    return (init_avg_daily_tips * ((30 - days_so_far) * .71) + sum(tips_so_far)) / 21.3
 
-def avg_daily_tips(tips):
-    # calculate tips for last 30 days
+def avg_daily_tips_earned(tips):
     '''
     List -> Int
     '''
+    # calculate tips for last 30 days
     if tips:
-        return sum(tips) / len(tips)
+        return sum(tips) / 21.3
     else:
         return 0
 
-def daily_avg_from_paycheck(paychecks):
+def tips_available_per_day_initial(init_avg_daily_tips, tips_so_far, signup_date):
+    '''
+    This is what we want to use to calculate how much a user has *available* each day
+    from their tips as part of their budget.
+    We divide by 30 instead of 21.3 because we're not interested in how much they *make*
+    on average each day they work, but instead how much they *have* daily based on
+    the total amount earned.
+    '''
+    days_so_far = (now().date() - signup_date).days
+    return (init_avg_daily_tips * ((30 - days_so_far) * .71) + sum(tips_so_far)) / 30
+
+def tips_available_per_day(tips):
+    '''
+    This is what we want to use to calculate how much a user has *available* each day
+    from their tips as part of their budget.
+    We divide by 30 instead of 21.3 because we're not interested in how much they *make*
+    on average each day they work, but instead how much they *have* daily based on
+    the total amount earned.
+    '''
+    return sum(tips) / 30
+
+def daily_avg_from_paycheck(paycheck_amts):
     # assuming paychecks are bi-weekly (2/mo)
-    #
-    # should maybe take tip_values array (or similar)
-    # instead of user (see avg_daily_tips)
-
-    # paychecks = Paycheck.objects.filter(owner=user)
-    paycheck_amts = [ paycheck.amount for paycheck in paychecks ]
-
-    if paycheck_amts:
-        return (sum(paycheck_amts) / len(paycheck_amts)) / 15
-    else:
-        return 0
+    # return (sum(paycheck_amts) / len(paycheck_amts)) / 15
+    # no need to do this ^
+    # simply add up the paychecks from the last 30 days
+    return sum(paycheck_amts) / 30
 
 def avg_hourly_wage(tips, paychecks, num_days):
     # will need to call avg_daily_tips and daily_avg_from_paycheck
@@ -44,4 +56,4 @@ def avg_hourly_wage(tips, paychecks, num_days):
     '''
     total_hours = sum([ tip.hours_worked for tip in tips ])
 
-    return ((avg_daily_tips(tips) + daily_avg_from_paycheck(paychecks)) * days) / total_hours
+    return ((avg_daily_tips(tips) + daily_avg_from_paycheck(paychecks)) * num_days) / total_hours
