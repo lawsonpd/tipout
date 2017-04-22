@@ -3,8 +3,9 @@ from django.shortcuts import render, redirect
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import permission_required
 from django.utils.timezone import now
+from string import strip
 
-from tipout.models import Employee, Expenditure, EnterExpenditureForm
+from tipout.models import Employee, Expenditure, EnterExpenditureForm, EditExpenditureForm
 from custom_auth.models import TipoutUser
 
 @login_required(login_url='/login/')
@@ -55,47 +56,63 @@ def expenditures(request):
     exps = Expenditure.objects.filter(owner=emp).filter(date=now().date())
     return render(request, 'expenditures.html', {'exps': exps})
 
-@login_required(login_url='/login/')
-def delete_expenditure(request, *args):
-    # exp = args[0].replace('-', ' ')
+# @login_required(login_url='/login/')
+# @require_http_methods(['POST'])
+# def delete_expenditure(request, *args):
+#     exp = args[0].replace('-', ' ')
+#
+#     if request.method == 'POST':
+#         u = TipoutUser.objects.get(email=request.user)
+#         emp = Employee.objects.get(user=u)
+#
+#         es = Expenditure.objects.filter(owner=emp).filter(date=now().date())
+#         for exp in es:
+#             if strip(exp.get_absolute_url(), '/') == args[0]:
+#                 e = exp
+#         e.delete()
+#         return redirect('/expenditures/')
 
+@login_required(login_url='/login/')
+@require_http_methods(['POST'])
+def delete_expenditure(request, exp, *args):
     if request.method == 'POST':
         u = TipoutUser.objects.get(email=request.user)
         emp = Employee.objects.get(user=u)
 
-        es = Expenditure.objects.filter(owner=emp).filter(date=now().date())
-        e = None
-        test = None
-        for exp in es:
-            if strip(exp.get_absolute_url(), '/') == args[0]:
-                e = exp
-        e.delete()
-        return redirect('/expenditures/')
+        exp_to_delete = Expenditure.objects.get(owner=emp, pk=exp)
+        # for exp in es:
+        #     if strip(exp.get_absolute_url(), '/') == args[0]:
+        #         e = exp
+        exp_to_delete.delete()
+        return redirect(request.META['HTTP_REFERER'])
 
 # To edit an expenditure, you'll have to use pk to identify it, since the note and amount could change.
 # This would effectively be deleting an expenditure and creating a new one, which might be enough anyway.
 #
-# @login_required(login_url='/login/')
-# def edit_expenditure(request, *args):
-#     '''
-#     Currently, you can only edit *today's* expenditures, so /expenditures/ only
-#     queries for today's and that's all you can edit.
-#     '''
-#     # exp = args[0].replace('-', ' ')
-#
-#     u = TipoutUser.objects.get(email=request.user)
-#     es = Expenditure.objects.filter(owner=u).filter(date=now().date())
-#
-#     e = [ e for e in es if str(e) == args[0] ]
-#
-#     if request.method == 'POST':
-#         form = EditExpenditureForm(request.POST)
-#         if form.is_valid():
-#             exp_data = form.cleaned_data
-#
-#
-#     else:
-#         pass
+@login_required(login_url='/login/')
+@require_http_methods(['GET', 'POST'])
+def edit_expenditure(request, exp, *args):
+    u = TipoutUser.objects.get(email=request.user)
+    emp = Employee.objects.get(user=u)
+    exp_to_edit = Expenditure.objects.get(owner=emp, pk=exp)
+
+    if request.method == 'POST':
+        form = EditExpenditureForm(request.POST)
+        if form.is_valid():
+            exp_data = form.cleaned_data
+            
+            exp_to_edit.cost = exp_data['cost']
+            exp_to_edit.note = exp_data['note']
+            exp_to_edit.date = exp_data['date']
+            exp_to_edit.save()
+            return redirect('/expenditures/')
+    else:
+        form = EditExpenditureForm(initial={'note': exp_to_edit.note,
+                                            'cost': exp_to_edit.cost,
+                                            'date': exp_to_edit.date
+                                           }
+                                  )
+        return render(request, 'edit_expenditure.html', {'form': form, 'exp': exp_to_edit})
 
 @login_required(login_url='/login/')
 @require_http_methods(['GET'])

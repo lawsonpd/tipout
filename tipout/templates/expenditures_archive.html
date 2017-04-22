@@ -30,7 +30,14 @@
 
     {% for exp in exps %}
       {# <p><a href='/expenditures/archive/{{year}}/{{month}}/{{day}}/{{exp.note|slugify}}'>{{exp.note}}</a></p> #}
-      <p>You spent <strong>${{exp.cost}}</strong> on <strong>{{exp.note}}</strong></p>
+      <p>
+        You spent <strong>${{exp.cost}}</strong> on <strong>{{exp.note}}</strong>
+        <form action="/delete-expenditure/{{ exp.pk }}/" method="post">
+          {% csrf_token %}
+          <a class="btn btn-default" href="/edit-expenditure/{{ exp.pk }}/">Edit</a>
+          <input type="submit" class="btn btn-sm btn-danger" value="Delete" />
+        </form>
+      </p>
     {% endfor %}
 
   {# {% elif exp %} #}
@@ -39,7 +46,7 @@
   {#  <p>You spent <strong>${{exp.cost}}</strong> on <strong>{{exp.note}}</strong> on {{exp.date}}</p> #}
 
   {% else %}
-    <h3 class='lead'>You haven't entered any expenditures yet.</h3>
+    <h3 class='lead'>You don't have any expenditures logged.</h3>
   {% endif %}
 
 {% endblock %}

@@ -5,7 +5,7 @@
 {% if paychecks %}
   <h1 style="font-family: 'Lobster', cursive">Your paychecks</h1>
     {% for paycheck in paychecks %}
-    <p><strong>${{ paycheck.amount }}</strong> on {{ paycheck.date_earned }} | <a href='/edit-paycheck/{{ paycheck.get_absolute_url }}/'>Edit</a></p>
+    <p><strong>${{ paycheck.amount }}</strong> on {{ paycheck.date_earned }} | <a href='/edit-paycheck/{{ paycheck.pk }}/'>Edit</a></p>
     {% endfor %}
 {% else %}
   <h2 style="font-family: 'Lobster', cursive">You don't have any paychecks yet.</h2>

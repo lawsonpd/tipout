@@ -23,7 +23,8 @@ urlpatterns = [
     url(r'^enter-expenditure/$', expenditures.enter_expenditure, name='enter-expenditure'),
     url(r'^expenditures/$', expenditures.expenditures, name='expenditures'),
     # url(r'^delete-expenditure/([a-z-A-Z-0-9]+)/([a-z-A-Z-0-9]+)/$', expenditures.delete_expenditure, name='delete-expenditure'),
-    url(r'^delete-expenditure/([a-z-A-Z-0-9]+)/$', expenditures.delete_expenditure, name='delete-expenditure'),
+    url(r'^delete-expenditure/(?P<exp>[0-9]+)/$', expenditures.delete_expenditure, name='delete-expenditure'),
+    url(r'^edit-expenditure/(?P<exp>[0-9]+)/$', expenditures.edit_expenditure, name='edit-expenditure'),
     url(r'^expenditures/archive/$', expenditures.expenditures_archive, name='expenditures-archive'),
     url(r'^expenditures/archive/(?P<year>[0-9]{4})/$', expenditures.expenditures_year_archive, name='expenditures-year-archive'),
     url(r'^expenditures/archive/(?P<year>[0-9]{4})/(?P<month>[0-9]{1,2})/$', expenditures.expenditures_month_archive, name='expenditures-month-archive'),
@@ -31,7 +32,7 @@ urlpatterns = [
     url(r'^expenditures/archive/(?P<year>[0-9]{4})/(?P<month>[0-9]{1,2})/(?P<day>[0-9]{1,2})/(?P<exp>[a-z-A-Z]+)$', expenditures.expenditure_detail, name='expenditure-detail'),
     url(r'^paychecks/$', paychecks.paychecks, name='paychecks'),
     url(r'^enter-paycheck/$', paychecks.enter_paycheck, name='enter-paycheck'),
-    url(r'^edit-paycheck/([a-z-A-Z-0-9]+)/$', paychecks.edit_paycheck, name='edit-paycheck'),
+    url(r'^edit-paycheck/(?P<p>[0-9]+)/$', paychecks.edit_paycheck, name='edit-paycheck'),
     # delete paycheck needs more expressive RE to identify specific paychecks (probably by date)
     #
     # would it be necessary to delete a paycheck?

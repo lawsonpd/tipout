@@ -47,7 +47,7 @@ class Paycheck(models.Model):
     # frequency = models.CharField(default='BW')
 
     def get_absolute_url(self):
-        return '%s-paycheck-%s' % (str(self.owner), slugify(self.date_earned))
+        return '/%s-paycheck-%s/' % (str(self.owner), slugify(self.date_earned))
 
 class Expense(models.Model):
     owner = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='expenses')
@@ -78,8 +78,8 @@ class Expenditure(models.Model):
         return str(self.owner) + ' ' +  self.note + ' ' + str(self.date)
 
     def get_absolute_url(self):
-        note_slugified = self.note.replace(' ', '-')
-        return "/%s-%s-%s/" % (str(self.owner), note_slugified, slugify(self.date))
+        # note_slugified = self.note.replace(' ', '-')
+        return "/%s-%s/" % ('expenditure', self.pk)
 
     def month_name(self):
         return self.date.strftime("%B")
@@ -113,7 +113,7 @@ class EnterPaycheckForm(ModelForm):
 class EditPaycheckForm(ModelForm):
     class Meta:
         model = Paycheck
-        exclude = ['owner', 'hours_worked', 'date_earned']
+        exclude = ['owner']
 
 class EnterExpenseForm(ModelForm):
     class Meta:
@@ -126,6 +126,11 @@ class EditExpenseForm(ModelForm):
         exclude = ['owner', 'expense_name', 'frequency']
 
 class EnterExpenditureForm(ModelForm):
+    class Meta:
+        model = Expenditure
+        exclude = ['owner']
+
+class EditExpenditureForm(ModelForm):
     class Meta:
         model = Expenditure
         exclude = ['owner']

@@ -6,10 +6,12 @@
   <h1 style="font-family: 'Lobster', cursive">Today's expenditures</h1>
 
     {% for exp in exps %}
-    <form action='/delete-expenditure{{ exp.get_absolute_url }}' method='post'>
+    <form action='/delete-expenditure/{{ exp.pk }}/' method='post'>
         {% csrf_token %}
-        <p id="{{ exp.pk }}">
-            {{ exp.note }} cost ${{ exp.cost }}
+        {# <p id="{{ exp.pk }}"> #}
+        <p>
+        {{ exp.note }} cost <strong>${{ exp.cost }}</strong>
+        <a class="btn btn-default" href="/edit-expenditure/{{ exp.pk }}/">Edit</a>
         <input type='submit' class='btn btn-sm btn-danger' value='DELETE' />
         </p>
     </form>

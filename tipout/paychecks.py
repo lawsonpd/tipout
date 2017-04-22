@@ -42,10 +42,6 @@ def enter_paycheck(request):
                             )
                 p.save()
                 return HttpResponseRedirect('/paychecks/')
-        else:
-            # render template w/ error messages
-            pass
-
     else:
         return render(request,
                       'enter_paycheck.html',
@@ -55,35 +51,33 @@ def enter_paycheck(request):
 
 @login_required(login_url='/login/')
 @permission_required('use_paychecks', login_url='/signup/')
-def edit_paycheck(request, *args):
+@require_http_methods(['GET', 'POST'])
+def edit_paycheck(request, p, *args):
     u = TipoutUser.objects.get(email=request.user)
     emp = Employee.objects.get(user=u)
 
     # split paycheck url into (email, 'paycheck', year, month, day)
-    paycheck_data_split = args[0].split('-')
-    paycheck = Paycheck.objects.get(owner=emp,
-                                    date_earned__year=paycheck_data_split[2],
-                                    date_earned__month=paycheck_data_split[3],
-                                    date_earned__day=paycheck_data_split[4])
+    # paycheck_data_split = args[0].split('-')
+    paycheck = Paycheck.objects.get(owner=emp, pk=p)
 
     if request.method == 'GET':
-        form = EditPaycheckForm(initial={'paycheck': paycheck})
+        form = EditPaycheckForm(initial={'amount': paycheck.amount,
+                                         'hours_worked': paycheck.hours_worked,
+                                         'date_earned': paycheck.date_earned
+                                        }
+                               )
         return render(request, 'edit_paycheck.html', {'form': form, 'paycheck': paycheck})
 
     if request.method == 'POST':
         form = EditPaycheckForm(request.POST)
         if form.is_valid():
             paycheck_data = form.cleaned_data
-            #
-            ## Don't need to check for dupe, since date isn't editable
-            #
-            p = Paycheck.objects.get(owner=emp, date_earned=paycheck.date_earned)
-            p.amount = paycheck_data['amount']
-            p.save()
-            return HttpResponseRedirect('/paychecks/')
-        else:
-            # render template w/ error messages
-            pass
+
+            paycheck.amount = paycheck_data['amount']
+            paycheck.hours_worked = paycheck_data['hours_worked']
+            paycheck.date_earned = paycheck_data['date_earned']
+            paycheck.save()
+            return redirect('/paychecks/')
 
 # May not ever need to delete a paycheck
 @login_required(login_url='/login/')
