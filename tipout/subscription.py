@@ -125,7 +125,7 @@ def manage_subscription(request):
     invoices = stripe.Invoice.list()
 
     customer_invoices = filter(lambda invoice: invoice.customer == customer.id, invoices)
-    invoice_data = [(pretty_date(invoice.date), pretty_dollar_amount(invoice.amount_due)) for invoice in customer_invoices]
+    invoice_data = [(pretty_date(invoice.date), pretty_stripe_dollar_amount(invoice.amount_due)) for invoice in customer_invoices]
 
     return render(request, 'registration/subscription.html', {'invoice_data': invoice_data})
 
