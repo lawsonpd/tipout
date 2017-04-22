@@ -53,21 +53,17 @@ class Expense(models.Model):
     owner = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='expenses')
     expense_name = models.CharField(max_length=100)
     cost = models.DecimalField(max_digits=9, decimal_places=2)
-    DAILY = 'DA'
-    BI_WEEKLY = 'BW'
-    MONTHLY = 'MO'
-    YEARLY = 'YR'
     FREQ_CHOICES = (
-        (DAILY, 'Daily'),
-        (BI_WEEKLY, 'Bi-weekly'),
-        (MONTHLY, 'Monthly'),
-        (YEARLY, 'Yearly'),
+        ('DAILY', 'Daily'),
+        ('BI_WEEKLY', 'Bi-weekly'),
+        ('MONTHLY', 'Monthly'),
+        ('ANNUALLY', 'Annually'),
     )
-    frequency = models.CharField(max_length=2,
+    frequency = models.CharField(max_length=9,
                                  choices=FREQ_CHOICES,
-                                 default=MONTHLY)
+                                 default='MONTHLY')
     def get_absolute_url(self):
-        expense_name_split = expense_name.split(' ')
+        expense_name_split = self.expense_name.split(' ')
         url_name = '-'.join(expense_name_split)
         return "/%s" % url_name
 

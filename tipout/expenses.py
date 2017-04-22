@@ -35,7 +35,7 @@ def enter_expenses(request):
             dupe = Expense.objects.filter(
                        owner=emp
                    ).filter(
-                       expense_name=expense_data['expense_name'].lower()
+                       expense_name=expense_data['expense_name']
                    )
             if dupe:
                 return render(request,
@@ -45,7 +45,7 @@ def enter_expenses(request):
             else:
                 e = Expense(owner=emp,
                             cost=expense_data['cost'],
-                            expense_name=expense_data['expense_name'].lower(),
+                            expense_name=expense_data['expense_name'],
                             frequency=expense_data['frequency']
                            )
                 e.save()
@@ -64,11 +64,11 @@ def edit_expense(request, *args):
     u = TipoutUser.objects.get(email=request.user)
     emp = Employee.objects.get(user=u)
 
-    e = Expense.objects.filter(owner=emp).get(expense_name=exp_name)
+    exp = Expense.objects.filter(owner=emp).get(expense_name=exp_name)
 
     if request.method == 'GET':
-        form = EditExpenseForm(initial={'cost': e.cost})
-        return render(request, 'edit_expense.html', {'form': form, 'expense_name': e.expense_name})
+        form = EditExpenseForm(initial={'cost': exp.cost})
+        return render(request, 'edit_expense.html', {'form': form, 'expense': exp})
 
     if request.method == 'POST':
         form = EditExpenseForm(request.POST)
