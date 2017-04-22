@@ -3,7 +3,7 @@ from datetime import date, timedelta
 def pretty_date(timestamp):
   return date.fromtimestamp(timestamp).strftime('%B %d %Y')
 
-def pretty_dollar_amount(amount):
+def pretty_stripe_dollar_amount(amount):
   '''
   This only works if amount is multiple of 100 (e.g. '500')
   '''

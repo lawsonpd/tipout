@@ -4,7 +4,7 @@
 
 {% if tips %}
   <h1 style="font-family: 'Lobster', cursive">Your tips for {{ month }}</h1>
-  <p class='lead'>Average daily tips this month: ${{ avg_daily_tips }}</p>
+  <p class='lead'>Average daily tips this month: {{ avg_daily_tips }}</p>
   <p><a href='/enter-tips/'>Enter tips</a> | <a href='/tips/archive/'>See past tips</a></p>
   <div class='row'>
     <div class='col-md-4 col-md-offset-4'>

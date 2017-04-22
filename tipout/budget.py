@@ -1,5 +1,6 @@
 from django.utils.timezone import now
 from tipout.models import Paycheck
+from decimal import Decimal
 
 def avg_daily_tips_earned_initial(init_avg_daily_tips, tips_so_far, signup_date):
     '''
@@ -7,7 +8,7 @@ def avg_daily_tips_earned_initial(init_avg_daily_tips, tips_so_far, signup_date)
     so we're dividing by 21.3 assuming 21.3 work days per month.
     '''
     days_so_far = (now().date() - signup_date).days
-    return (init_avg_daily_tips * ((30 - days_so_far) * .71) + sum(tips_so_far)) / 21.3
+    return (init_avg_daily_tips * Decimal((30 - days_so_far) * .71) + sum(tips_so_far)) / Decimal(21.3)
 
 def avg_daily_tips_earned(tips):
     '''
@@ -28,7 +29,7 @@ def tips_available_per_day_initial(init_avg_daily_tips, tips_so_far, signup_date
     the total amount earned.
     '''
     days_so_far = (now().date() - signup_date).days
-    return (init_avg_daily_tips * ((30 - days_so_far) * .71) + sum(tips_so_far)) / 30
+    return (init_avg_daily_tips * Decimal((30 - days_so_far) * .71) + sum(tips_so_far)) / Decimal(30)
 
 def tips_available_per_day(tips):
     '''
@@ -57,3 +58,9 @@ def avg_hourly_wage(tips, paychecks, num_days):
     total_hours = sum([ tip.hours_worked for tip in tips ])
 
     return ((avg_daily_tips(tips) + daily_avg_from_paycheck(paychecks)) * num_days) / total_hours
+
+def pretty_dollar_amount(amount):
+  '''
+  This only works if amount is multiple of 100 (e.g. '500')
+  '''
+  return '$' + '{0:.2f}'.format(amount)
