@@ -12,7 +12,7 @@ from django.contrib.auth.decorators import permission_required
 
 from django.views.generic.edit import DeleteView
 
-from tipout.budget import avg_daily_tips, avg_daily_tips_initial, daily_avg_from_paycheck
+from tipout.budget import avg_daily_tips_earned, avg_daily_tips_earned_initial, daily_avg_from_paycheck
 from datetime import date
 from django.utils.timezone import now, timedelta
 # whatever is using strip should be moved into utils
@@ -498,7 +498,7 @@ def budget(request):
         else:
             budget = tips_available_per_day(tip_values) + daily_avg_from_paycheck(paycheck_amts) - daily_expense_cost - expenditures_today
             budget_formatted = pretty_dollar_amount(budget)
-            return render(request, 'budget.html', {'avg_daily_tips': avg_daily_tips(tip_values), 'budget': budget_formatted})
+            return render(request, 'budget.html', {'avg_daily_tips': avg_daily_tips_earned(tip_values), 'budget': budget_formatted})
 
 @login_required(login_url='/login/')
 def enter_expenditure(request):
