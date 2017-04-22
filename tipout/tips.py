@@ -1,9 +1,17 @@
 from django.contrib.auth.decorators import permission_required, login_required
 from django.shortcuts import render, redirect
 from django.views.decorators.http import require_http_methods
+from django.utils.timezone import now
 
 from tipout.models import Tip, EnterTipsForm, Employee
 from custom_auth.models import TipoutUser
+from budget_utils import (avg_daily_tips_earned,
+                          avg_daily_tips_earned_initial,
+                          tips_available_per_day_initial,
+                          tips_available_per_day,
+                          daily_avg_from_paycheck,
+                          pretty_dollar_amount
+                         )
 
 @login_required(login_url='/login/')
 @permission_required('tipout.use_tips', login_url='/signup/')
@@ -23,7 +31,7 @@ def enter_tips(request):
                     date_earned=tip_data['date_earned'],
                     owner=emp)
             t.save()
-            return HttpResponseRedirect('/tips/')
+            return redirect('/tips/')
 
     # if a GET (or any other method), we'll create a blank form
     else:
@@ -39,15 +47,31 @@ def tips(request):
     ALL tips that belong to current user.
     Daily avg. tips based on ALL user's tips.
     '''
-    u = TipoutUser.objects.get(email=request.user)
-    emp = Employee.objects.get(user=u)
-
-    tips = Tip.objects.filter(owner=emp,
-                              date_earned__month=date.today().month).order_by('date_earned')[::-1]
-    # tips = Tip.objects.filter(owner=u).order_by('date_earned')[:30]
-    tip_values = [ tip.amount for tip in tips ]
-
-    return render(request, 'tips.html', {'avg_daily_tips': avg_daily_tips(tip_values), 'tips': tips})
+    if request.method == 'GET':
+        u = TipoutUser.objects.get(email=request.user)
+        emp = Employee.objects.get(user=u)
+        t = now().date()
+        # tips = Tip.objects.filter(owner=emp,
+        #                           date_earned__month=now().date().month).order_by('date_earned')[::-1]
+        if (now().date() - emp.signup_date).days <= 30:
+            tips = Tip.objects.filter(owner=emp).order_by('-date_earned')
+            tip_values = [ tip.amount for tip in tips ]
+            avg_daily_tips = pretty_dollar_amount(avg_daily_tips_earned_initial(emp.init_avg_daily_tips, tip_values, emp.signup_date))
+            return render(request, 'tips.html', {'avg_daily_tips': avg_daily_tips,
+                                                 'tips': tips,
+                                                 'month': t.strftime('%B')
+                                                }
+                         )
+        else:
+            tips = Tip.objects.filter(owner=emp,
+                                      date_earned__month=now().date().month).order_by('-date_earned')
+            tip_values = [ tip.amount for tip in tips ]
+            avg_daily_tips = pretty_dollar_amount(avg_daily_tips_earned(tip_values))
+            return render(request, 'tips.html', {'avg_daily_tips': avg_daily_tips,
+                                                 'tips': tips,
+                                                 'month': t.strftime('%B')
+                                                }
+                         )
 
 @login_required(login_url='/login/')
 def edit_tip(request, *args):
@@ -62,7 +86,7 @@ def delete_tip(request, tip_id, *args):
 
         t = Tip.objects.get(owner=emp, pk=tip_id)
         t.delete()
-        return HttpResponseRedirect('/tips/')
+        return redirect('/tips/')
 
 @login_required(login_url='/login/')
 def tips_archive(request, year=None, month=None, day=None, *args):

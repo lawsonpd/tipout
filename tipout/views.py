@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
 from tipout.models import Tip, EnterTipsForm, Paycheck, EditPaycheckForm, Expense, Employee, Expenditure, EnterPaycheckForm, EnterExpenditureForm, EnterExpenseForm, EditExpenseForm, NewUserSetupForm
@@ -12,13 +12,13 @@ from django.contrib.auth.decorators import permission_required
 
 from django.views.generic.edit import DeleteView
 
-from tipout.budget import (avg_daily_tips_earned,
-                           avg_daily_tips_earned_initial,
-                           tips_available_per_day_initial,
-                           tips_available_per_day,
-                           daily_avg_from_paycheck,
-                           pretty_dollar_amount
-                          )
+from budget_utils import (avg_daily_tips_earned,
+                          avg_daily_tips_earned_initial,
+                          tips_available_per_day_initial,
+                          tips_available_per_day,
+                          daily_avg_from_paycheck,
+                          pretty_dollar_amount
+                         )
 from datetime import date
 from django.utils.timezone import now, timedelta
 # whatever is using strip should be moved into utils
@@ -74,7 +74,7 @@ def register(request, template_name):
             #                               init_avg_daily_tips=0,
             #                               signup_date=now().date()
 
-            # return HttpResponseRedirect('/login/')
+            # return redirect('/login/')
         # RESPONSE: email
         #           password1
         #           password2
@@ -89,7 +89,7 @@ def register(request, template_name):
             #                               new_user=True,
             #                               init_avg_daily_tips=0)
             #
-            # return HttpResponseRedirect('/login/')
+            # return redirect('/login/')
         else:
             return render(request, template_name, {'form': form})
     else:
@@ -243,7 +243,7 @@ def new_user_setup(request):
             emp.init_avg_daily_tips = form_data['init_avg_daily_tips']
             emp.new_user = False
             emp.save()
-            return HttpResponseRedirect('/expenses/')
+            return redirect('/expenses/')
 
 @login_required(login_url='/login/')
 @permission_required('tipout.use_tips', login_url='/signup/')
@@ -265,7 +265,7 @@ def enter_tips(request):
                     owner=emp,
                     hours_worked=tip_data['hours_worked'])
             t.save()
-            return HttpResponseRedirect('/tips/')
+            return redirect('/tips/')
 
     # if a GET (or any other method), we'll create a blank form
     else:
@@ -310,7 +310,7 @@ def enter_paycheck(request):
                              hours_worked=paycheck_data['hours_worked'],
                             )
                 p.save()
-                return HttpResponseRedirect('/paychecks/')
+                return redirect('/paychecks/')
     else:
         return render(request,
                       'enter_paycheck.html',
@@ -342,7 +342,7 @@ def edit_paycheck(request, *args):
             p = Paycheck.objects.get(owner=emp, date_earned=paycheck.date_earned)
             p.amount = paycheck_data['amount']
             p.save()
-            return HttpResponseRedirect('/paychecks/')
+            return redirect('/paychecks/')
 
     form = EditPaycheckForm(initial={'paycheck': paycheck})
     return render(request, 'edit_paycheck.html', {'form': form, 'paycheck': paycheck})
@@ -386,7 +386,7 @@ def enter_expenses(request):
                             frequency=expense_data['frequency']
                            )
                 e.save()
-                return HttpResponseRedirect('/expenses/')
+                return redirect('/expenses/')
     else:
         form = EnterExpenseForm()
         return render(request, 'enter_expenses.html', {'form': form})
@@ -452,7 +452,7 @@ def delete_tip(request, tip_id, *args):
 
         t = Tip.objects.get(owner=emp, pk=tip_id)
         t.delete()
-        return HttpResponseRedirect('/tips/')
+        return redirect('/tips/')
 
 @login_required(login_url='/login/')
 @require_http_methods(['GET'])
@@ -476,7 +476,7 @@ def budget(request):
 
     # if user is new, send to new-user-setup
     if emp.new_user:
-        return HttpResponseRedirect('/new-user-setup/')
+        return redirect('/new-user-setup/')
 
     else:
         # expenses, daily expense cost - assuming every expense is paid monthly
@@ -536,9 +536,9 @@ def enter_expenditure(request):
                                'error_message': 'An expenditure with that note already exists. Change the note slightly (e.g. "Coffee with Tom" instead of "Coffee") and try again.'}
                               )
             else:
-                e = Expenditure(owner=emp, cost=exp_data['cost'], date=exp_data['date'], note=exp_data['note'].lower())
+                e = Expenditure(owner=emp, cost=exp_data['cost'], date=exp_data['date'], note=exp_data['note'])
                 e.save()
-                return HttpResponseRedirect('/expenditures/')
+                return redirect('/expenditures/')
     else:
         return render(request,
                       'enter_expenditure.html',
@@ -583,7 +583,7 @@ def delete_expenditure(request, *args):
             if strip(exp.get_absolute_url(), '/') == args[0]:
                 e = exp
         e.delete()
-        return HttpResponseRedirect('/expenditures/')
+        return redirect('/expenditures/')
 
 @login_required(login_url='/login/')
 @permission_required('use_expenditures', login_url='/signup/')
@@ -621,7 +621,7 @@ def edit_expense(request, *args):
             exp = Expense.objects.get(owner=emp, expense_name=e.expense_name)
             exp.cost = exp_data['cost']
             exp.save()
-            return HttpResponseRedirect('/expenses/')
+            return redirect('/expenses/')
 
 @login_required(login_url='/login/')
 def delete_expense(request, *args):
@@ -633,7 +633,7 @@ def delete_expense(request, *args):
 
         e = Expense.objects.get(owner=emp, expense_name=exp_name)
         e.delete()
-        return HttpResponseRedirect('/expenses/')
+        return redirect('/expenses/')
 
 @login_required(login_url='/login/')
 @require_http_methods(['GET'])

@@ -49,7 +49,7 @@ def enter_expenses(request):
                             frequency=expense_data['frequency']
                            )
                 e.save()
-                return HttpResponseRedirect('/expenses/')
+                return redirect('/expenses/')
         else:
             # render template with error messages
             pass
@@ -80,7 +80,7 @@ def edit_expense(request, *args):
             exp = Expense.objects.get(owner=emp, expense_name=e.expense_name)
             exp.cost = exp_data['cost']
             exp.save()
-            return HttpResponseRedirect('/expenses/')
+            return redirect('/expenses/')
 
 @login_required(login_url='/login/')
 def delete_expense(request, *args):
@@ -92,4 +92,4 @@ def delete_expense(request, *args):
 
         e = Expense.objects.get(owner=emp, expense_name=exp_name)
         e.delete()
-        return HttpResponseRedirect('/expenses/')
+        return redirect('/expenses/')

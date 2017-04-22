@@ -1,6 +1,8 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.views.decorators.http import require_http_methods
+from django.contrib.auth.decorators import permission_required
+from django.utils.timezone import now
 
 from tipout.models import Employee, Expenditure, EnterExpenditureForm
 from custom_auth.models import TipoutUser
@@ -20,24 +22,24 @@ def enter_expenditure(request):
             dupe = Expenditure.objects.filter(
                        owner=emp
                    ).filter(
-                       date=date.today()
+                       date=now().date()
                    ).filter(
                        note=exp_data['note'].lower()
                    )
             if dupe:
                 return render(request,
                               'enter_expenditure.html',
-                              {'form': EnterExpenditureForm(initial={'date': date.today()}),
+                              {'form': EnterExpenditureForm(initial={'date': now().date()}),
                                'error_message': 'An expenditure with that note already exists.'}
                               )
             else:
-                e = Expenditure(owner=emp, cost=exp_data['cost'], date=exp_data['date'], note=exp_data['note'].lower())
+                e = Expenditure(owner=emp, cost=exp_data['cost'], date=exp_data['date'], note=exp_data['note'])
                 e.save()
-                return HttpResponseRedirect('/expenditures/')
+                return redirect('/expenditures/')
     else:
         return render(request,
                       'enter_expenditure.html',
-                      {'form': EnterExpenditureForm(initial={'date': date.today()})}
+                      {'form': EnterExpenditureForm(initial={'date': now().date()})}
                       )
 
 @login_required(login_url='/login/')
@@ -50,7 +52,7 @@ def expenditures(request):
     u = TipoutUser.objects.get(email=request.user)
     emp = Employee.objects.get(user=u)
 
-    exps = Expenditure.objects.filter(owner=emp).filter(date=date.today())
+    exps = Expenditure.objects.filter(owner=emp).filter(date=now().date())
     return render(request, 'expenditures.html', {'exps': exps})
 
 @login_required(login_url='/login/')
@@ -61,14 +63,14 @@ def delete_expenditure(request, *args):
         u = TipoutUser.objects.get(email=request.user)
         emp = Employee.objects.get(user=u)
 
-        es = Expenditure.objects.filter(owner=emp).filter(date=date.today())
+        es = Expenditure.objects.filter(owner=emp).filter(date=now().date())
         e = None
         test = None
         for exp in es:
             if strip(exp.get_absolute_url(), '/') == args[0]:
                 e = exp
         e.delete()
-        return HttpResponseRedirect('/expenditures/')
+        return redirect('/expenditures/')
 
 # To edit an expenditure, you'll have to use pk to identify it, since the note and amount could change.
 # This would effectively be deleting an expenditure and creating a new one, which might be enough anyway.
@@ -82,7 +84,7 @@ def delete_expenditure(request, *args):
 #     # exp = args[0].replace('-', ' ')
 #
 #     u = TipoutUser.objects.get(email=request.user)
-#     es = Expenditure.objects.filter(owner=u).filter(date=date.today())
+#     es = Expenditure.objects.filter(owner=u).filter(date=now().date())
 #
 #     e = [ e for e in es if str(e) == args[0] ]
 #
