@@ -90,7 +90,7 @@ def delete_paycheck(request, p):
         u = TipoutUser.objects.get(email=request.user)
         emp = Employee.objects.get(user=u)
 
-        paycheck_to_delete = Expenditure.objects.get(owner=emp, pk=p)
+        paycheck_to_delete = Paycheck.objects.get(owner=emp, pk=p)
         # for exp in es:
         #     if strip(exp.get_absolute_url(), '/') == args[0]:
         #         e = exp
