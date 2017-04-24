@@ -38,10 +38,11 @@ def enter_paycheck(request):
             else:
                 p = Paycheck(owner=emp,
                              amount=paycheck_data['amount'],
-                             date_earned=paycheck_data['date_earned']
+                             date_earned=paycheck_data['date_earned'],
+                             hours_worked=paycheck_data['hours_worked'],
                             )
                 p.save()
-                return HttpResponseRedirect('/paychecks/')
+                return redirect('/paychecks/')
     else:
         return render(request,
                       'enter_paycheck.html',
