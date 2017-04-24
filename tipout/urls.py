@@ -36,7 +36,7 @@ urlpatterns = [
     # delete paycheck needs more expressive RE to identify specific paychecks (probably by date)
     #
     # would it be necessary to delete a paycheck?
-    # url(r'^delete-paycheck/$', paychecks.delete_paycheck, name='delete-paycheck'),
+    url(r'^delete-paycheck/(?P<p>[0-9]+)/$', paychecks.delete_paycheck, name='delete-paycheck'),
     #
     url(r'^new-user-setup/$', general_views.new_user_setup, name='new-user-setup'),
     # url(r'^register/$',

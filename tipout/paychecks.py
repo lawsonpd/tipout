@@ -84,5 +84,15 @@ def edit_paycheck(request, p, *args):
 # May not ever need to delete a paycheck
 @login_required(login_url='/login/')
 @permission_required('use_paychecks', login_url='/signup/')
-def delete_paycheck(request):
-    pass
+@require_http_methods(['POST'])
+def delete_paycheck(request, p):
+    if request.method == 'POST':
+        u = TipoutUser.objects.get(email=request.user)
+        emp = Employee.objects.get(user=u)
+
+        paycheck_to_delete = Expenditure.objects.get(owner=emp, pk=p)
+        # for exp in es:
+        #     if strip(exp.get_absolute_url(), '/') == args[0]:
+        #         e = exp
+        paycheck_to_delete.delete()
+        return redirect('/paychecks/')
