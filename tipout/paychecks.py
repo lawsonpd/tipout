@@ -34,7 +34,8 @@ def enter_paycheck(request):
             if dupe:
                 return render(request,
                               'enter_paycheck.html',
-                              {'error_message': 'Paycheck from that date exists.'})
+                              {'error_message': 'Paycheck from that date exists.',
+                               'form': EnterPaycheckForm()})
             else:
                 p = Paycheck(owner=emp,
                              amount=paycheck_data['amount'],
