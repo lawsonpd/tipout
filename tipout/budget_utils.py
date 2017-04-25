@@ -1,5 +1,5 @@
-from django.utils.timezone import now
-from tipout.models import Paycheck
+from django.utils.timezone import now, timedelta
+from tipout.models import Paycheck, Employee, Expense, Expenditure, Tip
 from decimal import Decimal
 
 def avg_daily_tips_earned_initial(init_avg_daily_tips, tips_so_far, signup_date):
@@ -60,7 +60,39 @@ def avg_hourly_wage(tips, paychecks, num_days):
     return ((avg_daily_tips(tips) + daily_avg_from_paycheck(paychecks)) * num_days) / total_hours
 
 def pretty_dollar_amount(amount):
-  '''
-  This only works if amount is multiple of 100 (e.g. '500')
-  '''
   return '$' + '{0:.2f}'.format(amount)
+
+def balancer(over_unders):
+    '''
+    Should be passed budgets, expenditures:
+    budgets is List of budgets for each of past 7 days.
+    expenditures is List of expenditures for each of past 7 days.
+    '''
+    return sum([float(over_unders[i]) / 7 for i in range(len(over_unders))])
+
+def daily_budget(emp):
+    # expenses, daily expense cost - assuming every expense is paid monthly
+    expenses = Expense.objects.filter(owner=emp)
+    daily_expense_cost = sum([ exp.cost for exp in expenses ]) / 30
+
+    # expenditures for the day
+    expenditures_today_query = Expenditure.objects.filter(owner=emp, date=now().date())
+    expenditures_today = sum([ exp.cost for exp in expenditures_today_query ])
+
+    # get tips for last 30 days
+    # not sure if order_by is ascending or descending
+    # --> '-date_earned' is descending (newest first)
+    tips = Tip.objects.filter(owner=emp).order_by('-date_earned')[:30]
+    tip_values = [ tip.amount for tip in tips ]
+
+    # user's paychecks from last 30 days
+    recent_paychecks = Paycheck.objects.filter(owner=emp, date_earned__gt=(now().date()-timedelta(30)))
+    paycheck_amts = [ paycheck.amount for paycheck in recent_paychecks ]
+    # daily_avg_from_paycheck = (sum(paycheck_amts) / len(paycheck_amts))
+
+    if (now().date() - emp.signup_date).days <= 30:
+        tips_for_day = tips_available_per_day_initial(emp.init_avg_daily_tips, tip_values, emp.signup_date)
+    else:
+        tips_for_day = tips_available_per_day(tip_values)
+    budget = tips_for_day + daily_avg_from_paycheck(paycheck_amts) - daily_expense_cost - expenditures_today
+    return pretty_dollar_amount(budget)
