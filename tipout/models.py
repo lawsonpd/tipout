@@ -55,6 +55,7 @@ class Expense(models.Model):
     cost = models.DecimalField(max_digits=9, decimal_places=2)
     FREQ_CHOICES = (
         ('DAILY', 'Daily'),
+        ('WEEKLY', 'Weekly'),
         ('BI_WEEKLY', 'Bi-weekly'),
         ('MONTHLY', 'Monthly'),
         ('ANNUALLY', 'Annually'),
@@ -107,7 +108,6 @@ class EditTipForm(ModelForm):
 class EnterPaycheckForm(ModelForm):
     class Meta:
         model = Paycheck
-        # assume default hrs worked (80) for now
         exclude = ['owner']
 
 class EditPaycheckForm(ModelForm):
