@@ -1,4 +1,4 @@
-from custom_auth import TipoutUser
+from custom_auth.models import TipoutUser
 from django.utils.timezone import now, timedelta
 from tipout.models import Paycheck, Employee, Expense, Expenditure, Tip
 from decimal import Decimal

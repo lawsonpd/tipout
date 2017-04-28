@@ -4,7 +4,7 @@ from django.views.decorators.http import require_http_methods
 from django.utils.timezone import now, timedelta
 
 from tipout.models import Tip, Paycheck, Employee, Expense, Expenditure
-from budget_utils import today_budget, pretty_dollar_amount
+from budget_utils import today_budget, pretty_dollar_amount, expenditures_sum_for_specific_day, budget_for_specific_day
 from custom_auth.models import TipoutUser
 
 @login_required(login_url='/login/')
