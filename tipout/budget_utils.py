@@ -1,3 +1,4 @@
+from custom_auth import TipoutUser
 from django.utils.timezone import now, timedelta
 from tipout.models import Paycheck, Employee, Expense, Expenditure, Tip
 from decimal import Decimal
@@ -62,6 +63,9 @@ def avg_hourly_wage(tips, paychecks, num_days):
 def pretty_dollar_amount(amount):
   return '$' + '{0:.2f}'.format(amount)
 
+def balancer(over_unders):
+    return sum(map(lambda x: float(x)/7, over_unders))
+
 def today_budget(emp):
     '''
     Calculate budget for today.
@@ -95,3 +99,43 @@ def today_budget(emp):
     else:
         tips_for_day = tips_available_per_day(tip_values)
     return tips_for_day + daily_avg_from_paycheck(paycheck_amts) - daily_expense_cost - expenditures_for_day + balancer(over_unders)
+
+def budget_for_specific_day(emp, date):
+    '''
+    date must be datetime format
+    '''
+    # expenses, daily expense cost - assuming every expense is paid monthly
+    expenses = Expense.objects.filter(owner=emp)
+    daily_expense_cost = sum([ exp.cost for exp in expenses ]) / 30
+
+    # expenditures for the day
+    expenditures_for_day_query = Expenditure.objects.filter(owner=emp, date=date)
+    expenditures_for_day = sum([ exp.cost for exp in expenditures_for_day_query ])
+
+    # get tips for last 30 days before date parameter
+    # not sure if order_by is ascending or descending
+    # --> '-date_earned' is descending (newest first)
+    tips = Tip.objects.filter(owner=emp, date_earned__lt=(date + timedelta(1))).order_by('-date_earned')[:30]
+    tip_values = [ tip.amount for tip in tips ]
+
+    # user's paychecks from last 30 days
+    recent_paychecks = Paycheck.objects.filter(owner=emp,
+                                               date_earned__gt=(date-timedelta(30)),
+                                               date_earned__lt=(date+timedelta(1))
+                                               )
+    paycheck_amts = [ paycheck.amount for paycheck in recent_paychecks ]
+    # daily_avg_from_paycheck = (sum(paycheck_amts) / len(paycheck_amts))
+
+    # getting over/unders
+    past_budgets = Budget.objects.filter(owner=emp, date__lt=date).order_by('-date')[:7]
+    over_unders = [budget.over_under for budget in past_budgets]
+
+    if (now().date() - emp.signup_date).days <= 30:
+        tips_for_day = tips_available_per_day_initial(emp.init_avg_daily_tips, tip_values, emp.signup_date)
+    else:
+        tips_for_day = tips_available_per_day(tip_values)
+    return tips_for_day + daily_avg_from_paycheck(paycheck_amts) - daily_expense_cost - expenditures_for_day + balancer(over_unders)
+
+def expenditures_sum_for_specific_day(emp, date):
+    expenditures_for_day_query = Expenditure.objects.filter(owner=emp, date=date)
+    return sum([ exp.cost for exp in expenditures_for_day_query ])
