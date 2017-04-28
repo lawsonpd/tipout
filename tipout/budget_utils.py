@@ -1,6 +1,6 @@
 from custom_auth.models import TipoutUser
 from django.utils.timezone import now, timedelta
-from tipout.models import Paycheck, Employee, Expense, Expenditure, Tip
+from tipout.models import Paycheck, Employee, Expense, Expenditure, Tip, Budget
 from decimal import Decimal
 
 def avg_daily_tips_earned_initial(init_avg_daily_tips, tips_so_far, signup_date):
@@ -98,7 +98,7 @@ def today_budget(emp):
         tips_for_day = tips_available_per_day_initial(emp.init_avg_daily_tips, tip_values, emp.signup_date)
     else:
         tips_for_day = tips_available_per_day(tip_values)
-    return tips_for_day + daily_avg_from_paycheck(paycheck_amts) - daily_expense_cost - expenditures_for_day + balancer(over_unders)
+    return tips_for_day + daily_avg_from_paycheck(paycheck_amts) - daily_expense_cost - expenditures_for_day + Decimal(balancer(over_unders))
 
 def budget_for_specific_day(emp, date):
     '''
@@ -130,11 +130,11 @@ def budget_for_specific_day(emp, date):
     past_budgets = Budget.objects.filter(owner=emp, date__lt=date).order_by('-date')[:7]
     over_unders = [budget.over_under for budget in past_budgets]
 
-    if (now().date() - emp.signup_date).days <= 30:
+    if now().date() - emp.signup_date <= timedelta(30):
         tips_for_day = tips_available_per_day_initial(emp.init_avg_daily_tips, tip_values, emp.signup_date)
     else:
         tips_for_day = tips_available_per_day(tip_values)
-    return tips_for_day + daily_avg_from_paycheck(paycheck_amts) - daily_expense_cost - expenditures_for_day + balancer(over_unders)
+    return tips_for_day + daily_avg_from_paycheck(paycheck_amts) - daily_expense_cost - expenditures_for_day + Decimal(balancer(over_unders))
 
 def expenditures_sum_for_specific_day(emp, date):
     expenditures_for_day_query = Expenditure.objects.filter(owner=emp, date=date)

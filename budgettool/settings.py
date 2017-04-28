@@ -206,7 +206,9 @@ LOGIN_REDIRECT_URL = '/budget/'
 
 STRIPE_KEYS = {
     'secret_key': 'sk_live_VZuuKr51mjqssdIYBtNWU0nq',
-    'publishable_key': 'pk_live_WLB0pXGykT9BM5tJ1EixjZF1'
+    'publishable_key': 'pk_live_WLB0pXGykT9BM5tJ1EixjZF1',
+    'test_sk': 'sk_test_GVCFYxcWaAZq3zBnEifLXeJd',
+    'test_pk': 'pk_test_p5rrucKiZvMX19wKoUGVDbRd'
 }
 
 EMAIL_HOST = 'tipoutapp.com'

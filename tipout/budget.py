@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 from django.views.decorators.http import require_http_methods
 from django.utils.timezone import now, timedelta
 
-from tipout.models import Tip, Paycheck, Employee, Expense, Expenditure
+from tipout.models import Tip, Paycheck, Employee, Expense, Expenditure, Budget
 from budget_utils import today_budget, pretty_dollar_amount, expenditures_sum_for_specific_day, budget_for_specific_day
 from custom_auth.models import TipoutUser
 
@@ -76,7 +76,7 @@ def budget(request):
 
                 # calculate budgets from mrb_date through yesterday (can't set
                 # over/unders for today yet, so today's over/under gets calc'd tomorrow)
-                number_of_days = (now().date() - mrb.date).days
+                number_of_days = (now().date() - mrb_date).days
                 # budgets up to today; new_budgets[0] is oldest (day after mrb_date)
                 for i in range(1, number_of_days):
                     b = budget_for_specific_day(emp, mrb_date+timedelta(i))
@@ -88,7 +88,7 @@ def budget(request):
                     budget_object.save()
                 b = Budget(owner=emp,
                            date=now().date(),
-                           amount=today_budget())
+                           amount=today_budget(emp))
                 b.save()
                 exps = Expenditure.objects.filter(owner=emp, date=now().date())
                 exps_sum = sum(exp.cost for exp in exps)
