@@ -88,8 +88,15 @@ class Expenditure(models.Model):
 # not sure if Budget is needed. can we get the data insights we want
 # just by having the Tip and Expense models?
 class Budget(models.Model):
-    owner = models.OneToOneField(Employee, on_delete=models.CASCADE, related_name='budget', primary_key=True)
-    daily_budget = models.DecimalField(max_digits=9, decimal_places=2)
+    '''
+    Budget amount is the initial budget for the day (i.e. it doesn't take into account
+    expenses or expenditures. The 'running' budget is calculated in the view.)
+    '''
+    owner = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='budget', primary_key=True)
+    date = models.DateField()
+    amount = models.DecimalField(max_digits=9, decimal_places=2)
+    # positive over_under means user was *under* budget
+    over_under = models.DecimalField(max_digits=9, decimal_places=2, default=0)
 
 #########
 # FORMS #
