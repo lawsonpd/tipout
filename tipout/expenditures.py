@@ -9,6 +9,7 @@ from tipout.models import Employee, Expenditure, EnterExpenditureForm, EditExpen
 from custom_auth.models import TipoutUser
 
 @login_required(login_url='/login/')
+@require_http_methods(['GET', 'POST'])
 def enter_expenditure(request):
     '''
     If POST, admit and process form. Otherwise, show blank form.
@@ -36,7 +37,7 @@ def enter_expenditure(request):
             else:
                 e = Expenditure(owner=emp, cost=exp_data['cost'], date=exp_data['date'], note=exp_data['note'])
                 e.save()
-                return redirect('/expenditures/')
+                return redirect('/budget/')
     else:
         return render(request,
                       'enter_expenditure.html',
