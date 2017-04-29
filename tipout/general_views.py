@@ -59,3 +59,8 @@ def new_user_setup(request):
                                       date=now().date(),
                                       amount=today_budget())
             return redirect('/expenses/')
+
+@require_http_methods(['GET'])
+def how_it_works(request):
+    if request.method == 'GET':
+        return render(request, 'how_it_works.html')
