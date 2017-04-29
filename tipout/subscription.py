@@ -117,7 +117,7 @@ def thank_you(request):
         return render(request, 'thankyou.html')
 
 @login_required(login_url='/login/')
-@require_http_methods(['GET', 'POST'])
+@require_http_methods(['GET'])
 def manage_subscription(request):
     u = TipoutUser.objects.get(email=request.user)
     customer = stripe.Customer.retrieve(u.stripe_id)
