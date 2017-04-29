@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1><em>Chive on!</em></h1>
+
+<p class='lead'>Currently we're only offering a paid plan for $5.00 per month.</p>
+<p class='lead'>You can cancel at anytime.</p>
+
+<hr style="width: 100px"/>
+
+<form action="/signup/" method="POST">
+  {% csrf_token %}
+  {{ form.non_field_errors }}
+  <div class="form-group">
+    {{ form.email.errors }}
+    {{ form.email.label_tag }}
+    {{ form.email }}
+  </div>
+  <div class="form-group">
+    {{ form.password1.errors }}
+    {{ form.password1.label_tag }}
+    {{ form.password1 }}
+  </div>
+  <div class="form-group">
+    {{ form.password2.errors }}
+    {{ form.password2.label_tag }}
+    {{ form.password2 }}
+  </div>
+  <div class="form-group">
+    {{ form.city.errors }}
+    {{ form.city.label_tag }}
+    {{ form.city }}
+  </div>
+  <div class="form-group">
+    {{ form.state.errors }}
+    {{ form.state.label_tag }}
+    {{ form.state }}
+  </div>
+  <script
+    src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+    data-key="{{ key }}"
+    data-amount="500"
+    data-name="Tipout"
+    data-description="Monthly subscription"
+    data-label="Pay with card"
+    data-image="../../static/tipout/tipout-logo.png"
+    data-locale="auto"
+    data-zip-code="true">
+  </script>
+</form>
+
+{% endblock %}

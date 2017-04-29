@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 
 from custom_auth.admin import UserCreationForm
 from custom_auth.models import TipoutUser
+from tipout.models import Employee
 from stripe_utils import pretty_date, pretty_stripe_dollar_amount, refund_approved, most_recent_invoice
 import stripe
 from budgettool.settings import STRIPE_KEYS

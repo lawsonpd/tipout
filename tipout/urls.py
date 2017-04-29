@@ -2,7 +2,7 @@ from django.conf.urls import url, include
 from django.contrib.auth import views as auth_views
 
 # from . import views
-from . import budget, expenditures, expenses, general_views, paychecks, subscription, tips
+from . import budget, expenditures, expenses, general_views, paychecks, subscription, tips, subscription_test
 
 urlpatterns = [
     url(r'^enter-tips/$', tips.enter_tips, name='enter-tips'),
@@ -67,4 +67,8 @@ urlpatterns = [
         general_views.home,
         {'template_name': 'home.html'}
     ),
+    # url(r'^signup-test/$',
+    #     subscription_test.signup_test,
+    #     {'template_name': 'registration/signup_test.html'}
+    # ),
 ]

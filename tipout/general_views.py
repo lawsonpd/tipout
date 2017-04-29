@@ -3,9 +3,10 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login
 from django.views.decorators.http import require_http_methods
 
-from tipout.models import Tip, Employee, NewUserSetupForm
+from tipout.models import Tip, Employee, NewUserSetupForm, Budget
 from custom_auth.models import TipoutUser
 from django.core.mail import send_mail
+from django.utils.timezone import now
 # from django.conf import settings
 
 @require_http_methods(['GET'])
@@ -38,8 +39,8 @@ def feedback(request):
 @require_http_methods(['GET', 'POST'])
 def new_user_setup(request):
     u = TipoutUser.objects.get(email=request.user)
-
     emp = Employee.objects.get(user=u)
+
     if request.method == 'GET':
         if not emp.new_user:
             return render(request, 'new_user_setup.html', {'new_user': False})
@@ -54,4 +55,7 @@ def new_user_setup(request):
             emp.init_avg_daily_tips = form_data['init_avg_daily_tips']
             emp.new_user = False
             emp.save()
+            b = Budget.objects.create(owner=emp,
+                                      date=now().date(),
+                                      amount=today_budget())
             return redirect('/expenses/')
