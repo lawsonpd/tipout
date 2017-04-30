@@ -71,5 +71,6 @@ urlpatterns = [
     #     subscription_test.signup_test,
     #     {'template_name': 'registration/signup_test.html'}
     # ),
-    url(r'^how-it-works/$', general_views.how_it_works, name='how-it-works'),
+    # url(r'^how-it-works/$', general_views.how_it_works, name='how-it-works'),
+    url(r'^faq/$', general_views.faq, name='faq'),
 ]

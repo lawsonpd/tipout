@@ -14,6 +14,9 @@ def home(request, template_name):
     '''
     If user is logged in, redirect to '/budget/', else send to home page.
     '''
+    # using 'has_module_perms' since for some reason
+    # django was seeing anonymous user as an authenticated user and
+    # was redirecting to budget, which then redirected to signup page
     if request.user.has_module_perms('tipout'):
         return redirect('/budget/')
     else:
@@ -60,7 +63,12 @@ def new_user_setup(request):
                                       amount=today_budget())
             return redirect('/expenses/')
 
+# @require_http_methods(['GET'])
+# def how_it_works(request):
+#     if request.method == 'GET':
+#         return render(request, 'how_it_works.html')
+
 @require_http_methods(['GET'])
-def how_it_works(request):
+def faq(request):
     if request.method == 'GET':
-        return render(request, 'how_it_works.html')
+        return render(request, 'faq.html')

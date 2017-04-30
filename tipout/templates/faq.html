@@ -1,0 +1,96 @@
+{% extends 'base-no_text_center.html' %}
+
+{% block content %}
+
+<h1 style="font-family: 'Lobster', cursive">Frequently asked questions</h1>
+
+<h3 class="lead text-info">How is my budget calculated?</h3>
+
+<p>
+  Your daily budget is calculated by finding your average daily income (based on your average tips
+  earned per day and your paychecks for the past 30 days) and substracting your daily expense cost
+  (the total cost of your expenses divided by 30 days). Throughout the day, the budget will update
+  to reflect your expenditures for the day.
+</p>
+<p>
+  If you're over or under budget with your spending, then your budget for the next <strong>7 days</strong>
+  will be adjusted to reflect this. So, if you're <em>over</em> budget, then your budget for the next
+  7 days will be <em>reduced</em> slightly to make up for the loss, and if you're <em>under</em>, then
+  your budget for the next 7 days will be <em>increased</em> slightly since you then have more to spend.
+</p>
+
+<h3 class="lead text-info">What's the difference between an <strong>expense</strong> and an <strong>expenditure</strong>?</h3>
+
+<dl class="dl-horizontal">
+  <dt>An expense</dt>
+  <dd>is a <strong>reoccuring</strong> bill or payment (e.g. rent, phone bill, car insurance, etc.)</dd>
+  <dt>An expenditure</dt>
+  <dd>is a <strong>one-off</strong> payment that isn't intended to happen regularly (e.g. lunch, dinner, coffee)</dd>
+</dl>
+<p>
+  You may find that some things are more easily managed as expenses rather than expenditures.
+  For example, if you buy the same bag of dog food each week, you could enter that as an <strong>expense</strong>,
+  since you know you'll be buying it regularly.
+</p>
+<p>
+  On the other hand, even though you may go out to lunch everyday, you should probably enter that
+  as an <strong>expenditure</strong> since the cost will likely be differnt each time.
+</p>
+
+<h3 class="lead text-info">What if I want to put money into savings?</h3>
+
+<p>
+  We think this is a great idea. Presently, Tipout doesn't take into account money you have
+  in savings or let you specify an amount of money you'd like to save each day or week.
+</p>
+<p>
+  Rest assured, however, that this is a feature we're actively developing and <strong>very soon</strong>
+  you'll be able to keep track of savings as well.
+</p>
+
+<h3 class="lead text-info">Can I use Tipout if I don't earn tips?</h3>
+
+<p>
+  Yes, you absolutely can! If you'd like to enter your income only as paychecks and ignore the tips section,
+  then Tipout will calculate your budget based on just the paychecks.
+</p>
+
+<h3 class="lead text-info">Is there a Tipout app for Android or iOS?</h3>
+
+<p>
+  For now, Tipout is just a web app (i.e. it runs in the browser). There are a couple of reasons for this.
+  <ol>
+    <li>
+      First, with a web app we're able to deploy changes and updates immediately. Deploying an app through
+      the Google Play Store or Apple's App Store takes time and you would have to update your version of the app
+      every time an update is made. We want to be able to react quickly to your feedback, so it's
+      important that we can do that without the added inconvenience.
+    </li>
+    <li>
+      Second, Tipout simply runs very fast in the browser. Native apps tend to be fast once they get going
+      but are slow to start. You'll find that Tipout launches quickly since it doesn't have the overhead
+      of a native app.
+    </li>
+  </ol>
+  <p>
+
+</p>
+
+<h3 class="lead text-info">Why did it ask for my location when I signed up?</h3>
+
+<p>
+  As we grow, we'd like to know where users are joining from! We're based in Nashville, Tennessee,
+  but we want to help people from all across the country, so asking for your location is just
+  a way to get to know you :)
+</p>
+<p>
+  (We won't share your information with any third-parties or use it for advertisements or promotions.)
+</p>
+
+<h3 class="lead text-info">How do I cancel my subscription?</h3>
+
+<p>
+  You'll see the option to cancel if you select "Subscription" from the menu.
+</p>
+
+{% endblock %}
