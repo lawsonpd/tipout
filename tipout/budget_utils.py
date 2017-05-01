@@ -70,9 +70,8 @@ def today_budget(emp):
     '''
     Calculate budget for today.
     '''
-    # expenses, daily expense cost - assuming every expense is paid monthly
     expenses = Expense.objects.filter(owner=emp)
-    daily_expense_cost = sum([ exp.cost for exp in expenses ]) / 30
+    expense_cost_for_today = daily_expense_cost(expenses) # sum([ exp.cost for exp in expenses ]) / 30
 
     # expenditures for the day
     expenditures_for_day_query = Expenditure.objects.filter(owner=emp, date=now().date())
@@ -98,15 +97,23 @@ def today_budget(emp):
         tips_for_day = tips_available_per_day_initial(emp.init_avg_daily_tips, tip_values, emp.signup_date)
     else:
         tips_for_day = tips_available_per_day(tip_values)
-    return tips_for_day + daily_avg_from_paycheck(paycheck_amts) - daily_expense_cost - expenditures_for_day + Decimal(balancer(over_unders))
+    return tips_for_day + daily_avg_from_paycheck(paycheck_amts) - expense_cost_for_today - expenditures_for_day + Decimal(balancer(over_unders))
+
+def daily_expense_cost(expenses):
+    dailies = sum([e.cost for e in expenses if e.frequency == 'DAILY'])
+    weeklies = sum([e.cost for e in expenses if e.frequency == 'WEEKLY'])
+    bi_weeklies = sum([e.cost for e in expenses if e.frequency == 'BI-WEEKLY'])
+    monthlies = sum([e.cost for e in expenses if e.frequency == 'MONTHLY'])
+    annuallies = sum([e.cost for e in expenses if e.frequency == 'ANNUALLY'])
+
+    return dailies + (weeklies/7) + (bi_weeklies/14) + (monthlies/30) + (annuallies/365)
 
 def budget_for_specific_day(emp, date):
     '''
     date must be datetime format
     '''
-    # expenses, daily expense cost - assuming every expense is paid monthly
     expenses = Expense.objects.filter(owner=emp)
-    daily_expense_cost = sum([ exp.cost for exp in expenses ]) / 30
+    expense_cost_for_today = daily_expense_cost(expenses) # sum([ exp.cost for exp in expenses ]) / 30
 
     # expenditures for the day
     expenditures_for_day_query = Expenditure.objects.filter(owner=emp, date=date)
@@ -134,7 +141,7 @@ def budget_for_specific_day(emp, date):
         tips_for_day = tips_available_per_day_initial(emp.init_avg_daily_tips, tip_values, emp.signup_date)
     else:
         tips_for_day = tips_available_per_day(tip_values)
-    return tips_for_day + daily_avg_from_paycheck(paycheck_amts) - daily_expense_cost - expenditures_for_day + Decimal(balancer(over_unders))
+    return tips_for_day + daily_avg_from_paycheck(paycheck_amts) - expense_cost_for_today - expenditures_for_day + Decimal(balancer(over_unders))
 
 def expenditures_sum_for_specific_day(emp, date):
     expenditures_for_day_query = Expenditure.objects.filter(owner=emp, date=date)
