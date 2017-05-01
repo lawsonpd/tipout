@@ -114,7 +114,7 @@ def thank_you(request):
         if emp.new_user:
             return render(request, 'registration/charge.html', {'amount': '5.00'})
         else:
-            render(request, 'thankyou.html')
+            return render(request, 'thankyou.html')
     return render(request, 'thankyou.html')
 
 @login_required(login_url='/login/')
