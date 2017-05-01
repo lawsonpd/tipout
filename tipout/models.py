@@ -98,6 +98,13 @@ class Budget(models.Model):
     # positive over_under means user was *under* budget
     over_under = models.DecimalField(max_digits=9, decimal_places=2, default=0)
 
+class Feedback(models.Model):
+    # No foreign key to User since user can submit feedback after canceling sub.
+    email = models.EmailField()
+    feedback = models.TextField()
+    refer_likelihood = models.IntegerField()
+    date = models.DateField(default=now)
+
 #########
 # FORMS #
 #########

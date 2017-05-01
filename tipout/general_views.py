@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login
 from django.views.decorators.http import require_http_methods
 
-from tipout.models import Tip, Employee, NewUserSetupForm, Budget
+from tipout.models import Tip, Employee, NewUserSetupForm, Budget, Feedback
 from custom_auth.models import TipoutUser
 from django.core.mail import send_mail
 from django.utils.timezone import now
@@ -29,12 +29,17 @@ def feedback(request):
     if request.method == 'POST':
         # could use request.META['HTTP_REFERER'] to get referring page
         # form_data = form.cleaned_data
-        send_mail(
-            'Feedback',
-            request.POST['feedback'],
-            request.POST['email'],
-            ['support@tipoutapp.com'],
-            fail_silently=True,
+        # send_mail(
+        #     'Feedback',
+        #     request.POST['feedback'],
+        #     request.POST['email'],
+        #     ['support@tipoutapp.com'],
+        #     fail_silently=True,
+        # )
+        Feedback.objects.create(
+            email=request.POST['email'],
+            feedback=request.POST['feedback'],
+            refer_likelihood=request.POST['inlineRadioOptions']
         )
         return redirect('/thankyou/')
 
