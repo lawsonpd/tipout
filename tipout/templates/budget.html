@@ -7,11 +7,11 @@
     <p style='font-size:72px'>{{ budget }}</p>
 
     {% if over %}
-    	<p class='bg-warning'>Be careful! Yesterday you went over your budget by ${{ over_under_amount }}.</p>
+    	<p style="padding: 10px" class='bg-warning'>Be careful! Yesterday you went over your budget by ${{ over_under_amount }}.</p>
     {% elif not over %}
     	<p style="padding: 10px" class='bg-success'>Excellent spending! Yesterday you were under your budget by ${{ over_under_amount }}!</p>
     {% elif over == 0 %}
-    	<p class='bg-primary'>Great job yesterday! You were right on budget!</p>
+    	<p style="padding: 10px" class='bg-primary'>Great job yesterday! You were right on budget!</p>
     {% endif %}
 
 {% endblock %}
