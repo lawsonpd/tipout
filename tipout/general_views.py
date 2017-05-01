@@ -38,7 +38,8 @@ def feedback(request):
         # )
         Feedback.objects.create(
             email=request.POST['email'],
-            feedback=request.POST['feedback']
+            feedback=request.POST['feedback'],
+            refer_likelihood=request.POST['inlineRadioOptions']
         )
         return redirect('/thankyou/')
 
