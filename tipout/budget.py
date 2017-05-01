@@ -58,7 +58,6 @@ def budget(request):
                 over = False
             else:
                 over = 0
-            print "Something"
             return render(request, 'budget.html', {'budget': pretty_dollar_amount(current_budget),
                                                    'over': over,
                                                    'over_under_amount': yesterday_budget.over_under})
@@ -82,7 +81,6 @@ def budget(request):
                     over = False
                 else:
                     over = 0
-                print "Something"
                 return render(request, 'budget.html', {'budget': pretty_dollar_amount(current_budget),
                                                        'over': over,
                                                        'over_under_amount': yesterday_budget.over_under})
@@ -123,7 +121,6 @@ def budget(request):
                     over = False
                 else:
                     over = 0
-                print "Something"
                 return render(request, 'budget.html', {'budget': pretty_dollar_amount(current_budget),
                                                        'over': over,
                                                        'over_under_amount': yesterday_budget.over_under})
