@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login
 from django.views.decorators.http import require_http_methods
 
-from tipout.models import Tip, Employee, NewUserSetupForm, Budget
+from tipout.models import Tip, Employee, NewUserSetupForm, Budget, Feedback
 from custom_auth.models import TipoutUser
 from django.core.mail import send_mail
 from django.utils.timezone import now

@@ -100,9 +100,9 @@ class Budget(models.Model):
 
 class Feedback(models.Model):
     # No foreign key to User since user can submit feedback after canceling sub.
-    email = EmailField()
-    feedback = TextField()
-    refer_likelihood = IntegerField()
+    email = models.EmailField()
+    feedback = models.TextField()
+    refer_likelihood = models.IntegerField()
     date = models.DateField(default=now)
 
 #########
