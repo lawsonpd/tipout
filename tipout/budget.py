@@ -50,7 +50,18 @@ def budget(request):
             exps = Expenditure.objects.filter(owner=emp, date=now().date())
             exps_sum = sum([exp.cost for exp in exps])
             current_budget = budget - exps_sum
-            return render(request, 'budget.html', {'budget': pretty_dollar_amount(current_budget)})
+            yesterday_budget = Budget.objects.get(owner=emp, date=now().date()-timedelta(1))
+            # negative over_under means they went over
+            if yesterday_budget.over_under < 0:
+                over = True
+            elif yesterday_budget.over_under > 0:
+                over = False
+            else:
+                over = 0
+            print "Something"
+            return render(request, 'budget.html', {'budget': pretty_dollar_amount(current_budget),
+                                                   'over': over,
+                                                   'over_under_amount': yesterday_budget.over_under})
         except:
             try:
                 yesterday_budget = Budget.objects.get(owner=emp, date=now().date()-timedelta(1))
@@ -64,7 +75,17 @@ def budget(request):
                 exps = Expenditure.objects.filter(owner=emp, date=now().date())
                 exps_sum = sum([exp.cost for exp in exps])
                 current_budget = b.amount - exps_sum
-                return render(request, 'budget.html', {'budget': pretty_dollar_amount(current_budget)})
+                # negative over_under means they went over
+                if yesterday_budget.over_under < 0:
+                    over = True
+                elif yesterday_budget.over_under > 0:
+                    over = False
+                else:
+                    over = 0
+                print "Something"
+                return render(request, 'budget.html', {'budget': pretty_dollar_amount(current_budget),
+                                                       'over': over,
+                                                       'over_under_amount': yesterday_budget.over_under})
             except:
                 most_recent_budget = Budget.objects.filter(owner=emp).order_by('-date')[0]
                 mrb_date = most_recent_budget.date
@@ -93,4 +114,16 @@ def budget(request):
                 exps = Expenditure.objects.filter(owner=emp, date=now().date())
                 exps_sum = sum([exp.cost for exp in exps])
                 current_budget = b.amount - exps_sum
-                return render(request, 'budget.html', {'budget': pretty_dollar_amount(current_budget)})
+
+                yesterday_budget = Budget.objects.get(owner=emp, date=now().date()-timedelta(1))
+                # negative over_under means they went over
+                if yesterday_budget.over_under < 0:
+                    over = True
+                elif yesterday_budget.over_under > 0:
+                    over = False
+                else:
+                    over = 0
+                print "Something"
+                return render(request, 'budget.html', {'budget': pretty_dollar_amount(current_budget),
+                                                       'over': over,
+                                                       'over_under_amount': yesterday_budget.over_under})
