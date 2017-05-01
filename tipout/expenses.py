@@ -77,7 +77,7 @@ def edit_expense(request, *args):
             ##
             # Need to check for dupe here
             ##
-            exp = Expense.objects.get(owner=emp, expense_name=e.expense_name)
+            # exp = Expense.objects.get(owner=emp, expense_name=e.expense_name)
             exp.cost = exp_data['cost']
             exp.save()
             return redirect('/expenses/')
