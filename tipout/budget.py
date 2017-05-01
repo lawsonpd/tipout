@@ -48,7 +48,7 @@ def budget(request):
         try:
             budget = Budget.objects.get(owner=emp, date=now().date()).amount
             exps = Expenditure.objects.filter(owner=emp, date=now().date())
-            exps_sum = sum(exp.cost for exp in exps)
+            exps_sum = sum([exp.cost for exp in exps])
             current_budget = budget - exps_sum
             return render(request, 'budget.html', {'budget': pretty_dollar_amount(current_budget)})
         except:
