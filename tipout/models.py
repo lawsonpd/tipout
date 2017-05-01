@@ -99,6 +99,7 @@ class Budget(models.Model):
     over_under = models.DecimalField(max_digits=9, decimal_places=2, default=0)
 
 class Feedback(models.Model):
+    # No foreign key to User since user can submit feedback after canceling sub.
     email = EmailField()
     feedback = TextField()
     date = models.DateField(default=now)
