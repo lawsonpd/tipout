@@ -29,12 +29,16 @@ def feedback(request):
     if request.method == 'POST':
         # could use request.META['HTTP_REFERER'] to get referring page
         # form_data = form.cleaned_data
-        send_mail(
-            'Feedback',
-            request.POST['feedback'],
-            request.POST['email'],
-            ['support@tipoutapp.com'],
-            fail_silently=True,
+        # send_mail(
+        #     'Feedback',
+        #     request.POST['feedback'],
+        #     request.POST['email'],
+        #     ['support@tipoutapp.com'],
+        #     fail_silently=True,
+        # )
+        Feedback.objects.create(
+            email=request.POST['email'],
+            feedback=request.POST['feedback']
         )
         return redirect('/thankyou/')
 
