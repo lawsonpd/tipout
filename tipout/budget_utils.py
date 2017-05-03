@@ -99,15 +99,6 @@ def today_budget(emp):
         tips_for_day = tips_available_per_day(tip_values)
     return tips_for_day + daily_avg_from_paycheck(paycheck_amts) - expense_cost_for_today - expenditures_for_day + Decimal(balancer(over_unders))
 
-def daily_expense_cost(expenses):
-    dailies = sum([e.cost for e in expenses if e.frequency == 'DAILY'])
-    weeklies = sum([e.cost for e in expenses if e.frequency == 'WEEKLY'])
-    bi_weeklies = sum([e.cost for e in expenses if e.frequency == 'BI-WEEKLY'])
-    monthlies = sum([e.cost for e in expenses if e.frequency == 'MONTHLY'])
-    annuallies = sum([e.cost for e in expenses if e.frequency == 'ANNUALLY'])
-
-    return dailies + (weeklies/7) + (bi_weeklies/14) + (monthlies/30) + (annuallies/365)
-
 def budget_for_specific_day(emp, date):
     '''
     date must be datetime format
@@ -142,6 +133,15 @@ def budget_for_specific_day(emp, date):
     else:
         tips_for_day = tips_available_per_day(tip_values)
     return tips_for_day + daily_avg_from_paycheck(paycheck_amts) - expense_cost_for_today - expenditures_for_day + Decimal(balancer(over_unders))
+
+def daily_expense_cost(expenses):
+    dailies = sum([e.cost for e in expenses if e.frequency == 'DAILY'])
+    weeklies = sum([e.cost for e in expenses if e.frequency == 'WEEKLY'])
+    bi_weeklies = sum([e.cost for e in expenses if e.frequency == 'BI-WEEKLY'])
+    monthlies = sum([e.cost for e in expenses if e.frequency == 'MONTHLY'])
+    annuallies = sum([e.cost for e in expenses if e.frequency == 'ANNUALLY'])
+
+    return dailies + (weeklies/7) + (bi_weeklies/14) + (monthlies/30) + (annuallies/365)
 
 def expenditures_sum_for_specific_day(emp, date):
     expenditures_for_day_query = Expenditure.objects.filter(owner=emp, date=date)
