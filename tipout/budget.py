@@ -2,11 +2,14 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.views.decorators.http import require_http_methods
 from django.utils.timezone import now, timedelta
+from django.core.cache import cache
+from django.views.decorators.cache import cache_control
 
 from tipout.models import Tip, Paycheck, Employee, Expense, Expenditure, Budget
 from budget_utils import today_budget, pretty_dollar_amount, expenditures_sum_for_specific_day, budget_for_specific_day
 from custom_auth.models import TipoutUser
 
+@cache_control(private=True)
 @login_required(login_url='/login/')
 @require_http_methods(['GET'])
 def budget(request):

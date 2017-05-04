@@ -1,13 +1,15 @@
 from django.contrib.auth.decorators import permission_required, login_required
 from django.shortcuts import render, redirect
 from django.views.decorators.http import require_http_methods
+from django.core.cache import cache
+from django.views.decorators.cache import cache_control
 
 from tipout.models import Employee, Expense, EnterExpenseForm, EditExpenseForm
 from tipout.budget_utils import update_budgets
 from custom_auth.models import TipoutUser
 
+@cache_control(private=True)
 @login_required(login_url='/login/')
-@permission_required('use_expenses', login_url='/signup/')
 @require_http_methods(['GET'])
 def expenses(request):
     '''
@@ -16,11 +18,16 @@ def expenses(request):
     u = TipoutUser.objects.get(email=request.user)
     emp = Employee.objects.get(user=u)
 
-    expenses = Expense.objects.filter(owner=emp)
+    expenses = cache.get('expenses')
+    if not expenses:
+        expenses = Expense.objects.filter(owner=emp)
+        cache.set('expenses', expenses)
+
     return render(request, 'expenses.html', {'expenses': expenses})
 
 @login_required(login_url='/login/')
 @permission_required('use_expenses', login_url='/signup/')
+@require_http_methods(['GET', 'POST'])
 def enter_expenses(request):
     '''
     On POST request, get expenses data from form and update db.
@@ -33,9 +40,13 @@ def enter_expenses(request):
             emp = Employee.objects.get(user=u)
 
             expense_data = form.cleaned_data
-            dupe = Expense.objects.filter(
-                       owner=emp
-                   ).filter(
+
+            expenses = cache.get('expenses')
+            if not expenses:
+                expenses = Expense.objects.filter(owner=emp)
+                cache.set('expenses', expenses)
+
+            dupe = expenses.filter(
                        expense_name=expense_data['expense_name']
                    )
             if dupe:
@@ -44,28 +55,37 @@ def enter_expenses(request):
                               {'form': EnterExpenseForm(),
                                'error_message': 'An expense with that name already exists.'})
             else:
-                e = Expense(owner=emp,
+                exp = Expense(owner=emp,
                             cost=expense_data['cost'],
                             expense_name=expense_data['expense_name'],
                             frequency=expense_data['frequency']
                            )
-                e.save()
+                exp.save()
+
+                expenses = Expense.objects.filter(owner=emp)
+                cache.set('expenses', expenses)
+
+                update_budgets(emp, exp.date_added)
+
                 return redirect('/expenses/')
-        else:
-            # render template with error messages
-            pass
     else:
         form = EnterExpenseForm()
         return render(request, 'enter_expenses.html', {'form': form})
 
 @login_required(login_url='/login/')
+@require_http_methods(['GET', 'POST'])
 def edit_expense(request, *args):
     exp_name = args[0].replace('-', ' ')
 
     u = TipoutUser.objects.get(email=request.user)
     emp = Employee.objects.get(user=u)
 
-    exp = Expense.objects.filter(owner=emp).get(expense_name=exp_name)
+    expenses = cache.get('expenses')
+    if not expenses:
+        expenses = Expense.objects.filter(owner=emp)
+        cache.set('expenses', expenses)
+
+    exp = expenses.get(expense_name=exp_name)
 
     if request.method == 'GET':
         form = EditExpenseForm(initial={'cost': exp.cost})
@@ -81,10 +101,16 @@ def edit_expense(request, *args):
             exp = Expense.objects.get(owner=emp, expense_name=e.expense_name)
             exp.cost = exp_data['cost']
             exp.save()
+
+            expenses = Expense.objects.filter(owner=emp)
+            cache.set('expenses', expenses)
+
             update_budgets(emp, exp.date_added)
+
             return redirect('/expenses/')
 
 @login_required(login_url='/login/')
+@require_http_methods(['POST'])
 def delete_expense(request, *args):
     exp_name = args[0].replace('-', ' ')
 
@@ -92,7 +118,19 @@ def delete_expense(request, *args):
         u = TipoutUser.objects.get(email=request.user)
         emp = Employee.objects.get(user=u)
 
-        e = Expense.objects.get(owner=emp, expense_name=exp_name)
-        e.delete()
+        expenses = cache.get('expenses')
+
+        if not expenses:
+            expenses = Expense.objects.filter(owner=emp)
+            cache.set('expenses', expenses)
+
+        exp = expenses.get(expense_name=exp_name)
+
+        exp.delete()
+
+        expenses = Expense.objects.filter(owner=emp)
+        cache.set('expenses', expenses)
+
+        update_budgets(emp, exp.date_added)
         
         return redirect('/expenses/')

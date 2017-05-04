@@ -3,6 +3,8 @@ from django.shortcuts import render, redirect
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import permission_required
 from django.utils.timezone import now
+from django.core.cache import cache
+from django.views.decorators.cache import cache_control
 from string import strip
 
 from tipout.models import Employee, Expenditure, EnterExpenditureForm, EditExpenditureForm
@@ -47,8 +49,8 @@ def enter_expenditure(request):
                       {'form': EnterExpenditureForm(initial={'date': now().date()})}
                       )
 
+@cache_control(private=True)
 @login_required(login_url='/login/')
-@permission_required('use_expenditures', login_url='/signup/')
 @require_http_methods(['GET'])
 def expenditures(request):
     '''

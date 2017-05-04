@@ -1,14 +1,16 @@
 from django.contrib.auth.decorators import permission_required, login_required
 from django.shortcuts import render, redirect
 from django.views.decorators.http import require_http_methods
+from django.core.cache import cache
+from django.views.decorators.cache import cache_control
 
 from tipout.models import Employee, Paycheck, EnterPaycheckForm, EditPaycheckForm
 from tipout.budget_utils import update_budgets
 from custom_auth.models import TipoutUser
 
 # need to be able to view paychecks by month & year
+@cache_control(private=True)
 @login_required(login_url='/login/')
-@permission_required('use_paychecks', login_url='/signup/')
 @require_http_methods(['GET'])
 def paychecks(request):
     u = TipoutUser.objects.get(email=request.user)
@@ -18,7 +20,6 @@ def paychecks(request):
     return render(request, 'paychecks.html', {'paychecks': paychecks})
 
 @login_required(login_url='/login/')
-@permission_required('use_paychecks', login_url='/signup/')
 def enter_paycheck(request):
     if request.method == 'POST':
         form = EnterPaycheckForm(request.POST)
@@ -55,7 +56,6 @@ def enter_paycheck(request):
 
 
 @login_required(login_url='/login/')
-@permission_required('use_paychecks', login_url='/signup/')
 @require_http_methods(['GET', 'POST'])
 def edit_paycheck(request, p, *args):
     u = TipoutUser.objects.get(email=request.user)
@@ -88,7 +88,6 @@ def edit_paycheck(request, p, *args):
 
 # May not ever need to delete a paycheck
 @login_required(login_url='/login/')
-@permission_required('use_paychecks', login_url='/signup/')
 @require_http_methods(['POST'])
 def delete_paycheck(request, p):
     if request.method == 'POST':

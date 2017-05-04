@@ -2,6 +2,8 @@ from django.contrib.auth.decorators import permission_required, login_required
 from django.shortcuts import render, redirect
 from django.views.decorators.http import require_http_methods
 from django.utils.timezone import now
+from django.core.cache import cache
+from django.views.decorators.cache import cache_control
 
 from tipout.models import Tip, EnterTipsForm, Employee
 from custom_auth.models import TipoutUser
@@ -41,8 +43,8 @@ def enter_tips(request):
         form = EnterTipsForm()
         return render(request, 'enter_tips.html', {'form': form})
 
+@cache_control(private=True)
 @login_required(login_url='/login/')
-@permission_required('use_tips', login_url='/signup/')
 @require_http_methods(['GET'])
 def tips(request):
     '''
