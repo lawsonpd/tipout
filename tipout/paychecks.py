@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect
 from django.views.decorators.http import require_http_methods
 
 from tipout.models import Employee, Paycheck, EnterPaycheckForm, EditPaycheckForm
+from tipout.budget_utils import update_budgets
 from custom_auth.models import TipoutUser
 
 # need to be able to view paychecks by month & year
@@ -43,6 +44,8 @@ def enter_paycheck(request):
                              hours_worked=paycheck_data['hours_worked'],
                             )
                 p.save()
+                if p.date_earned < now().date():
+                    update_budgets(emp, p.date_earned)
                 return redirect('/paychecks/')
     else:
         return render(request,
@@ -79,6 +82,8 @@ def edit_paycheck(request, p, *args):
             paycheck.hours_worked = paycheck_data['hours_worked']
             paycheck.date_earned = paycheck_data['date_earned']
             paycheck.save()
+            if paycheck.date_earned < now().date():
+                update_budgets(emp, paycheck.date_earned)
             return redirect('/paychecks/')
 
 # May not ever need to delete a paycheck
@@ -95,4 +100,6 @@ def delete_paycheck(request, p):
         #     if strip(exp.get_absolute_url(), '/') == args[0]:
         #         e = exp
         paycheck_to_delete.delete()
+        if paycheck_to_delete.date_earned < now().date():
+            update_budgets(emp, paycheck_to_delete.date_earned)
         return redirect('/paychecks/')

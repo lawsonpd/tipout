@@ -10,7 +10,8 @@ from budget_utils import (avg_daily_tips_earned,
                           tips_available_per_day_initial,
                           tips_available_per_day,
                           daily_avg_from_paycheck,
-                          pretty_dollar_amount
+                          pretty_dollar_amount,
+                          update_budgets
                          )
 
 @login_required(login_url='/login/')
@@ -31,6 +32,8 @@ def enter_tips(request):
                     date_earned=tip_data['date_earned'],
                     owner=emp)
             t.save()
+            if t.date_earned < now().date():
+                update_budgets(emp, t.date_earned)
             return redirect('/tips/')
 
     # if a GET (or any other method), we'll create a blank form
@@ -86,6 +89,8 @@ def delete_tip(request, tip_id, *args):
 
         t = Tip.objects.get(owner=emp, pk=tip_id)
         t.delete()
+        if t.date_earned < now().date():
+            update_budgets(emp, t.date_earned)
         return redirect('/tips/')
 
 @login_required(login_url='/login/')

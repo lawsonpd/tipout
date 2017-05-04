@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect
 from django.views.decorators.http import require_http_methods
 
 from tipout.models import Employee, Expense, EnterExpenseForm, EditExpenseForm
+from tipout.budget_utils import update_budgets
 from custom_auth.models import TipoutUser
 
 @login_required(login_url='/login/')
@@ -80,6 +81,7 @@ def edit_expense(request, *args):
             exp = Expense.objects.get(owner=emp, expense_name=e.expense_name)
             exp.cost = exp_data['cost']
             exp.save()
+            update_budgets(emp, exp.date_added)
             return redirect('/expenses/')
 
 @login_required(login_url='/login/')
@@ -92,4 +94,5 @@ def delete_expense(request, *args):
 
         e = Expense.objects.get(owner=emp, expense_name=exp_name)
         e.delete()
+        
         return redirect('/expenses/')
