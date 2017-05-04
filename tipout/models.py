@@ -53,7 +53,7 @@ class Expense(models.Model):
     owner = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='expenses')
     expense_name = models.CharField(max_length=100)
     cost = models.DecimalField(max_digits=9, decimal_places=2)
-    dated_added = models.DateField(auto_now_add=True)
+    date_added = models.DateField(auto_now_add=True)
     FREQ_CHOICES = (
         ('DAILY', 'Daily'),
         ('WEEKLY', 'Weekly'),
