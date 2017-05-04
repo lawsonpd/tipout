@@ -48,11 +48,53 @@ def budget(request):
         #   (saving the budgets & over/unders for those days)
         # if there are fewer than 7 budgets, do all of them
 
+<<<<<<< HEAD
         current_budget = cache.get('current_budget')
 
         if not current_budget:
             try:
                 budget = Budget.objects.get(owner=emp, date=now().date())
+=======
+        try:
+            budget = Budget.objects.get(owner=emp, date=now().date()).amount
+            exps = Expenditure.objects.filter(owner=emp, date=now().date())
+            exps_sum = sum([exp.cost for exp in exps])
+            current_budget = budget - exps_sum
+            yesterday_budget = Budget.objects.get(owner=emp, date=now().date()-timedelta(1))
+            # negative over_under means they went over
+            if yesterday_budget.over_under < 0:
+                over = True
+            elif yesterday_budget.over_under > 0:
+                over = False
+            else:
+                over = 0
+            return render(request, 'budget.html', {'budget': pretty_dollar_amount(current_budget),
+                                                   'over': over,
+                                                   'over_under_amount': yesterday_budget.over_under})
+        except:
+            try:
+                yesterday_budget = Budget.objects.get(owner=emp, date=now().date()-timedelta(1))
+                yesterday_exps = Expenditure.objects.filter(owner=emp, date=now().date()-timedelta(1))
+                yesterday_budget.over_under = yesterday_budget - sum([exp.cost for exp in yesterday_exps])
+                yesterday_budget.save()
+                b = Budget(owner=emp,
+                           date=now().date(),
+                           amount=today_budget())
+                b.save()
+                exps = Expenditure.objects.filter(owner=emp, date=now().date())
+                exps_sum = sum([exp.cost for exp in exps])
+                current_budget = b.amount - exps_sum
+                # negative over_under means they went over
+                if yesterday_budget.over_under < 0:
+                    over = True
+                elif yesterday_budget.over_under > 0:
+                    over = False
+                else:
+                    over = 0
+                return render(request, 'budget.html', {'budget': pretty_dollar_amount(current_budget),
+                                                       'over': over,
+                                                       'over_under_amount': yesterday_budget.over_under})
+>>>>>>> master
             except:
                 try:
                     yesterday_budget = Budget.objects.get(owner=emp, date=now().date()-timedelta(1))
@@ -95,4 +137,38 @@ def budget(request):
             current_budget = budget.amount - exps_sum
             cache.set('current_budget', current_budget)
 
+<<<<<<< HEAD
         return render(request, 'budget.html', {'budget': pretty_dollar_amount(current_budget)})
+=======
+                # calculate budgets from mrb_date through yesterday (can't set
+                # over/unders for today yet, so today's over/under gets calc'd tomorrow)
+                number_of_days = (now().date() - mrb_date).days
+                # budgets up to today; new_budgets[0] is oldest (day after mrb_date)
+                for i in range(1, number_of_days):
+                    b = budget_for_specific_day(emp, mrb_date+timedelta(i))
+                    exps_sum = expenditures_sum_for_specific_day(emp, mrb_date+timedelta(i))
+                    budget_object = Budget(owner=emp,
+                                           date=mrb_date+timedelta(i),
+                                           amount=b,
+                                           over_under=b-exps_sum)
+                    budget_object.save()
+                b = Budget(owner=emp,
+                           date=now().date(),
+                           amount=today_budget(emp))
+                b.save()
+                exps = Expenditure.objects.filter(owner=emp, date=now().date())
+                exps_sum = sum([exp.cost for exp in exps])
+                current_budget = b.amount - exps_sum
+
+                yesterday_budget = Budget.objects.get(owner=emp, date=now().date()-timedelta(1))
+                # negative over_under means they went over
+                if yesterday_budget.over_under < 0:
+                    over = True
+                elif yesterday_budget.over_under > 0:
+                    over = False
+                else:
+                    over = 0
+                return render(request, 'budget.html', {'budget': pretty_dollar_amount(current_budget),
+                                                       'over': over,
+                                                       'over_under_amount': yesterday_budget.over_under})
+>>>>>>> master

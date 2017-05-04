@@ -113,8 +113,9 @@ def thank_you(request):
         emp = Employee.objects.get(user=u)
         if emp.new_user:
             return render(request, 'registration/charge.html', {'amount': '5.00'})
-    else:
-        return render(request, 'thankyou.html')
+        else:
+            return render(request, 'thankyou.html')
+    return render(request, 'thankyou.html')
 
 @login_required(login_url='/login/')
 @require_http_methods(['GET'])

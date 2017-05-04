@@ -53,7 +53,11 @@ class Expense(models.Model):
     owner = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='expenses')
     expense_name = models.CharField(max_length=100)
     cost = models.DecimalField(max_digits=9, decimal_places=2)
+<<<<<<< HEAD
     date_added = models.DateField(auto_now_add=True)
+=======
+    date_added = models.DateField(default=now)
+>>>>>>> master
     FREQ_CHOICES = (
         ('DAILY', 'Daily'),
         ('WEEKLY', 'Weekly'),
@@ -98,6 +102,13 @@ class Budget(models.Model):
     amount = models.DecimalField(max_digits=9, decimal_places=2)
     # positive over_under means user was *under* budget
     over_under = models.DecimalField(max_digits=9, decimal_places=2, default=0)
+
+class Feedback(models.Model):
+    # No foreign key to User since user can submit feedback after canceling sub.
+    email = models.EmailField()
+    feedback = models.TextField()
+    refer_likelihood = models.IntegerField()
+    date = models.DateField(default=now)
 
 #########
 # FORMS #
