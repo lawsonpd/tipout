@@ -16,10 +16,16 @@ def paychecks(request):
     u = TipoutUser.objects.get(email=request.user)
     emp = Employee.objects.get(user=u)
 
-    paychecks = Paycheck.objects.filter(owner=emp)
+    paychecks = cache.get('paychecks')
+    if not paychecks:
+        paychecks = Paycheck.objects.filter(owner=emp)
+        cache.set('paychecks', paychecks)
+
     return render(request, 'paychecks.html', {'paychecks': paychecks})
 
+@cache_control(private=True)
 @login_required(login_url='/login/')
+@require_http_methods(['GET', 'POST'])
 def enter_paycheck(request):
     if request.method == 'POST':
         form = EnterPaycheckForm(request.POST)
@@ -28,11 +34,13 @@ def enter_paycheck(request):
             emp = Employee.objects.get(user=u)
 
             paycheck_data = form.cleaned_data
-            dupe = Paycheck.objects.filter(
-                      owner=emp
-                   ).filter(
-                      date_earned=paycheck_data['date_earned']
-                   )
+
+            paychecks = cache.get('paychecks')
+            if not paychecks:
+                paychecks = Paycheck.objects.filter(owner=emp)
+                cache.set('paychecks', paychecks)
+
+            dupe = paychecks.filter(date_earned=paycheck_data['date_earned'])
             if dupe:
                 return render(request,
                               'enter_paycheck.html',
@@ -45,8 +53,13 @@ def enter_paycheck(request):
                              hours_worked=paycheck_data['hours_worked'],
                             )
                 p.save()
+
+                paychecks = Paycheck.objects.filter(owner=emp)
+                cache.set('paychecks', paychecks)
+
                 if p.date_earned < now().date():
                     update_budgets(emp, p.date_earned)
+
                 return redirect('/paychecks/')
     else:
         return render(request,
@@ -54,7 +67,7 @@ def enter_paycheck(request):
                       {'form': EnterPaycheckForm()}
                      )
 
-
+@cache_control(private=True)
 @login_required(login_url='/login/')
 @require_http_methods(['GET', 'POST'])
 def edit_paycheck(request, p, *args):
@@ -63,15 +76,13 @@ def edit_paycheck(request, p, *args):
 
     # split paycheck url into (email, 'paycheck', year, month, day)
     # paycheck_data_split = args[0].split('-')
-    paycheck = Paycheck.objects.get(owner=emp, pk=p)
 
-    if request.method == 'GET':
-        form = EditPaycheckForm(initial={'amount': paycheck.amount,
-                                         'hours_worked': paycheck.hours_worked,
-                                         'date_earned': paycheck.date_earned
-                                        }
-                               )
-        return render(request, 'edit_paycheck.html', {'form': form, 'paycheck': paycheck})
+    paychecks = cache.get('paychecks')
+    if not paychecks:
+        paychecks = Paycheck.objects.filter(owner=emp)
+        cache.set('paychecks', paychecks)
+
+    paycheck = paychecks.get(pk=p)
 
     if request.method == 'POST':
         form = EditPaycheckForm(request.POST)
@@ -82,11 +93,26 @@ def edit_paycheck(request, p, *args):
             paycheck.hours_worked = paycheck_data['hours_worked']
             paycheck.date_earned = paycheck_data['date_earned']
             paycheck.save()
+
+            paychecks = Paycheck.objects.filter(owner=emp)
+            cache.set('paychecks', paychecks)
+
             if paycheck.date_earned < now().date():
                 update_budgets(emp, paycheck.date_earned)
+
             return redirect('/paychecks/')
 
+    else:
+        form = EditPaycheckForm(initial={'amount': paycheck.amount,
+                                         'hours_worked': paycheck.hours_worked,
+                                         'date_earned': paycheck.date_earned
+                                        }
+                               )
+        return render(request, 'edit_paycheck.html', {'form': form, 'paycheck': paycheck})
+
+
 # May not ever need to delete a paycheck
+@cache_control(private=True)
 @login_required(login_url='/login/')
 @require_http_methods(['POST'])
 def delete_paycheck(request, p):
@@ -94,11 +120,21 @@ def delete_paycheck(request, p):
         u = TipoutUser.objects.get(email=request.user)
         emp = Employee.objects.get(user=u)
 
-        paycheck_to_delete = Paycheck.objects.get(owner=emp, pk=p)
+        paychecks = cache.get('paychecks')
+        if not paychecks:
+            paychecks = Paycheck.objects.filter(owner=emp)
+            cache.set('paychecks', paychecks)
+
+        paycheck_to_delete = paychecks.get(pk=p)
         # for exp in es:
         #     if strip(exp.get_absolute_url(), '/') == args[0]:
         #         e = exp
         paycheck_to_delete.delete()
+
+        paychecks = Paycheck.objects.filter(owner=emp)
+        cache.set('paychecks', paychecks)
+
         if paycheck_to_delete.date_earned < now().date():
             update_budgets(emp, paycheck_to_delete.date_earned)
+
         return redirect('/paychecks/')
