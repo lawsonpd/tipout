@@ -1,5 +1,6 @@
-from custom_auth.models import TipoutUser
 from django.utils.timezone import now, timedelta
+from django.core.cache import cache
+from custom_auth.models import TipoutUser
 from tipout.models import Paycheck, Employee, Expense, Expenditure, Tip, Budget
 from decimal import Decimal
 
@@ -70,7 +71,7 @@ def update_budgets(emp, date):
     '''
     date is the date to *start* with. go from date through yesterday (now()date() - timedelta(1)).
     '''
-    starting_budget = Budget.objects.filter(owner=emp, date=date)
+    # starting_budget = Budget.objects.filter(owner=emp, date=date)
 
     # calculate budgets from date through yesterday (can't set
     # over/unders for today yet, so today's over/under gets calc'd tomorrow)
@@ -87,6 +88,16 @@ def update_budgets(emp, date):
     budget_today = Budget.objects.get(owner=emp, date=now().date())
     budget_today.amount = today_budget(emp)
     budget_today.save()
+
+    today_expends = cache.get('today_expends')
+    if not today_expends:
+        today_expends = Expenditure.objects.filter(owner=emp, date=now().date())
+        cache.set('today_expends', today_expends)
+
+    expends_sum = sum([exp.cost for exp in today_expends])
+    current_budget = budget_today.amount - expends_sum
+
+    cache.set('current_budget', current_budget)
 
 def today_budget(emp):
     '''

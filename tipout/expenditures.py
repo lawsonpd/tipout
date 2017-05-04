@@ -26,12 +26,12 @@ def enter_expenditure(request):
             emp = Employee.objects.get(user=u)
             exp_data = form.cleaned_data
 
-            exps = cache.get('exps')
-            if not exps:
-                exps = Expenditure.objects.filter(owner=emp)
-                cache.set('exps', exps)
+            expends = cache.get('expends')
+            if not expends:
+                expends = Expenditure.objects.filter(owner=emp)
+                cache.set('expends', expends)
 
-            dupe = exps.filter(
+            dupe = expends.filter(
                        date=now().date()
                    ).filter(
                        note=exp_data['note'].lower()
@@ -46,8 +46,8 @@ def enter_expenditure(request):
                 e = Expenditure(owner=emp, cost=exp_data['cost'], date=exp_data['date'], note=exp_data['note'])
                 e.save()
 
-                exps = Expenditure.objects.filter(owner=emp)
-                cache.set('exps', exps)
+                expends = Expenditure.objects.filter(owner=emp)
+                cache.set('expends', expends)
 
                 if e.date < now().date():
                     update_budgets(emp, e.date)
@@ -69,13 +69,12 @@ def expenditures(request):
     u = TipoutUser.objects.get(email=request.user)
     emp = Employee.objects.get(user=u)
 
-    exps = cache.get('exps')
-    if not exps:
-        exps = Expenditure.objects.filter(owner=emp)
-        cache.set('exps', exps)
+    today_expends = cache.get('today_expends')
+    if not today_expends:
+        today_expends = Expenditure.objects.filter(owner=emp, date=now().date())
+        cache.set('today_expends', today_expends)
 
-    today_exps = exps.filter(date=now().date())
-    return render(request, 'expenditures.html', {'exps': today_exps})
+    return render(request, 'expenditures.html', {'exps': today_expends})
 
 # @login_required(login_url='/login/')
 # @require_http_methods(['POST'])
@@ -101,19 +100,19 @@ def delete_expenditure(request, exp, *args):
         u = TipoutUser.objects.get(email=request.user)
         emp = Employee.objects.get(user=u)
 
-        exps = cache.get('exps')
-        if not exps:
-            exps = Expenditure.objects.filter(owner=emp)
-            cache.set('exps', exps)
+        expends = cache.get('expends')
+        if not expends:
+            expends = Expenditure.objects.filter(owner=emp)
+            cache.set('expends', expends)
 
-        exp_to_delete = exps.get(pk=exp)
+        exp_to_delete = expends.get(pk=exp)
         # for exp in es:
         #     if strip(exp.get_absolute_url(), '/') == args[0]:
         #         e = exp
         exp_to_delete.delete()
 
-        exps = Expenditure.objects.filter(owner=emp)
-        cache.set('exps', exps)
+        expends = Expenditure.objects.filter(owner=emp)
+        cache.set('expends', expends)
 
         if exp_to_delete.date < now().date():
             update_budgets(emp, exp_to_delete.date)
@@ -130,12 +129,12 @@ def edit_expenditure(request, exp, *args):
     u = TipoutUser.objects.get(email=request.user)
     emp = Employee.objects.get(user=u)
 
-    exps = cache.get('exps')
-    if not exps:
-        exps = Expenditure.objects.filter(owner=emp)
-        cache.set('exps', exps)
+    expends = cache.get('expends')
+    if not expends:
+        expends = Expenditure.objects.filter(owner=emp)
+        cache.set('expends', expends)
 
-    exp_to_edit = exps.get(pk=exp)
+    exp_to_edit = expends.get(pk=exp)
 
     if request.method == 'POST':
         form = EditExpenditureForm(request.POST)
@@ -147,8 +146,8 @@ def edit_expenditure(request, exp, *args):
             exp_to_edit.date = exp_data['date']
             exp_to_edit.save()
 
-            exps = Expenditure.objects.filter(owner=emp)
-            cache.set('exps', exps)
+            expends = Expenditure.objects.filter(owner=emp)
+            cache.set('expends', expends)
 
             if exp_to_edit.date < now().date():
                 update_budgets(emp, exp_to_edit.date)
@@ -172,12 +171,12 @@ def expenditures_archive(request, *args):
     u = TipoutUser.objects.get(email=request.user)
     emp = Employee.objects.get(user=u)
 
-    exps = cache.get('exps')
-    if not exps:
-        exps = Expenditure.objects.filter(owner=emp)
-        cache.set('exps', exps)
+    expends = cache.get('expends')
+    if not expends:
+        expends = Expenditure.objects.filter(owner=emp)
+        cache.set('expends', expends)
 
-    all_years = [e.date.year for e in exps]
+    all_years = [e.date.year for e in expends]
     years = set(all_years)
     return render(request, 'expenditures_archive.html', {'years': years})
 
@@ -191,15 +190,15 @@ def expenditures_year_archive(request, year, *args):
     u = TipoutUser.objects.get(email=request.user)
     emp = Employee.objects.get(user=u)
 
-    exps = cache.get('exps')
-    if not exps:
-        exps = Expenditure.objects.filter(owner=emp)
-        cache.set('exps', exps)
+    expends = cache.get('expends')
+    if not expends:
+        expends = Expenditure.objects.filter(owner=emp)
+        cache.set('expends', expends)
 
     # all_months = [e.month_name for e in Expenditure.objects.filter(owner=u)
     #                            if e.date.year == year]
     # months = set(all_months)
-    dates = exps.filter(date__year=year).dates('date', 'month')
+    dates = expends.filter(date__year=year).dates('date', 'month')
     months = [date.month for date in dates]
     return render(request, 'expenditures_archive.html', {'year': year,
                                                          'months': months})
@@ -214,13 +213,13 @@ def expenditures_month_archive(request, year, month, *args):
     u = TipoutUser.objects.get(email=request.user)
     emp = Employee.objects.get(user=u)
 
-    exps = cache.get('exps')
-    if not exps:
-        exps = Expenditure.objects.filter(owner=emp)
-        cache.set('exps', exps)
+    expends = cache.get('expends')
+    if not expends:
+        expends = Expenditure.objects.filter(owner=emp)
+        cache.set('expends', expends)
 
-    dates = exps.filter(date__year=year,
-                        date__month=month).dates('date', 'day')
+    dates = expends.filter(date__year=year,
+                           date__month=month).dates('date', 'day')
     days = [date.day for date in dates]
     return render(request, 'expenditures_archive.html', {'year': year,
                                                          'month': month,
@@ -235,19 +234,19 @@ def expenditures_day_archive(request, year, month, day, *args):
     u = TipoutUser.objects.get(email=request.user)
     emp = Employee.objects.get(user=u)
 
-    exps = cache.get('exps')
-    if not exps:
-        exps = Expenditure.objects.filter(owner=emp)
-        cache.set('exps', exps)
+    expends = cache.get('expends')
+    if not expends:
+        expends = Expenditure.objects.filter(owner=emp)
+        cache.set('expends', expends)
 
-    today_exps = exps.filter(date__year=year,
-                             date__month=month,
-                             date__day=day)
-    # exps_notes = [date.note for exp in exps]
+    day_expends = expends.filter(date__year=year,
+                                 date__month=month,
+                                 date__day=day)
+    # expends_notes = [date.note for exp in expends]
     return render(request, 'expenditures_archive.html', {'year': year,
                                                          'month': month,
                                                          'day': day,
-                                                         'exps': today_exps})
+                                                         'exps': day_expends})
 
 @cache_control(private=True)
 @login_required(login_url='/login/')
@@ -260,15 +259,15 @@ def expenditure_detail(request, year, month, day, exp, *args):
     u = TipoutUser.objects.get(email=request.user)
     emp = Employee.objects.get(user=u)
 
-    exps = cache.get('exps')
-    if not exps:
-        exps = Expenditure.objects.filter(owner=emp)
-        cache.set('exps', exps)
+    expends = cache.get('expends')
+    if not expends:
+        expends = Expenditure.objects.filter(owner=emp)
+        cache.set('expends', expends)
 
-    exp = exps.get(date__year=year,
-                   date__month=month,
-                   date__day=day,
-                   note=exp_note)
+    exp = expends.get(date__year=year,
+                      date__month=month,
+                      date__day=day,
+                      note=exp_note)
     return render(request, 'expenditures_archive.html', {'year': year,
                                                          'month': month,
                                                          'day': day,

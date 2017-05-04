@@ -35,8 +35,10 @@ def enter_tips(request):
                     date_earned=tip_data['date_earned'],
                     owner=emp)
             t.save()
+
             if t.date_earned < now().date():
                 update_budgets(emp, t.date_earned)
+
             return redirect('/tips/')
 
     # if a GET (or any other method), we'll create a blank form
