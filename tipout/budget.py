@@ -45,52 +45,51 @@ def budget(request):
         #   (saving the budgets & over/unders for those days)
         # if there are fewer than 7 budgets, do all of them
 
-        try:
-            budget = Budget.objects.get(owner=emp, date=now().date())
+        current_budget = cache.get('current_budget')
+
+        if not current_budget:
+            try:
+                budget = Budget.objects.get(owner=emp, date=now().date())
+            except:
+                try:
+                    yesterday_budget = Budget.objects.get(owner=emp, date=now().date()-timedelta(1))
+                    yesterday_exps = Expenditure.objects.filter(owner=emp, date=now().date()-timedelta(1))
+                    yesterday_budget.over_under = yesterday_budget.amount - sum([exp.cost for exp in yesterday_exps])
+                    yesterday_budget.save()
+                    budget = Budget(owner=emp,
+                                    date=now().date(),
+                                    amount=today_budget(emp))
+                    budget.save()
+                except:
+                    most_recent_budget = Budget.objects.filter(owner=emp).order_by('-date')[0]
+                    mrb_date = most_recent_budget.date
+
+                    # over/under for most_recent_budget
+                    exps = Expenditure.objects.filter(owner=emp, date=mrb_date)
+                    most_recent_budget.over_under = most_recent_budget.amount - sum([exp.cost for exp in exps])
+                    most_recent_budget.save()
+
+                    # calculate budgets from mrb_date through yesterday (can't set
+                    # over/unders for today yet, so today's over/under gets calc'd tomorrow)
+                    number_of_days = (now().date() - mrb_date).days
+                    # budgets up to today; new_budgets[0] is oldest (day after mrb_date)
+                    for i in range(1, number_of_days):
+                        b = budget_for_specific_day(emp, mrb_date+timedelta(i))
+                        exps_sum = expenditures_sum_for_specific_day(emp, mrb_date+timedelta(i))
+                        budget_object = Budget(owner=emp,
+                                               date=mrb_date+timedelta(i),
+                                               amount=b,
+                                               over_under=b-exps_sum)
+                        budget_object.save()
+                    # still want to update the budget _amount_ for today
+                    budget = Budget(owner=emp,
+                                    date=now().date(),
+                                    amount=today_budget(emp))
+                    budget.save()
+
             exps = Expenditure.objects.filter(owner=emp, date=now().date())
             exps_sum = sum([exp.cost for exp in exps])
             current_budget = budget.amount - exps_sum
-            return render(request, 'budget.html', {'budget': pretty_dollar_amount(current_budget)})
-        except:
-            try:
-                yesterday_budget = Budget.objects.get(owner=emp, date=now().date()-timedelta(1))
-                yesterday_exps = Expenditure.objects.filter(owner=emp, date=now().date()-timedelta(1))
-                yesterday_budget.over_under = yesterday_budget.amount - sum([exp.cost for exp in yesterday_exps])
-                yesterday_budget.save()
-                b = Budget(owner=emp,
-                           date=now().date(),
-                           amount=today_budget(emp))
-                b.save()
-                exps = Expenditure.objects.filter(owner=emp, date=now().date())
-                exps_sum = sum([exp.cost for exp in exps])
-                current_budget = b.amount - exps_sum
-                return render(request, 'budget.html', {'budget': pretty_dollar_amount(current_budget)})
-            except:
-                most_recent_budget = Budget.objects.filter(owner=emp).order_by('-date')[0]
-                mrb_date = most_recent_budget.date
+            cache.set('current_budget', current_budget)
 
-                # over/under for most_recent_budget
-                exps = Expenditure.objects.filter(owner=emp, date=mrb_date)
-                most_recent_budget.over_under = most_recent_budget.amount - sum([exp.cost for exp in exps])
-                most_recent_budget.save()
-
-                # calculate budgets from mrb_date through yesterday (can't set
-                # over/unders for today yet, so today's over/under gets calc'd tomorrow)
-                number_of_days = (now().date() - mrb_date).days
-                # budgets up to today; new_budgets[0] is oldest (day after mrb_date)
-                for i in range(1, number_of_days):
-                    b = budget_for_specific_day(emp, mrb_date+timedelta(i))
-                    exps_sum = expenditures_sum_for_specific_day(emp, mrb_date+timedelta(i))
-                    budget_object = Budget(owner=emp,
-                                           date=mrb_date+timedelta(i),
-                                           amount=b,
-                                           over_under=b-exps_sum)
-                    budget_object.save()
-                b = Budget(owner=emp,
-                           date=now().date(),
-                           amount=today_budget(emp))
-                b.save()
-                exps = Expenditure.objects.filter(owner=emp, date=now().date())
-                exps_sum = sum([exp.cost for exp in exps])
-                current_budget = b.amount - exps_sum
-                return render(request, 'budget.html', {'budget': pretty_dollar_amount(current_budget)})
+        return render(request, 'budget.html', {'budget': pretty_dollar_amount(current_budget)})
