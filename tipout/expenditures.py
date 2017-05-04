@@ -6,6 +6,7 @@ from django.utils.timezone import now
 from string import strip
 
 from tipout.models import Employee, Expenditure, EnterExpenditureForm, EditExpenditureForm
+from tipout.budget_utils import update_budgets
 from custom_auth.models import TipoutUser
 
 @login_required(login_url='/login/')
@@ -37,6 +38,8 @@ def enter_expenditure(request):
             else:
                 e = Expenditure(owner=emp, cost=exp_data['cost'], date=exp_data['date'], note=exp_data['note'])
                 e.save()
+                if e.date < now().date():
+                    update_budgets(emp, e.date)
                 return redirect('/budget/')
     else:
         return render(request,
@@ -85,6 +88,10 @@ def delete_expenditure(request, exp, *args):
         #     if strip(exp.get_absolute_url(), '/') == args[0]:
         #         e = exp
         exp_to_delete.delete()
+
+        if exp_to_delete.date < now().date():
+            update_budgets(emp, exp_to_delete.date)
+
         return redirect('/expenditures')
 
 # To edit an expenditure, you'll have to use pk to identify it, since the note and amount could change.
@@ -106,6 +113,10 @@ def edit_expenditure(request, exp, *args):
             exp_to_edit.note = exp_data['note']
             exp_to_edit.date = exp_data['date']
             exp_to_edit.save()
+
+            if exp_to_edit.date < now().date():
+                update_budgets(emp, exp_to_edit.date)
+
             return redirect('/expenditures/')
     else:
         form = EditExpenditureForm(initial={'note': exp_to_edit.note,

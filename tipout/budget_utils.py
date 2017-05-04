@@ -66,6 +66,28 @@ def pretty_dollar_amount(amount):
 def balancer(over_unders):
     return sum(map(lambda x: float(x)/7, over_unders))
 
+def update_budgets(emp, date):
+    '''
+    date is the date to *start* with. go from date through yesterday (now()date() - timedelta(1)).
+    '''
+    starting_budget = Budget.objects.filter(owner=emp, date=date)
+
+    # calculate budgets from date through yesterday (can't set
+    # over/unders for today yet, so today's over/under gets calc'd tomorrow)
+    number_of_days = (now().date() - date).days
+    for i in range(number_of_days):
+        budget_amount = budget_for_specific_day(emp, date+timedelta(i))
+        exps_sum = expenditures_sum_for_specific_day(emp, date+timedelta(i))
+        budget_object = Budget(owner=emp,
+                               date=date+timedelta(i),
+                               amount=budget_amount,
+                               over_under=budget_amount-exps_sum)
+        budget_object.save()
+    # we still want to recalculate the budget _amount_ for today
+    budget_today = Budget.objects.get(owner=emp, date=now().date())
+    budget_today.amount = today_budget(emp)
+    budget_today.save()
+
 def today_budget(emp):
     '''
     Calculate budget for today.
@@ -115,13 +137,13 @@ def budget_for_specific_day(emp, date):
     # get tips for last 30 days before date parameter
     # not sure if order_by is ascending or descending
     # --> '-date_earned' is descending (newest first)
-    tips = Tip.objects.filter(owner=emp, date_earned__lt=(date + timedelta(1))).order_by('-date_earned')[:30]
+    tips = Tip.objects.filter(owner=emp, date_earned__lte=(date)).order_by('-date_earned')[:30]
     tip_values = [ tip.amount for tip in tips ]
 
     # user's paychecks from last 30 days
     recent_paychecks = Paycheck.objects.filter(owner=emp,
                                                date_earned__gt=(date-timedelta(30)),
-                                               date_earned__lt=(date+timedelta(1))
+                                               date_earned__lte=(date)
                                                )
     paycheck_amts = [ paycheck.amount for paycheck in recent_paychecks ]
     # daily_avg_from_paycheck = (sum(paycheck_amts) / len(paycheck_amts))

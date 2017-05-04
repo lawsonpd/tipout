@@ -46,20 +46,20 @@ def budget(request):
         # if there are fewer than 7 budgets, do all of them
 
         try:
-            budget = Budget.objects.get(owner=emp, date=now().date()).amount
+            budget = Budget.objects.get(owner=emp, date=now().date())
             exps = Expenditure.objects.filter(owner=emp, date=now().date())
             exps_sum = sum([exp.cost for exp in exps])
-            current_budget = budget - exps_sum
+            current_budget = budget.amount - exps_sum
             return render(request, 'budget.html', {'budget': pretty_dollar_amount(current_budget)})
         except:
             try:
                 yesterday_budget = Budget.objects.get(owner=emp, date=now().date()-timedelta(1))
                 yesterday_exps = Expenditure.objects.filter(owner=emp, date=now().date()-timedelta(1))
-                yesterday_budget.over_under = yesterday_budget - sum([exp.cost for exp in yesterday_exps])
+                yesterday_budget.over_under = yesterday_budget.amount - sum([exp.cost for exp in yesterday_exps])
                 yesterday_budget.save()
                 b = Budget(owner=emp,
                            date=now().date(),
-                           amount=today_budget())
+                           amount=today_budget(emp))
                 b.save()
                 exps = Expenditure.objects.filter(owner=emp, date=now().date())
                 exps_sum = sum([exp.cost for exp in exps])
