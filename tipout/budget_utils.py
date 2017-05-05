@@ -100,7 +100,10 @@ def update_budgets(emp, date):
         #                                    over_under=budget_amount-expends_sum)
     # we still want to recalculate the budget _amount_ for today
     # if the budget hasn't been created yet, create it
-    Budget.objects.update_or_create(owner=emp, date=now().date(), defaults={'amount': today_budget(emp)})
+    budget_today, created = Budget.objects.update_or_create(owner=emp,
+                                                   date=now().date(),
+                                                   defaults={'amount': today_budget(emp)}
+    )
     # try:
     #     budget_today = Budget.objects.get(owner=emp, date=now().date())
     #     budget_today.amount = today_budget(emp)

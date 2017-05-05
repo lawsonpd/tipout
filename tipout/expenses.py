@@ -42,6 +42,7 @@ def enter_expense(request):
             expense_data = form.cleaned_data
 
             expenses = cache.get('expenses')
+
             if not expenses:
                 expenses = Expense.objects.filter(owner=emp)
                 cache.set('expenses', expenses)
