@@ -158,7 +158,7 @@ def budget_for_specific_day(emp, date):
     '''
     date must be datetime format
     '''
-    expenses = Expense.objects.filter(owner=emp)
+    expenses = Expense.objects.filter(owner=emp, date_added__gte=date)
     expense_cost_for_today = daily_expense_cost(expenses) # sum([ exp.cost for exp in expenses ]) / 30
 
     # expenditures for the day
