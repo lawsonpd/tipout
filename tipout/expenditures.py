@@ -32,15 +32,15 @@ def enter_expenditure(request):
                 cache.set('expends', expends)
 
             dupe = expends.filter(
-                       date=now().date()
+                       date=exp_data['date']
                    ).filter(
                        note=exp_data['note'].lower()
                    )
             if dupe:
                 return render(request,
                               'enter_expenditure.html',
-                              {'form': EnterExpenditureForm(initial={'date': now().date()}),
-                               'error_message': 'An expenditure with that note already exists.'}
+                              {'form': EnterExpenditureForm(initial={'date': exp_data['date']}),
+                               'error_message': 'An expenditure for today with that note already exists.'}
                               )
             else:
                 e = Expenditure(owner=emp, cost=exp_data['cost'], date=exp_data['date'], note=exp_data['note'])

@@ -82,21 +82,31 @@ def update_budgets(emp, date):
     for i in range(number_of_days):
         budget_amount = budget_for_specific_day(emp, date+timedelta(i))
         expends_sum = expenditures_sum_for_specific_day(emp, date+timedelta(i))
-        try:
-            budget = Budget.objects.get(owner=emp,
-                                        date=date+timedelta(i))
-            budget.amount=budget_amount
-            budget.over_under=budget_amount-expends_sum
-            budget.save()
-        except:
-            budget = Budget.objects.create(owner=emp,
-                                           date=date+timedelta(i),
-                                           amount=budget_amount,
-                                           over_under=budget_amount-expends_sum)
+        Budget.objects.update_or_create(owner=emp,
+                                        date=date+timedelta(i),
+                                        defaults={'amount': budget_amount,
+                                                  'over_under': budget_amount-expends_sum}
+        )
+        # try:
+        #     budget = Budget.objects.get(owner=emp,
+        #                                 date=date+timedelta(i))
+        #     budget.amount=budget_amount
+        #     budget.over_under=budget_amount-expends_sum
+        #     budget.save()
+        # except:
+        #     budget = Budget.objects.create(owner=emp,
+        #                                    date=date+timedelta(i),
+        #                                    amount=budget_amount,
+        #                                    over_under=budget_amount-expends_sum)
     # we still want to recalculate the budget _amount_ for today
-    budget_today = Budget.objects.get(owner=emp, date=now().date())
-    budget_today.amount = today_budget(emp)
-    budget_today.save()
+    # if the budget hasn't been created yet, create it
+    Budget.objects.update_or_create(owner=emp, date=now().date(), defaults={'amount': today_budget(emp)})
+    # try:
+    #     budget_today = Budget.objects.get(owner=emp, date=now().date())
+    #     budget_today.amount = today_budget(emp)
+    #     budget_today.save()
+    # except:
+    #     budget_today = Budget.objects.create(owner=emp, date=now().date(), amount=today_budget(emp))
 
     today_expends = cache.get('today_expends')
     if not today_expends:
