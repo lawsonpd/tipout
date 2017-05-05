@@ -41,7 +41,7 @@ DEBUG = False
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'budgettool',
+        'NAME': 'postgres',
         'USER': 'poorman',
         'PASSWORD': 'channel12OI&',
         'HOST': '',
