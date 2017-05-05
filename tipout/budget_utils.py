@@ -1,5 +1,6 @@
 from django.utils.timezone import now, timedelta
 from django.core.cache import cache
+from django.views.decorators.cache import cache_control
 from custom_auth.models import TipoutUser
 from tipout.models import Paycheck, Employee, Expense, Expenditure, Tip, Budget
 from decimal import Decimal
