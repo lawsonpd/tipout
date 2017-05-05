@@ -76,7 +76,7 @@ def tips(request):
                                                 }
                          )
         else:
-            recent_tips = tips.filter(date_earned__gte=(now().date()-timedelta(30)))
+            recent_tips = tips.filter(date_earned__gt=(now().date()-timedelta(30)))
             tip_values = [ tip.amount for tip in recent_tips ]
             avg_daily_tips = pretty_dollar_amount(avg_daily_tips_earned(tip_values))
             return render(request, 'tips.html', {'avg_daily_tips': avg_daily_tips,
