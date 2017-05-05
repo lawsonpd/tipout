@@ -31,12 +31,7 @@ def enter_expenditure(request):
                 expends = Expenditure.objects.filter(owner=emp)
                 cache.set('expends', expends)
 
-            dupe = expends.filter(
-                       date=exp_data['date']
-                   ).filter(
-                       note=exp_data['note'].lower()
-                   )
-            if dupe:
+            if expends.filter(date=exp_data['date'], note=exp_data['note'].lower()).exists():
                 return render(request,
                               'enter_expenditure.html',
                               {'form': EnterExpenditureForm(initial={'date': exp_data['date']}),
