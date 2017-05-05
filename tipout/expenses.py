@@ -46,21 +46,18 @@ def enter_expenses(request):
                 expenses = Expense.objects.filter(owner=emp)
                 cache.set('expenses', expenses)
 
-            dupe = expenses.filter(
-                       expense_name=expense_data['expense_name']
-                   )
-            if dupe:
+            if expenses.filter(expense_name=expense_data['expense_name']).exists():
                 return render(request,
                               'enter_expenses.html',
                               {'form': EnterExpenseForm(),
-                               'error_message': 'An expense with that name already exists.'})
+                               'error_message': 'An expense with that name already exists.'}
+                )
             else:
-                exp = Expense(owner=emp,
-                            cost=expense_data['cost'],
-                            expense_name=expense_data['expense_name'],
-                            frequency=expense_data['frequency']
-                           )
-                exp.save()
+                exp = Expense.objects.create(owner=emp,
+                                             cost=expense_data['cost'],
+                                             expense_name=expense_data['expense_name'],
+                                             frequency=expense_data['frequency']
+                )
 
                 expenses = Expense.objects.filter(owner=emp)
                 cache.set('expenses', expenses)
