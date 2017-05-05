@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 from django.views.decorators.http import require_http_methods
 from django.core.cache import cache
 from django.views.decorators.cache import cache_control
-from django.utils.timezone import now
+from django.utils.timezone import now, timedelta
 
 from tipout.models import Employee, Paycheck, EnterPaycheckForm, EditPaycheckForm
 from tipout.budget_utils import update_budgets
@@ -17,12 +17,12 @@ def paychecks(request):
     u = TipoutUser.objects.get(email=request.user)
     emp = Employee.objects.get(user=u)
 
-    paychecks = cache.get('paychecks')
-    if not paychecks:
-        paychecks = Paycheck.objects.filter(owner=emp)
-        cache.set('paychecks', paychecks)
+    recent_paychecks = cache.get('recent_paychecks')
+    if not recent_paychecks:
+        recent_paychecks = Paycheck.objects.filter(owner=emp, date_earned__gt=now().date()-timedelta(30))
+        cache.set('recent_paychecks', recent_paychecks)
 
-    return render(request, 'paychecks.html', {'paychecks': paychecks})
+    return render(request, 'paychecks.html', {'paychecks': recent_paychecks})
 
 @cache_control(private=True)
 @login_required(login_url='/login/')
@@ -36,12 +36,12 @@ def enter_paycheck(request):
 
             paycheck_data = form.cleaned_data
 
-            paychecks = cache.get('paychecks')
-            if not paychecks:
-                paychecks = Paycheck.objects.filter(owner=emp)
-                cache.set('paychecks', paychecks)
+            all_paychecks = cache.get('all_paychecks')
+            if not all_paychecks:
+                all_paychecks = Paycheck.objects.filter(owner=emp)
+                cache.set('all_paychecks', all_paychecks)
 
-            dupe = paychecks.filter(date_earned=paycheck_data['date_earned'])
+            dupe = all_paychecks.filter(date_earned=paycheck_data['date_earned'])
             if dupe:
                 return render(request,
                               'enter_paycheck.html',
@@ -55,8 +55,8 @@ def enter_paycheck(request):
                             )
                 p.save()
 
-                paychecks = Paycheck.objects.filter(owner=emp)
-                cache.set('paychecks', paychecks)
+                all_paychecks = Paycheck.objects.filter(owner=emp)
+                cache.set('all_paychecks', all_paychecks)
 
                 if p.date_earned < now().date():
                     update_budgets(emp, p.date_earned)
@@ -78,12 +78,12 @@ def edit_paycheck(request, p, *args):
     # split paycheck url into (email, 'paycheck', year, month, day)
     # paycheck_data_split = args[0].split('-')
 
-    paychecks = cache.get('paychecks')
-    if not paychecks:
-        paychecks = Paycheck.objects.filter(owner=emp)
-        cache.set('paychecks', paychecks)
+    all_paychecks = cache.get('all_paychecks')
+    if not all_paychecks:
+        all_paychecks = Paycheck.objects.filter(owner=emp)
+        cache.set('all_paychecks', all_paychecks)
 
-    paycheck = paychecks.get(pk=p)
+    paycheck = all_paychecks.get(pk=p)
 
     if request.method == 'POST':
         form = EditPaycheckForm(request.POST)
@@ -95,8 +95,8 @@ def edit_paycheck(request, p, *args):
             paycheck.date_earned = paycheck_data['date_earned']
             paycheck.save()
 
-            paychecks = Paycheck.objects.filter(owner=emp)
-            cache.set('paychecks', paychecks)
+            all_paychecks = Paycheck.objects.filter(owner=emp)
+            cache.set('all_paychecks', all_paychecks)
 
             if paycheck.date_earned < now().date():
                 update_budgets(emp, paycheck.date_earned)
@@ -121,12 +121,12 @@ def delete_paycheck(request, p):
         u = TipoutUser.objects.get(email=request.user)
         emp = Employee.objects.get(user=u)
 
-        paychecks = cache.get('paychecks')
-        if not paychecks:
-            paychecks = Paycheck.objects.filter(owner=emp)
-            cache.set('paychecks', paychecks)
+        all_paychecks = cache.get('all_paychecks')
+        if not all_paychecks:
+            all_paychecks = Paycheck.objects.filter(owner=emp)
+            cache.set('all_paychecks', all_paychecks)
 
-        paycheck_to_delete = paychecks.get(pk=p)
+        paycheck_to_delete = all_paychecks.get(pk=p)
         # for exp in es:
         #     if strip(exp.get_absolute_url(), '/') == args[0]:
         #         e = exp
@@ -136,8 +136,8 @@ def delete_paycheck(request, p):
         
         paycheck_to_delete.delete()
 
-        paychecks = Paycheck.objects.filter(owner=emp)
-        cache.set('paychecks', paychecks)
+        all_paychecks = Paycheck.objects.filter(owner=emp)
+        cache.set('all_paychecks', all_paychecks)
 
         if paycheck_date < now().date():
             update_budgets(emp, paycheck_date)

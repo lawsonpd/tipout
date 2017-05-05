@@ -4,6 +4,7 @@
 
 {% if paychecks %}
   <h1 style="font-family: 'Lobster', cursive">Your paychecks</h1>
+  <p class="lead">from the past 30 days</p>
     {% for paycheck in paychecks %}
     <form action='/delete-paycheck/{{ paycheck.pk }}/' method='post'>
         {% csrf_token %}
