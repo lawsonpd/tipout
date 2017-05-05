@@ -82,11 +82,17 @@ def update_budgets(emp, date):
     for i in range(number_of_days):
         budget_amount = budget_for_specific_day(emp, date+timedelta(i))
         expends_sum = expenditures_sum_for_specific_day(emp, date+timedelta(i))
-        budget = Budget.objects.get(owner=emp,
-                                   date=date+timedelta(i))
-        budget.amount=budget_amount
-        budget.over_under=budget_amount-expends_sum
-        budget.save()
+        try:
+            budget = Budget.objects.get(owner=emp,
+                                        date=date+timedelta(i))
+            budget.amount=budget_amount
+            budget.over_under=budget_amount-expends_sum
+            budget.save()
+        except:
+            budget = Budget.objects.create(owner=emp,
+                                           date=date+timedelta(i),
+                                           amount=budget_amount,
+                                           over_under=budget_amount-expends_sum)
     # we still want to recalculate the budget _amount_ for today
     budget_today = Budget.objects.get(owner=emp, date=now().date())
     budget_today.amount = today_budget(emp)
