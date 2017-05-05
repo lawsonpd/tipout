@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect
 from django.views.decorators.http import require_http_methods
 from django.core.cache import cache
 from django.views.decorators.cache import cache_control
+from django.utils.timezone import now
 
 from tipout.models import Employee, Paycheck, EnterPaycheckForm, EditPaycheckForm
 from tipout.budget_utils import update_budgets
