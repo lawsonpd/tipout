@@ -62,7 +62,10 @@ def avg_hourly_wage(tips, paychecks, num_days):
     return ((avg_daily_tips(tips) + daily_avg_from_paycheck(paychecks)) * num_days) / total_hours
 
 def pretty_dollar_amount(amount):
-  return '$' + '{0:.2f}'.format(amount)
+    if amount < 0:
+        return '-$' + '{0:.2f}'.format(abs(amount))
+    else:
+        return '$' + '{0:.2f}'.format(amount)
 
 def balancer(over_unders):
     return sum(map(lambda x: float(x)/7, over_unders))
@@ -78,12 +81,12 @@ def update_budgets(emp, date):
     number_of_days = (now().date() - date).days
     for i in range(number_of_days):
         budget_amount = budget_for_specific_day(emp, date+timedelta(i))
-        exps_sum = expenditures_sum_for_specific_day(emp, date+timedelta(i))
-        budget_object = Budget(owner=emp,
-                               date=date+timedelta(i),
-                               amount=budget_amount,
-                               over_under=budget_amount-exps_sum)
-        budget_object.save()
+        expends_sum = expenditures_sum_for_specific_day(emp, date+timedelta(i))
+        budget = Budget.objects.get(owner=emp,
+                                   date=date+timedelta(i))
+        budget.amount=budget_amount
+        budget.over_under=budget_amount-expends_sum
+        budget.save()
     # we still want to recalculate the budget _amount_ for today
     budget_today = Budget.objects.get(owner=emp, date=now().date())
     budget_today.amount = today_budget(emp)
