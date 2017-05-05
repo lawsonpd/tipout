@@ -66,7 +66,8 @@ def budget(request):
                     yesterday_budget.save()
                     budget = Budget(owner=emp,
                                     date=now().date(),
-                                    amount=today_budget(emp))
+                                    amount=today_budget(emp)
+                    )
                     budget.save()
 
                     exps = Expenditure.objects.filter(owner=emp, date=now().date())
@@ -93,12 +94,14 @@ def budget(request):
                         budget_object = Budget(owner=emp,
                                                date=mrb_date+timedelta(i),
                                                amount=b,
-                                               over_under=b-exps_sum)
+                                               over_under=b-exps_sum
+                        )
                         budget_object.save()
                     # still want to set the budget _amount_ for today
                     budget = Budget(owner=emp,
                                     date=now().date(),
-                                    amount=today_budget(emp))
+                                    amount=today_budget(emp)
+                    )
                     budget.save()
 
             exps = Expenditure.objects.filter(owner=emp, date=now().date())
