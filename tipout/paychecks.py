@@ -130,12 +130,16 @@ def delete_paycheck(request, p):
         # for exp in es:
         #     if strip(exp.get_absolute_url(), '/') == args[0]:
         #         e = exp
+
+        # need date for budgets update
+        paycheck_date = paycheck_to_delete.date_earned
+        
         paycheck_to_delete.delete()
 
         paychecks = Paycheck.objects.filter(owner=emp)
         cache.set('paychecks', paychecks)
 
-        if paycheck_to_delete.date_earned < now().date():
-            update_budgets(emp, paycheck_to_delete.date_earned)
+        if paycheck_date < now().date():
+            update_budgets(emp, paycheck_date)
 
         return redirect('/paychecks/')
