@@ -28,7 +28,7 @@ def expenses(request):
 @login_required(login_url='/login/')
 @permission_required('use_expenses', login_url='/signup/')
 @require_http_methods(['GET', 'POST'])
-def enter_expenses(request):
+def enter_expense(request):
     '''
     On POST request, get expenses data from form and update db.
     On GET request, show enter_expenses template/form.
