@@ -26,6 +26,20 @@ def paychecks(request):
 
 @cache_control(private=True)
 @login_required(login_url='/login/')
+@require_http_methods(['GET'])
+def paychecks_archive(request):
+    u = TipoutUser.objects.get(email=request.user)
+    emp = Employee.objects.get(user=u)
+
+    all_paychecks = cache.get('all_paychecks')
+    if not all_paychecks:
+        all_paychecks = Paycheck.objects.filter(owner=emp)
+        cache.set('all_paychecks', all_paychecks)
+
+    return render(request, 'paychecks_archive.html', {'paychecks': all_paychecks})
+
+@cache_control(private=True)
+@login_required(login_url='/login/')
 @require_http_methods(['GET', 'POST'])
 def enter_paycheck(request):
     if request.method == 'POST':
@@ -56,7 +70,8 @@ def enter_paycheck(request):
                 p.save()
 
                 all_paychecks = Paycheck.objects.filter(owner=emp)
-                cache.set('all_paychecks', all_paychecks)
+                recent_paychecks = all_paychecks.filter(date_earned__gt=now().date()-timedelta(30))
+                cache.set_many({'all_paychecks': all_paychecks, 'recent_paychecks': recent_paychecks})
 
                 if p.date_earned < now().date():
                     update_budgets(emp, p.date_earned)

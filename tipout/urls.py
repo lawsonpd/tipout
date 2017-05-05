@@ -31,6 +31,7 @@ urlpatterns = [
     url(r'^expenditures/archive/(?P<year>[0-9]{4})/(?P<month>[0-9]{1,2})/(?P<day>[0-9]{1,2})/$', expenditures.expenditures_day_archive, name='expenditures-day-archive'),
     url(r'^expenditures/archive/(?P<year>[0-9]{4})/(?P<month>[0-9]{1,2})/(?P<day>[0-9]{1,2})/(?P<exp>[a-z-A-Z]+)$', expenditures.expenditure_detail, name='expenditure-detail'),
     url(r'^paychecks/$', paychecks.paychecks, name='paychecks'),
+    url(r'^paychecks-archive/$', paychecks.paychecks_archive, name='paychecks-archive'),
     url(r'^enter-paycheck/$', paychecks.enter_paycheck, name='enter-paycheck'),
     url(r'^edit-paycheck/(?P<p>[0-9]+)/$', paychecks.edit_paycheck, name='edit-paycheck'),
     # delete paycheck needs more expressive RE to identify specific paychecks (probably by date)
