@@ -6,7 +6,7 @@
 
 {% if error_message %}<p class="text-warning"><strong>{{ error_message }}</strong></p>{% endif %}
 
-<form class='form-horizontal' action='/enter-expenses/' method='post'>
+<form class='form-horizontal' action='/enter-expense/' method='post'>
   <div>
     {% csrf_token %}
     {{ form.as_p }}
