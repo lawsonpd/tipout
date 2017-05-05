@@ -25,8 +25,8 @@ def expenses(request):
 
     return render(request, 'expenses.html', {'expenses': expenses})
 
+@cache_control(private=True)
 @login_required(login_url='/login/')
-@permission_required('use_expenses', login_url='/signup/')
 @require_http_methods(['GET', 'POST'])
 def enter_expense(request):
     '''
@@ -70,6 +70,7 @@ def enter_expense(request):
         form = EnterExpenseForm()
         return render(request, 'enter_expenses.html', {'form': form})
 
+@cache_control(private=True)
 @login_required(login_url='/login/')
 @require_http_methods(['GET', 'POST'])
 def edit_expense(request, *args):
@@ -107,6 +108,7 @@ def edit_expense(request, *args):
 
             return redirect('/expenses/')
 
+@cache_control(private=True)
 @login_required(login_url='/login/')
 @require_http_methods(['POST'])
 def delete_expense(request, *args):
