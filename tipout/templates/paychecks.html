@@ -9,7 +9,7 @@
         {% csrf_token %}
         <p>
         <strong>${{ paycheck.amount }}</strong> on {{ paycheck.date_earned }}
-        <a class="btn btn-sm btn-default" href="/edit-paycheck/{{ exp.pk }}/">Edit</a>
+        <a class="btn btn-sm btn-default" href="/edit-paycheck/{{ paycheck.pk }}/">Edit</a>
         <input type='submit' class='btn btn-sm btn-danger' value='DELETE' />
         </p>
     </form>
