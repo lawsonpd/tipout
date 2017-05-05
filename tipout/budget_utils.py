@@ -70,6 +70,7 @@ def pretty_dollar_amount(amount):
 def balancer(over_unders):
     return sum(map(lambda x: float(x)/7, over_unders))
 
+@cache_control(private=True)
 def update_budgets(emp, date):
     '''
     date is the date to *start* with. go from date through yesterday (now()date() - timedelta(1)).
