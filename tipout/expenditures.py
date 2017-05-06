@@ -38,8 +38,11 @@ def enter_expenditure(request):
                                'error_message': 'An expenditure for today with that note already exists.'}
                               )
             else:
-                e = Expenditure(owner=emp, cost=exp_data['cost'], date=exp_data['date'], note=exp_data['note'])
-                e.save()
+                e = Expenditure.objects.create(owner=emp,
+                                               cost=exp_data['cost'],
+                                               date=exp_data['date'],
+                                               note=exp_data['note']
+                )
 
                 expends = Expenditure.objects.filter(owner=emp)
                 cache.set('expends', expends)

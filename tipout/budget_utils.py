@@ -1,6 +1,4 @@
 from django.utils.timezone import now, timedelta
-from django.core.cache import cache
-from django.views.decorators.cache import cache_control
 from custom_auth.models import TipoutUser
 from tipout.models import Paycheck, Employee, Expense, Expenditure, Tip, Budget
 from decimal import Decimal
@@ -104,8 +102,8 @@ def update_budgets(emp, date):
     # we still want to recalculate the budget _amount_ for today
     # if the budget hasn't been created yet, create it
     budget_today, created = Budget.objects.update_or_create(owner=emp,
-                                                   date=now().date(),
-                                                   defaults={'amount': today_budget(emp)}
+                                                            date=now().date(),
+                                                            defaults={'amount': today_budget(emp)}
     )
     # try:
     #     budget_today = Budget.objects.get(owner=emp, date=now().date())
@@ -124,8 +122,8 @@ def today_budget(emp):
     expense_cost_for_today = daily_expense_cost(expenses) # sum([ exp.cost for exp in expenses ]) / 30
 
     # expenditures for the day
-    expenditures_for_day_query = Expenditure.objects.filter(owner=emp, date=now().date())
-    expenditures_for_day = sum([ exp.cost for exp in expenditures_for_day_query ])
+    # expenditures_for_day_query = Expenditure.objects.filter(owner=emp, date=now().date())
+    # expenditures_for_day = sum([ exp.cost for exp in expenditures_for_day_query ])
 
     # get tips for last 30 days
     # not sure if order_by is ascending or descending
@@ -147,7 +145,7 @@ def today_budget(emp):
         tips_for_day = tips_available_per_day_initial(emp.init_avg_daily_tips, tip_values, emp.signup_date)
     else:
         tips_for_day = tips_available_per_day(tip_values)
-    return tips_for_day + daily_avg_from_paycheck(paycheck_amts) - expense_cost_for_today - expenditures_for_day + Decimal(balancer(over_unders))
+    return tips_for_day + daily_avg_from_paycheck(paycheck_amts) - expense_cost_for_today + Decimal(balancer(over_unders))
 
 def budget_for_specific_day(emp, date):
     '''

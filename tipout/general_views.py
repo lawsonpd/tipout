@@ -3,10 +3,12 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login
 from django.views.decorators.http import require_http_methods
 
-from tipout.models import Tip, Employee, NewUserSetupForm, Budget, Feedback
 from custom_auth.models import TipoutUser
 from django.core.mail import send_mail
 from django.utils.timezone import now
+
+from tipout.models import Tip, Employee, NewUserSetupForm, Budget, Feedback
+from tipout.budget_utils import today_budget
 # from django.conf import settings
 
 @require_http_methods(['GET'])
@@ -65,7 +67,7 @@ def new_user_setup(request):
             emp.save()
             b = Budget.objects.create(owner=emp,
                                       date=now().date(),
-                                      amount=today_budget())
+                                      amount=today_budget(emp))
             return redirect('/expenses/')
 
 # @require_http_methods(['GET'])

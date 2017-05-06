@@ -5,7 +5,7 @@ from django.core.cache import cache
 from django.views.decorators.cache import cache_control
 from django.utils.timezone import now, timedelta
 
-from tipout.models import Employee, Paycheck, EnterPaycheckForm, EditPaycheckForm
+from tipout.models import Employee, Paycheck, Expenditure, EnterPaycheckForm, EditPaycheckForm
 from tipout.budget_utils import update_budgets
 from custom_auth.models import TipoutUser
 
@@ -74,8 +74,11 @@ def enter_paycheck(request):
                 p.save()
 
                 all_paychecks = Paycheck.objects.filter(owner=emp)
-                recent_paychecks = all_paychecks.filter(date_earned__gt=now().date()-timedelta(30))
-                cache.set_many({'all_paychecks': all_paychecks, 'recent_paychecks': recent_paychecks})
+                cache.set('all_paychecks', all_paychecks)
+
+                if p.date_earned > now().date()-timedelta(30):
+                    recent_paychecks = all_paychecks.filter(date_earned__gt=now().date()-timedelta(30))
+                    cache.set('recent_paychecks', recent_paychecks)
 
                 # update_budgets return today's budget amount
                 budget_today = update_budgets(emp, p.date_earned)

@@ -105,20 +105,16 @@ def budget(request):
                     )
                     budget.save()
 
-            exps = Expenditure.objects.filter(owner=emp, date=now().date())
-            exps_sum = sum([exp.cost for exp in exps])
-            current_budget = budget.amount - exps_sum
-            cache.set('current_budget', current_budget)
+                    exps = Expenditure.objects.filter(owner=emp, date=now().date())
+                    exps_sum = sum([exp.cost for exp in exps])
+                    current_budget = budget.amount - exps_sum
+                    cache.set('current_budget', current_budget)
 
-        yesterday_budget = Budget.objects.get(owner=emp, date=now().date()-timedelta(1))
-        # negative over_under means they went over
-        if yesterday_budget.over_under < 0:
-            over = True
-        elif yesterday_budget.over_under > 0:
-            over = False
-        else:
-            over = 0
+        try:
+            yesterday_budget = Budget.objects.get(owner=emp, date=now().date()-timedelta(1))
+            # negative over_under means they went over
 
-        return render(request, 'budget.html', {'budget': pretty_dollar_amount(current_budget),
-                                               'over': over,
-                                               'over_under_amount': abs(yesterday_budget.over_under)})
+            return render(request, 'budget.html', {'budget': pretty_dollar_amount(current_budget),
+                                                   'over_under_amount': abs(yesterday_budget.over_under)})
+        except:
+            return render(request, 'budget.html', {'budget': pretty_dollar_amount(current_budget)})

@@ -3,8 +3,9 @@ from django.shortcuts import render, redirect
 from django.views.decorators.http import require_http_methods
 from django.core.cache import cache
 from django.views.decorators.cache import cache_control
+from django.utils.timezone import now
 
-from tipout.models import Employee, Expense, EnterExpenseForm, EditExpenseForm
+from tipout.models import Employee, Expense, Expenditure, EnterExpenseForm, EditExpenseForm
 from tipout.budget_utils import update_budgets
 from custom_auth.models import TipoutUser
 
@@ -151,7 +152,7 @@ def delete_expense(request, *args):
         exp = expenses.get(expense_name=exp_name)
 
         # save date for update_budgets
-        exp_date = exp.date
+        exp_date = exp.date_added
 
         exp.delete()
 

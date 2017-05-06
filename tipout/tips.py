@@ -5,7 +5,7 @@ from django.utils.timezone import now, timedelta
 from django.core.cache import cache
 from django.views.decorators.cache import cache_control
 
-from tipout.models import Tip, EnterTipsForm, Employee
+from tipout.models import Tip, Expenditure, EnterTipsForm, Employee
 from custom_auth.models import TipoutUser
 from budget_utils import (avg_daily_tips_earned,
                           avg_daily_tips_earned_initial,
