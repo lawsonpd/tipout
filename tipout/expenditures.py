@@ -111,7 +111,7 @@ def delete_expenditure(request, exp, *args):
         cache.set('expends', expends)
 
         if exp_date < now().date():
-            update_budgets(emp, exp_date.date)
+            update_budgets(emp, exp_date)
 
         return redirect('/expenditures/')
 
