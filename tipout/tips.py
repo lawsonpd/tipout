@@ -36,8 +36,21 @@ def enter_tips(request):
                     owner=emp)
             t.save()
 
-            if t.date_earned < now().date():
-                update_budgets(emp, t.date_earned)
+            tips = Tip.objects.filter(owner=emp)
+            cache.set('tips', tips)
+
+            # update_budgets return today's budget amount
+            budget_today = update_budgets(emp, t.date)
+
+            # update cached budget
+            today_expends = cache.get('today_expends')
+            if not today_expends:
+                today_expends = Expenditure.objects.filter(owner=emp, date=now().date())
+                cache.set('today_expends', today_expends)
+            expends_sum = sum([exp.cost for exp in today_expends])
+
+            current_budget = budget_today - expends_sum
+            cache.set('current_budget', current_budget)
 
             return redirect('/tips/')
 
@@ -105,13 +118,24 @@ def delete_tip(request, tip_id, *args):
             cache.set('tips', tips)
 
         t = tips.get(owner=emp, pk=tip_id)
+        tip_date = t.date_earned
         t.delete()
 
         tips = Tip.objects.filter(owner=emp)
         cache.set('tips', tips)
 
-        if t.date_earned < now().date():
-            update_budgets(emp, t.date_earned)
+        # update_budgets return today's budget amount
+        budget_today = update_budgets(emp, tip_date)
+
+        # update cached budget
+        today_expends = cache.get('today_expends')
+        if not today_expends:
+            today_expends = Expenditure.objects.filter(owner=emp, date=now().date())
+            cache.set('today_expends', today_expends)
+        expends_sum = sum([exp.cost for exp in today_expends])
+
+        current_budget = budget_today - expends_sum
+        cache.set('current_budget', current_budget)
 
         return redirect('/tips/')
 

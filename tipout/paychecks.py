@@ -19,7 +19,11 @@ def paychecks(request):
 
     recent_paychecks = cache.get('recent_paychecks')
     if not recent_paychecks:
-        recent_paychecks = Paycheck.objects.filter(owner=emp, date_earned__gt=now().date()-timedelta(30))
+        all_paychecks = cache.get('all_paychecks')
+        if not all_paychecks:
+            all_paychecks = Paycheck.objects.filter(owner=emp)
+            cache.set('all_paychecks', all_paychecks)
+        recent_paychecks = all_paychecks.filter(date_earned__gt=now().date()-timedelta(30))
         cache.set('recent_paychecks', recent_paychecks)
 
     return render(request, 'paychecks.html', {'paychecks': recent_paychecks})
@@ -73,8 +77,18 @@ def enter_paycheck(request):
                 recent_paychecks = all_paychecks.filter(date_earned__gt=now().date()-timedelta(30))
                 cache.set_many({'all_paychecks': all_paychecks, 'recent_paychecks': recent_paychecks})
 
-                if p.date_earned < now().date():
-                    update_budgets(emp, p.date_earned)
+                # update_budgets return today's budget amount
+                budget_today = update_budgets(emp, p.date_earned)
+
+                # update cached budget
+                today_expends = cache.get('today_expends')
+                if not today_expends:
+                    today_expends = Expenditure.objects.filter(owner=emp, date=now().date())
+                    cache.set('today_expends', today_expends)
+                expends_sum = sum([exp.cost for exp in today_expends])
+
+                current_budget = budget_today - expends_sum
+                cache.set('current_budget', current_budget)
 
                 return redirect('/paychecks/')
     else:
@@ -113,8 +127,18 @@ def edit_paycheck(request, p, *args):
             all_paychecks = Paycheck.objects.filter(owner=emp)
             cache.set('all_paychecks', all_paychecks)
 
-            if paycheck.date_earned < now().date():
-                update_budgets(emp, paycheck.date_earned)
+            # update_budgets return today's budget amount
+            budget_today = update_budgets(emp, paycheck.date_earned)
+
+            # update cached budget
+            today_expends = cache.get('today_expends')
+            if not today_expends:
+                today_expends = Expenditure.objects.filter(owner=emp, date=now().date())
+                cache.set('today_expends', today_expends)
+            expends_sum = sum([exp.cost for exp in today_expends])
+
+            current_budget = budget_today - expends_sum
+            cache.set('current_budget', current_budget)
 
             return redirect('/paychecks/')
 
@@ -154,7 +178,17 @@ def delete_paycheck(request, p):
         all_paychecks = Paycheck.objects.filter(owner=emp)
         cache.set('all_paychecks', all_paychecks)
 
-        if paycheck_date < now().date():
-            update_budgets(emp, paycheck_date)
+        # update_budgets return today's budget amount
+        budget_today = update_budgets(emp, paycheck_date)
+
+        # update cached budget
+        today_expends = cache.get('today_expends')
+        if not today_expends:
+            today_expends = Expenditure.objects.filter(owner=emp, date=now().date())
+            cache.set('today_expends', today_expends)
+        expends_sum = sum([exp.cost for exp in today_expends])
+
+        current_budget = budget_today - expends_sum
+        cache.set('current_budget', current_budget)
 
         return redirect('/paychecks/')
