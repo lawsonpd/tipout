@@ -44,8 +44,23 @@ def enter_expenditure(request):
                 expends = Expenditure.objects.filter(owner=emp)
                 cache.set('expends', expends)
 
-                if e.date < now().date():
-                    update_budgets(emp, e.date)
+                # update today_expends if expend added is for today
+                if e.date == now().date():
+                    today_expends = expends.filter(date=now().date())
+                    cache.set('today_expends', today_expends)
+
+                # update_budgets return today's budget amount
+                budget_today = update_budgets(emp, e.date)
+
+                # update cached budget
+                today_expends = cache.get('today_expends')
+                if not today_expends:
+                    today_expends = Expenditure.objects.filter(owner=emp, date=now().date())
+                    cache.set('today_expends', today_expends)
+                expends_sum = sum([exp.cost for exp in today_expends])
+
+                current_budget = budget_today - expends_sum
+                cache.set('current_budget', current_budget)
 
                 return redirect('/budget/')
     else:
@@ -110,8 +125,23 @@ def delete_expenditure(request, exp, *args):
         expends = Expenditure.objects.filter(owner=emp)
         cache.set('expends', expends)
 
-        if exp_date < now().date():
-            update_budgets(emp, exp_date)
+        # update today_expends if expend was for today
+        if exp_date == now().date():
+            today_expends = expends.filter(date=now().date())
+            cache.set('today_expends', today_expends)
+
+        # update_budgets return today's budget amount
+        budget_today = update_budgets(emp, exp_date)
+
+        # update cached budget
+        today_expends = cache.get('today_expends')
+        if not today_expends:
+            today_expends = Expenditure.objects.filter(owner=emp, date=now().date())
+            cache.set('today_expends', today_expends)
+        expends_sum = sum([exp.cost for exp in today_expends])
+
+        current_budget = budget_today - expends_sum
+        cache.set('current_budget', current_budget)
 
         return redirect('/expenditures/')
 
@@ -145,8 +175,23 @@ def edit_expenditure(request, exp, *args):
             expends = Expenditure.objects.filter(owner=emp)
             cache.set('expends', expends)
 
-            if exp_to_edit.date < now().date():
-                update_budgets(emp, exp_to_edit.date)
+            # update today_expends if expend was for today
+            if exp_to_edit.date == now().date():
+                today_expends = expends.filter(date=now().date())
+                cache.set('today_expends', today_expends)
+
+            # update_budgets return today's budget amount
+            budget_today = update_budgets(emp, exp_to_edit.date)
+
+            # update cached budget
+            today_expends = cache.get('today_expends')
+            if not today_expends:
+                today_expends = Expenditure.objects.filter(owner=emp, date=now().date())
+                cache.set('today_expends', today_expends)
+            expends_sum = sum([exp.cost for exp in today_expends])
+
+            current_budget = budget_today - expends_sum
+            cache.set('current_budget', current_budget)
 
             return redirect('/expenditures/')
     else:
