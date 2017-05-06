@@ -101,6 +101,7 @@ def delete_expenditure(request, exp, *args):
             cache.set('expends', expends)
 
         exp_to_delete = expends.get(pk=exp)
+        exp_date = exp_to_delete.date
         # for exp in es:
         #     if strip(exp.get_absolute_url(), '/') == args[0]:
         #         e = exp
@@ -109,10 +110,10 @@ def delete_expenditure(request, exp, *args):
         expends = Expenditure.objects.filter(owner=emp)
         cache.set('expends', expends)
 
-        if exp_to_delete.date < now().date():
-            update_budgets(emp, exp_to_delete.date)
+        if exp_date < now().date():
+            update_budgets(emp, exp_date.date)
 
-        return redirect('/expenditures')
+        return redirect('/expenditures/')
 
 # To edit an expenditure, you'll have to use pk to identify it, since the note and amount could change.
 # This would effectively be deleting an expenditure and creating a new one, which might be enough anyway.

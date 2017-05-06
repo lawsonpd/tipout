@@ -49,7 +49,7 @@ def enter_expense(request):
 
             if expenses.filter(expense_name=expense_data['expense_name']).exists():
                 return render(request,
-                              'enter_expenses.html',
+                              'enter_expense.html',
                               {'form': EnterExpenseForm(),
                                'error_message': 'An expense with that name already exists.'}
                 )
@@ -68,7 +68,7 @@ def enter_expense(request):
                 return redirect('/expenses/')
     else:
         form = EnterExpenseForm()
-        return render(request, 'enter_expenses.html', {'form': form})
+        return render(request, 'enter_expense.html', {'form': form})
 
 @cache_control(private=True)
 @login_required(login_url='/login/')
