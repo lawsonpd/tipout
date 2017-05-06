@@ -71,7 +71,6 @@ def pretty_dollar_amount(amount):
 def balancer(over_unders):
     return sum(map(lambda x: float(x)/7, over_unders))
 
-@cache_control(private=True)
 def update_budgets(emp, date):
     '''
     date is the date to *start* with. go from date through yesterday (now()date() - timedelta(1)).
@@ -113,15 +112,7 @@ def update_budgets(emp, date):
     # except:
     #     budget_today = Budget.objects.create(owner=emp, date=now().date(), amount=today_budget(emp))
 
-    today_expends = cache.get('today_expends')
-    if not today_expends:
-        today_expends = Expenditure.objects.filter(owner=emp, date=now().date())
-        cache.set('today_expends', today_expends)
-
-    expends_sum = sum([exp.cost for exp in today_expends])
-    current_budget = budget_today.amount - expends_sum
-
-    cache.set('current_budget', current_budget)
+    return budget_today.amount
 
 def today_budget(emp):
     '''

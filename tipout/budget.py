@@ -53,6 +53,7 @@ def budget(request):
         if not current_budget:
             try:
                 budget = Budget.objects.get(owner=emp, date=now().date())
+                # exps will not throw exception since if there are none it will be an empty set
                 exps = Expenditure.objects.filter(owner=emp, date=now().date())
                 exps_sum = sum([exp.cost for exp in exps])
                 current_budget = budget.amount - exps_sum
