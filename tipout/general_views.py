@@ -65,9 +65,9 @@ def new_user_setup(request):
             emp.init_avg_daily_tips = form_data['init_avg_daily_tips']
             emp.new_user = False
             emp.save()
-            b = Budget.objects.create(owner=emp,
-                                      date=now().date(),
-                                      amount=today_budget(emp))
+            b = Budget.objects.update_or_create(owner=emp,
+                                                date=now().date(),
+                                                amount=today_budget(emp))
             return redirect('/expenses/')
 
 # @require_http_methods(['GET'])

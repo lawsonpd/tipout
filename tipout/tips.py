@@ -40,7 +40,7 @@ def enter_tips(request):
             cache.set('tips', tips)
 
             # update_budgets return today's budget amount
-            budget_today = update_budgets(emp, t.date)
+            budget_today = update_budgets(emp, t.date_earned)
 
             # update cached budget
             today_expends = cache.get('today_expends')
