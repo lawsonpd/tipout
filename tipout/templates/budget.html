@@ -8,11 +8,11 @@
 
     {# if over is negative, user was over their budget #}
     {% if over_under_amount %}
-	    {% if over_under_amount < 0 %}
+	    {% if over == True %}
 	    	<p style="padding: 10px" class='bg-warning'>Be careful! Yesterday you went over your budget by ${{ over_under_amount }}.</p>
-	    {% elif over_under_amount > 0 %}
+	    {% elif over == False %}
 	    	<p style="padding: 10px" class='bg-success'>Excellent spending! Yesterday you were under your budget by ${{ over_under_amount }}!</p>
-	    {% elif over_under_amount == 0 %}
+	    {% elif over == 0 %}
 	    	<p style="padding: 10px" class='bg-primary'>Great job yesterday! You were right on budget!</p>
 	    {% endif %}
 	{% endif %}
