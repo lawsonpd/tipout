@@ -167,6 +167,7 @@ def reset_budgets(request):
     else:
         return render(request, 'reset_budget.html')
 
+@cache_control(private=True)
 @login_required(login_url='/login/')
 @require_http_methods(['GET'])
 def weekly_budget(request):
@@ -180,6 +181,7 @@ def weekly_budget(request):
     else:
         return render(request, 'weekly_budget.html', {'weekly_budget': pretty_dollar_amount(weekly_budget_simple(emp))})
 
+@cache_control(private=True)
 @login_required(login_url='/login/')
 @require_http_methods(['GET'])
 def monthly_budget(request):

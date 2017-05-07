@@ -265,7 +265,7 @@ def ou_contribs(emp):
     # [0] in return is most recent
     # return [budget.over_under for budget in budgets]
     ous = []
-    for i in range(6):
+    for i in range(len(budgets)):
         ous.append((budgets[i].over_under / 7) / (6-i))
     return sum(ous)
 
