@@ -67,7 +67,7 @@ def new_user_setup(request):
             emp.save()
             b = Budget.objects.update_or_create(owner=emp,
                                                 date=now().date(),
-                                                amount=today_budget(emp))
+                                                defaults={'amount': today_budget(emp)})
             return redirect('/expenses/')
 
 # @require_http_methods(['GET'])
