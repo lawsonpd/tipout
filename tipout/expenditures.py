@@ -34,8 +34,16 @@ def enter_expenditure(request):
             if expends.filter(date=exp_data['date'], note=exp_data['note'].lower()).exists():
                 return render(request,
                               'enter_expenditure.html',
-                              {'form': EnterExpenditureForm(initial={'date': exp_data['date']}),
+                              {'form': EnterExpenditureForm(initial={'date': exp_data['date'],
+                                                                     'cost': exp_data['cost']}),
                                'error_message': 'An expenditure for today with that note already exists.'}
+                              )
+            if exp_data['date'] > now().date():
+                return render(request,
+                              'enter_expenditure.html',
+                              {'form': EnterExpenditureForm(initial={'note': exp_data['note'],
+                                                                     'cost': exp_data['cost']}),
+                               'error_message': "Please enter a date that isn't in the future."}
                               )
             else:
                 e = Expenditure.objects.create(owner=emp,
