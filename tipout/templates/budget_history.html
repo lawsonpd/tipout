@@ -14,7 +14,7 @@
 		<tr>
 			<td>{{ budget.date }}</td>
 			<td>{{ budget.amount }}</td>
-			<td>{{ budget.over_under }} {% if budget.over_under < 0 %} (over budget) {% elif budget.over_under > 0 %} (under budget)</td>
+			<td>{{ budget.over_under }} {% if budget.over_under < 0 %} (over budget) {% elif budget.over_under > 0 %} (under budget) {% endif %}</td>
 		</tr>
 		{% endfor %}
 	</table>
