@@ -7,7 +7,7 @@
     <p style='font-size:72px'>{{ budget }}</p>
 
     {# if over is negative, user was over their budget #}
-    {% if over_under_amount %}
+    {% if over_under_amount is not None %}
 	    {% if over == True %}
 	    	<p style="padding: 10px" class='bg-warning'>Be careful! Yesterday you went over your budget by ${{ over_under_amount }}.</p>
 	    {% elif over == False %}
