@@ -123,3 +123,14 @@ def budget(request):
                                                    'over_under_amount': abs(yesterday_budget.over_under)})
         except:
             return render(request, 'budget.html', {'budget': pretty_dollar_amount(current_budget)})
+
+@cache_control(private=True)
+@login_required(login_url='/login/')
+@require_http_methods(['GET'])
+def budget_history(request):
+    u = TipoutUser.objects.get(email=request.user)
+    emp = Employee.objects.get(user=u)
+
+    all_budgets = Budget.objects.filter(owner=emp)
+
+    return render(request, 'budget_history.html', {'budgets': all_budgets})
