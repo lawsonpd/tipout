@@ -20,6 +20,7 @@ class Employee(models.Model):
     new_user = models.BooleanField(default=True)
     init_avg_daily_tips = models.DecimalField(default=0, max_digits=9, decimal_places=2)
     signup_date = models.DateField(default=now)
+    savings_each_day = models.BooleanField(default=False)
 
     def __str__(self):
         email_name = self.user.email.split('@')
@@ -98,6 +99,24 @@ class Budget(models.Model):
     amount = models.DecimalField(max_digits=9, decimal_places=2)
     # positive over_under means user was *under* budget
     over_under = models.DecimalField(max_digits=9, decimal_places=2, default=0)
+
+class Savings(models.Model):
+    '''
+    This model holds the actual amount the user has in savings. This way a user can remove 
+    arbitrary amounts from savings if they wish.
+
+    Records of "deposits" and "withdrawals" from savings are kept in SavingsTransactions objects.
+    '''
+    owner = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='savings')
+    amount = models.DecimalField(max_digits=11, decimal_places=2)
+
+class SavingsTransactions(models.Model):
+    '''
+    Records of savings "deposits" and "withdrawals".
+    '''
+    owner = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='savingstransactions')
+    date = models.DateField(default=now)
+    amount = models.DecimalField(max_digits=11, decimal_places=2)
 
 class Feedback(models.Model):
     # No foreign key to User since user can submit feedback after canceling sub.
