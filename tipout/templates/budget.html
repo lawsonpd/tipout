@@ -5,6 +5,8 @@
     <h1 style="font-family: 'Lobster', cursive">Today's Budget</h1>
 
     <p style='font-size:72px'>{{ budget }}</p>
+
+    <p><a href='/weekly-budget/'>Weekly budget</a></p>
     	
     {% if over == -1 %}
     	<p style="padding: 10px" class='bg-warning'>Be careful! Yesterday you went over your budget by ${{ over_under_amount }}.</p>

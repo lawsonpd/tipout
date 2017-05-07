@@ -10,7 +10,8 @@ from budget_utils import (today_budget,
                           pretty_dollar_amount,
                           expenditures_sum_for_specific_day,
                           budget_for_specific_day,
-                          update_budgets
+                          update_budgets,
+                          weekly_budget_simple
 )
 from custom_auth.models import TipoutUser
 
@@ -165,3 +166,29 @@ def reset_budgets(request):
 
     else:
         return render(request, 'reset_budget.html')
+
+@login_required(login_url='/login/')
+@require_http_methods(['GET'])
+def weekly_budget(request):
+    u = TipoutUser.objects.get(email=request.user)
+    emp = Employee.objects.get(user=u)
+
+    # if user is new, send to new-user-setup
+    if emp.new_user:
+        return redirect('/new-user-setup/')
+
+    else:
+        return render(request, 'weekly_budget.html', {'weekly_budget': pretty_dollar_amount(weekly_budget_simple(emp))})
+
+@login_required(login_url='/login/')
+@require_http_methods(['GET'])
+def monthly_budget(request):
+    u = TipoutUser.objects.get(email=request.user)
+    emp = Employee.objects.get(user=u)
+
+    # if user is new, send to new-user-setup
+    if emp.new_user:
+        return redirect('/new-user-setup/')
+
+    else:
+        return render(request, 'monthly_budget.html', {'monthly_budget': pretty_dollar_amount(monthly_budget_amount(emp))})

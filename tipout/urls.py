@@ -17,6 +17,7 @@ urlpatterns = [
     url(r'^budget/$', budget.budget, name='budget'),
     url(r'^bhistory/$', budget.budget_history, name='budget-history'),
     url(r'^reset-budgets/$', budget.reset_budgets, name='reset-budgets'),
+    url(r'^weekly-budget/$', budget.weekly_budget, name='weekly-budget'),
     url(r'^expenses/$', expenses.expenses, name='expenses'),
     url(r'^enter-expense/$', expenses.enter_expense, name='enter-expense'),
     url(r'^edit-expense/$', expenses.edit_expense, name='edit-expense-submit'),
