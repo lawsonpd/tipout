@@ -6,7 +6,12 @@ from django.core.cache import cache
 from django.views.decorators.cache import cache_control
 
 from tipout.models import Tip, Paycheck, Employee, Expense, Expenditure, Budget
-from budget_utils import today_budget, pretty_dollar_amount, expenditures_sum_for_specific_day, budget_for_specific_day
+from budget_utils import (today_budget,
+                          pretty_dollar_amount,
+                          expenditures_sum_for_specific_day,
+                          budget_for_specific_day,
+                          update_budgets
+)
 from custom_auth.models import TipoutUser
 
 @cache_control(private=True)
@@ -134,3 +139,29 @@ def budget_history(request):
     all_budgets = Budget.objects.filter(owner=emp)
 
     return render(request, 'budget_history.html', {'budgets': all_budgets})
+
+@cache_control(private=True)
+@login_required(login_url='/login/')
+@require_http_methods(['GET', 'POST'])
+def reset_budgets(request):
+    u = TipoutUser.objects.get(email=request.user)
+    emp = Employee.objects.get(user=u)
+
+    if request.method == 'POST':
+        start_date = emp.signup_date
+        budget_today = update_budgets(emp, start_date)
+
+        # update cached budget
+        today_expends = cache.get('today_expends')
+        if not today_expends:
+            today_expends = Expenditure.objects.filter(owner=emp, date=now().date())
+            cache.set('today_expends', today_expends)
+        expends_sum = sum([exp.cost for exp in today_expends])
+
+        current_budget = budget_today - expends_sum
+        cache.set('current_budget', current_budget)
+
+        return redirect('/budget/')
+
+    else:
+        return render(request, 'reset_budget.html')
