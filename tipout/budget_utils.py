@@ -155,8 +155,8 @@ def budget_for_specific_day(emp, date):
     expense_cost_for_today = daily_expense_cost(expenses) # sum([ exp.cost for exp in expenses ]) / 30
 
     # expenditures for the day
-    expenditures_for_day_query = Expenditure.objects.filter(owner=emp, date=date)
-    expenditures_for_day = sum([ exp.cost for exp in expenditures_for_day_query ])
+    # expenditures_for_day_query = Expenditure.objects.filter(owner=emp, date=date)
+    # expenditures_for_day = sum([ exp.cost for exp in expenditures_for_day_query ])
 
     # get tips for last 30 days before date parameter
     # not sure if order_by is ascending or descending
