@@ -13,7 +13,10 @@ from django.views.decorators.cache import cache_control
 @login_required(login_url='/login/')
 @require_http_methods(['GET'])
 def savings(request):
-	pass
+	u = TipoutUser.objects.get(email=request.user)
+    emp = Employee.objects.get(user=u)
+
+    pass
 
 @cache_control(private=True)
 @login_required(login_url='/login/')
@@ -32,3 +35,4 @@ def deposit_to_savings(request):
 @require_http_methods(['GET', 'POST'])
 def withdraw_from_savings(request):
 	pass
+
