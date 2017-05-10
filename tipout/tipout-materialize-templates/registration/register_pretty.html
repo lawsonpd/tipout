@@ -1,0 +1,18 @@
+<!-- see http://stackoverflow.com/questions/5827590/css-styling-in-django-forms#5827669 -->
+
+{% extends 'base.html' %}
+
+{% block content %}
+
+<form action='/register/' method='post'>
+  {% csrf_token %}
+    <label for='username'>Username</label>
+    <div class='form-group' id='username'>{{ form.username }}</div>
+    <label for='password1'>Password</label>
+    <div class='form-group' id='password1'>{{ form.password1 }}</div>
+    <label for='password2'>Confirm password</label>
+    <div class='form-group' id='password2'>{{ form.password2 }}</div>
+  <input type='submit' value='Register' />
+</form>
+
+{% endblock %}

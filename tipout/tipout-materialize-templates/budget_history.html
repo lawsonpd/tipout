@@ -1,0 +1,22 @@
+{% extends "base-with-container.html" %}
+
+{% block content %}
+
+	<h1 style="font-family: 'Lobster', cursive">All budgets</h1>
+
+	<table class='table'>
+		<tr>
+			<td><strong>Date</strong></td>
+			<td><strong>Amount</strong></td>
+			<td><strong>Amount over/under</strong></td>
+		</tr>
+		{% for budget in budgets %}
+		<tr>
+			<td>{{ budget.date }}</td>
+			<td>{{ budget.amount }}</td>
+			<td>{{ budget.over_under }} {% if budget.over_under < 0 %} (over budget) {% elif budget.over_under > 0 %} (under budget) {% endif %}</td>
+		</tr>
+		{% endfor %}
+	</table>
+
+{% endblock %}
