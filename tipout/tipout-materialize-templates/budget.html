@@ -1,0 +1,21 @@
+{% extends 'base-with-container.html' %}
+
+{% block content %}
+
+    <h1 style="font-family: 'Lobster', cursive">Today's Budget</h1>
+
+    <p style='font-size:72px'>{{ budget }}</p>
+    	
+    {% if over == -1 %}
+    	<p style="padding: 10px" class='card-panel yellow'>Be careful! Yesterday you went over your budget by ${{ over_under_amount }}.</p>
+    {% elif over == 1 %}
+    	<p style="padding: 10px" class='card-panel green'>Excellent spending! Yesterday you were under your budget by ${{ over_under_amount }}!</p>
+    {% elif over == 0 %}
+    	<p style="padding: 10px" class='card-panel blue'>Great job yesterday! You were right on budget!</p>
+    {% elif not over %}
+    	<p style="padding: 10px" class='card-panel purple lighten-4'>This is where we'll tell you whether you were under or over your budget for the previous day and by how much. Good luck out there :))</p>
+    {% endif %}
+
+    <div class="section"><a href='/weekly-budget/'>Weekly budget</a></div>
+
+{% endblock %}

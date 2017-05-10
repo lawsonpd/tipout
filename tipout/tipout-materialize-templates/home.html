@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+  <div class="section no-pad-bot" id="index-banner">
+    <div class="container">
+      <br><br>
+      <div class="row center">
+        <img src="{% static 'tipout/tipout.ico' %}" alt="tipout logo"/>
+      </div>
+      {# <h1 class="header center" style="font-family: 'Lobster', cursive">Tipout</h1> #}
+      <div class="row center">
+        <h3 class="header col s12 light" style="font-family: 'Lobster', cursive">daily budgeting for servers & bartenders</h3>
+      </div>
+      <div class="row center">
+        <a href="https://www.tipoutapp.com/signup/" id="download-button" class="btn-large waves-effect waves-light blue">Create an account</a>
+      </div>
+      <br><br>
+
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="section">
+
+      <!--   Icon Section   -->
+      <div class="row">
+        <div class="col s12 m4">
+          <div class="icon-block">
+            <h2 class="center light-blue-text"><i class="material-icons">track_changes</i></h2>
+            <h5 class="center">Track your earnings</h5>
+
+            <p class="light">Enter the tips and paychecks you earn to build a personal earnings profile and see how much you've earned for the month and year. This data is used to build your budget so you know what you can spend each day, week, or month.</p>
+          </div>
+        </div>
+
+        <div class="col s12 m4">
+          <div class="icon-block">
+            <h2 class="center light-blue-text"><i class="material-icons">list</i></h2>
+            <h5 class="center">Keep up with expenses</h5>
+
+            <p class="light">Make a list of your monthly bills and make sure you save enough money to pay all of your recurring expenses.</p>
+          </div>
+        </div>
+
+        <div class="col s12 m4">
+          <div class="icon-block">
+            <h2 class="center light-blue-text"><i class="material-icons">credit_card</i></h2>
+            <h5 class="center">Manage your spending</h5>
+
+            <p class="light">Use daily expenditures (like coffee, lunch, and dinner) to keep your daily budget in check. You'll always know what you have left to spend today and still be able to pay your bills tomorrow.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    </div>
+  </div>
+
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends "base-with-container.html" %}
+
+{% block content %}
+
+<h1 style="font-family: 'Lobster', cursive;">Thank you!</h1>
+
+<h2 class='lead'>Click "Pay with Card" below to complete your subscription.</h2>
+
+<hr style="width: 100px"/>
+
+<form action="/subscribe/" method="POST">
+  {% csrf_token %}
+  <script
+    src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+    data-key="pk_test_p5rrucKiZvMX19wKoUGVDbRd"
+    data-amount="500"
+    data-name="Tipout Subscription"
+    data-description="Email address must match the one you used to register"
+    data-image="../static/tipout/tipout_logo-no_text.png"
+    data-locale="auto"
+    data-zip-code="true">
+  </script>
+</form>
+
+{% endblock %}

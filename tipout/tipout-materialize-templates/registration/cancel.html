@@ -1,0 +1,12 @@
+{% extends "base-with-container.html" %}
+
+{% block content %}
+
+<h1 style="font-family: 'Lobster', cursive">Are you sure you'd like to cancel?</h1>
+
+<form action="/cancel-subscription/" method="post">
+    {% csrf_token %}
+    <input type="submit" class="btn btn-sm btn-danger" value="Yes, please cancel" />
+</form>
+
+{% endblock %}

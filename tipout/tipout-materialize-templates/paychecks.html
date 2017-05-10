@@ -1,0 +1,24 @@
+{% extends "base-with-container.html" %}
+
+{% block content %}
+
+{% if paychecks %}
+  <h1 style="font-family: 'Lobster', cursive">Your paychecks</h1>
+  <p class="lead">from the past 30 days</p>
+    {% for paycheck in paychecks %}
+    <form action='/delete-paycheck/{{ paycheck.pk }}/' method='post'>
+        {% csrf_token %}
+        <p>
+        <strong>${{ paycheck.amount }}</strong> on {{ paycheck.date_earned }}
+        <a class="btn btn-sm btn-default" href="/edit-paycheck/{{ paycheck.pk }}/">Edit</a>
+        <input type='submit' class='btn btn-sm btn-danger' value='DELETE' />
+        </p>
+    </form>
+    {% endfor %}
+{% else %}
+  <h2 style="font-family: 'Lobster', cursive">No recent paychecks (last 30 days)</h2>
+{% endif %}
+
+<p><a href='/enter-paycheck/'>Enter a paycheck</a> | <a href='/paychecks-archive/'>See archive</a></p>
+
+{% endblock %}
