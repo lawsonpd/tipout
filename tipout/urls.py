@@ -2,7 +2,7 @@ from django.conf.urls import url, include
 from django.contrib.auth import views as auth_views
 
 # from . import views
-from . import budget, expenditures, expenses, general_views, paychecks, subscription, tips, subscription_test
+from . import budget, expenditures, expenses, general_views, paychecks, subscription, tips, subscription_test, savings
 
 urlpatterns = [
     url(r'^enter-tips/$', tips.enter_tips, name='enter-tips'),
@@ -41,6 +41,8 @@ urlpatterns = [
     #
     # would it be necessary to delete a paycheck?
     url(r'^delete-paycheck/(?P<p>[0-9]+)/$', paychecks.delete_paycheck, name='delete-paycheck'),
+    url(r'^savings/$', savings.savings, name='savings'),
+    url(r'^savings-setup/$', savings.savings_setup, name='savings-setup'),
     #
     url(r'^new-user-setup/$', general_views.new_user_setup, name='new-user-setup'),
     # url(r'^register/$',

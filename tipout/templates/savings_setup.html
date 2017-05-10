@@ -1,0 +1,18 @@
+{% extends "base-no_text_center.html" %}
+
+{% block content %}
+
+<h1 style="font-family: 'Lobster', cursive">Savings setup</h1>
+
+<p class="lead">You can set an amount of money you'd like to save each day. This will be deducted from your daily budget each day and you can set it aside to stash or deposit into your bank account.</p>
+<p class="lead">For example, if your budget is $50 for the day, and you've chosen to save $10 each day, then your budget would then be $40.</p>
+
+<form class='form-horizontal' action="/savings-setup/" method="post">
+    <div>
+      {% csrf_token %}
+      {{ form.as_p }}
+    <input type="submit" class="btn btn-primary" value="Submit"/>
+    </div>
+</form>
+
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% if savings %}
+  <h1 style="font-family: 'Lobster', cursive">Savings</h1>
+    <div class="lead">
+      <p>Money you've saved: {{ savings.amount }}</p>
+    </div>
+
+{% else %}
+    <h2 style="font-family: 'Lobster', cursive">You haven't set up your savings yet</h2>
+    <p><a href='/savings-setup/'>Setup savings</a></p>
+{% endif %}
+
+{% endblock %}

@@ -20,7 +20,7 @@ class Employee(models.Model):
     new_user = models.BooleanField(default=True)
     init_avg_daily_tips = models.DecimalField(default=0, max_digits=9, decimal_places=2)
     signup_date = models.DateField(default=now)
-    savings_each_day = models.BooleanField(default=False)
+    savings_each_day = models.DecimalField(default=0, max_digits=9, decimal_places=2)
 
     def __str__(self):
         email_name = self.user.email.split('@')
