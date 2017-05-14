@@ -5,7 +5,7 @@ from django.core.cache import cache
 from django.views.decorators.cache import cache_control
 from django.utils.timezone import now, timedelta
 
-from tipout.models import Employee, Paycheck, Expenditure, EnterPaycheckForm, EditPaycheckForm
+from tipout.models import Employee, Paycheck, Expenditure, EnterPaycheckForm, EditPaycheckForm, Savings, SavingsTransaction
 from tipout.budget_utils import update_budgets
 from custom_auth.models import TipoutUser
 
@@ -73,6 +73,17 @@ def enter_paycheck(request):
                             )
                 p.save()
 
+                # update savings
+                if emp.savings_percent > 0:
+                    # not sure if this should count as a savings 'deposit'
+                    # s = SavingsTransaction.objects.create(owner=emp,
+                    #                                       date=p.amount,
+                    #                                       amount=p.amount * (emp.savings_percent/100)
+                    # )
+                    emp_savings = Savings.objects.get(owner=emp)
+                    emp_savings.amount += p.amount * (emp.savings_percent/100)
+                    emp_savings.save()
+
                 # update paycheck cache
                 all_paychecks = Paycheck.objects.filter(owner=emp)
                 cache.set('all_paychecks', all_paychecks)
@@ -124,6 +135,13 @@ def edit_paycheck(request, p, *args):
         form = EditPaycheckForm(request.POST)
         if form.is_valid():
             paycheck_data = form.cleaned_data
+
+            # update savings
+            # do this before updating paycheck so we can compare amounts
+            if emp.savings_percent > 0 and paycheck_data['amount'] != paycheck.amount:
+                emp_savings = Savings.objects.get(owner=emp)
+                emp_savings.amount += ((paycheck_data['amount']-paycheck.amount) * (emp.savings_percent/100))
+                emp_savings.save()
 
             paycheck.amount = paycheck_data['amount']
             paycheck.hours_worked = paycheck_data['hours_worked']
@@ -181,6 +199,13 @@ def delete_paycheck(request, p):
 
         # need date for budgets update
         paycheck_date = paycheck_to_delete.date_earned
+
+        # update savings
+        # do this before deleting the paycheck so we can get the amount
+        if emp.savings_percent > 0:
+            emp_savings = Savings.objects.get(owner=emp)
+            emp_savings.amount -= (paycheck_to_delete.amount * (emp.savings_percent/100))
+            emp_savings.save()
         
         paycheck_to_delete.delete()
 

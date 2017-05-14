@@ -33,20 +33,20 @@ def enter_tips(request):
             u = TipoutUser.objects.get(email=request.user)
             emp = Employee.objects.get(user=u)
 
-            savings_percent = emp.savings_percent
-            if savings_percent > 0:
-                s = SavingsTransaction.objects.create(owner=emp,
-                                                      date=tip_data['date_earned'],
-                                                      amount=tip_data['amount'] * (savings_percent/100)
-                )
-                emp_savings = Savings.objects.get(owner=emp)
-                savings_total.amount += s.amount
-                emp_savings.save()
-
             t = Tip(amount=tip_data['amount'],
                     date_earned=tip_data['date_earned'],
                     owner=emp)
             t.save()
+
+            if emp.savings_percent > 0:
+                # not sure if this should count as a savings 'deposit'
+                # s = SavingsTransaction.objects.create(owner=emp,
+                #                                       date=t.date_earned,
+                #                                       amount=t.amount * (emp.savings_percent/100)
+                # )
+                emp_savings = Savings.objects.get(owner=emp)
+                emp_savings.amount += t.amount * (emp.savings_percent/100)
+                emp_savings.save()
 
             tips = Tip.objects.filter(owner=emp)
             cache.set('tips', tips)
@@ -133,9 +133,11 @@ def delete_tip(request, tip_id, *args):
         tip_date = t.date_earned
 
         # update savings
-        emp_savings = Savings.objects.get(owner=emp)
-        emp_savings.amount -= (t.amount * (emp.savings_percent/100))
-        emp_savings.save()
+        if emp.savings_percent > 0:
+            emp_savings = Savings.objects.get(owner=emp)
+            emp_savings.amount -= (t.amount * (emp.savings_percent/100))
+            emp_savings.save()
+
         t.delete()
 
         tips = Tip.objects.filter(owner=emp)

@@ -4,18 +4,24 @@
 
 {% if paychecks %}
   <h1 style="font-family: 'Lobster', cursive">Paychecks archive </h1>
-    <ul class='list-group'>
+    <table class='table tabled-striped'>
+      <tr>
+        <td><strong>Date</strong></td>
+        <td><strong>Amount</strong></td>
+        <td><strong>Options</strong></td>
       {% for paycheck in paychecks %}
-      <li class='list-group-item'>
-        <form action='/delete-paycheck/{{ paycheck.pk }}/' method='post'>
-            {% csrf_token %}
-            <strong>${{ paycheck.amount }}</strong> on {{ paycheck.date_earned }}
-            <a class="btn btn-sm btn-default" href="/edit-paycheck/{{ paycheck.pk }}/">Edit</a>
-            <input type='submit' class='btn btn-sm btn-danger' value='DELETE' />
-        </form>
-      </li>
+      <tr>
+        <td>{{ paycheck.date_earned }}</td>
+        <td>${{ paycheck.amount }}</td>
+        <td>
+          <form action='/delete-paycheck/{{ paycheck.pk }}/' method='post'>
+              {% csrf_token %}
+              <a class="btn btn-sm btn-default" href="/edit-paycheck/{{ paycheck.pk }}/">Edit</a>
+              <input type='submit' class='btn btn-sm btn-danger' value='DELETE' />
+          </form>
+        </td>
       {% endfor %}
-    </ul>
+    </table>
 {% else %}
   <h2 style="font-family: 'Lobster', cursive">You don't have any paychecks yet.</h2>
 {% endif %}
