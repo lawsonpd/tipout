@@ -261,7 +261,7 @@ def weekly_budget_simple(emp):
 
     over_under = ou_contribs(emp)
 
-    return tips_for_day + daily_from_paycheck - expense_cost_per_day - expenditures_for_day + over_under
+    return (tips_for_day * 7) + (daily_from_paycheck * 7) - (expense_cost_per_day * 7) - expenditures_for_day + over_under
 
 def ou_contribs(emp):
     budgets = Budget.objects.filter(owner=emp, date__lt=now().date()).order_by('-date')[:6]
