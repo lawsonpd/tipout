@@ -1,0 +1,23 @@
+{% extends "base-no_text_center.html" %}
+
+{% block content %}
+
+<h1 style="font-family: 'Lobster', cursive">Savings withdrawal/deposit</h1>
+
+<form class='form-horizontal' action="/savings-transaction/" method="post">
+    <div>
+      {% csrf_token %}
+      {{ form.as_p }}
+    <fieldset>
+	    <label class="radio-inline">
+	      <input type="radio" name="inlineRadioOptions" id="inlineRadio1" value="deposit"> Deposit
+	    </label>
+	    <label class="radio-inline">
+	      <input type="radio" name="inlineRadioOptions" id="inlineRadio2" value="withdraw"> Withdraw
+	    </label>
+	    <input type="submit" class="btn btn-primary" value="Submit"/>
+    </fieldset>
+    </div>
+</form>
+
+{% endblock %}

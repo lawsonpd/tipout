@@ -5,7 +5,9 @@ from django.utils.timezone import now, timedelta
 from django.core.cache import cache
 from django.views.decorators.cache import cache_control
 
-from tipout.models import Tip, Expenditure, EnterTipsForm, Employee
+from decimal import Decimal
+
+from tipout.models import Tip, Expenditure, EnterTipsForm, Employee, SavingsTransaction, Savings
 from custom_auth.models import TipoutUser
 from budget_utils import (avg_daily_tips_earned,
                           avg_daily_tips_earned_initial,
@@ -35,6 +37,16 @@ def enter_tips(request):
                     date_earned=tip_data['date_earned'],
                     owner=emp)
             t.save()
+
+            if emp.savings_percent > 0:
+                # not sure if this should count as a savings 'deposit'
+                # s = SavingsTransaction.objects.create(owner=emp,
+                #                                       date=t.date_earned,
+                #                                       amount=t.amount * (emp.savings_percent/100)
+                # )
+                emp_savings = Savings.objects.get(owner=emp)
+                emp_savings.amount += t.amount * (emp.savings_percent/100)
+                emp_savings.save()
 
             tips = Tip.objects.filter(owner=emp)
             cache.set('tips', tips)
@@ -119,6 +131,13 @@ def delete_tip(request, tip_id, *args):
 
         t = tips.get(owner=emp, pk=tip_id)
         tip_date = t.date_earned
+
+        # update savings
+        if emp.savings_percent > 0:
+            emp_savings = Savings.objects.get(owner=emp)
+            emp_savings.amount -= (t.amount * (emp.savings_percent/100))
+            emp_savings.save()
+
         t.delete()
 
         tips = Tip.objects.filter(owner=emp)

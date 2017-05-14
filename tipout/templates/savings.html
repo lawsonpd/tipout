@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+  <h1 style="font-family: 'Lobster', cursive">Savings</h1>
+    <div class="lead">
+      <p>Money you've saved: ${{ savings_amount }}</p>
+    </div>
+
+    <a href="/savings-transaction-history/">Savings history</a> | <a href="/savings-setup/">Savings setup</a> | <a href="/savings-transaction/">Withdraw or deposit</a>
+
+{% endblock %}

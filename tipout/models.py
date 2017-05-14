@@ -20,6 +20,8 @@ class Employee(models.Model):
     new_user = models.BooleanField(default=True)
     init_avg_daily_tips = models.DecimalField(default=0, max_digits=9, decimal_places=2)
     signup_date = models.DateField(default=now)
+    # savings_percent is a percentage (max value 99.9)
+    savings_percent = models.DecimalField(default=0, max_digits=3, decimal_places=1)
 
     def __str__(self):
         email_name = self.user.email.split('@')
@@ -63,7 +65,8 @@ class Expense(models.Model):
     )
     frequency = models.CharField(max_length=9,
                                  choices=FREQ_CHOICES,
-                                 default='MONTHLY')
+                                 default='MONTHLY'
+    )
     def get_absolute_url(self):
         expense_name_split = self.expense_name.split(' ')
         url_name = '-'.join(expense_name_split)
@@ -98,6 +101,25 @@ class Budget(models.Model):
     amount = models.DecimalField(max_digits=9, decimal_places=2)
     # positive over_under means user was *under* budget
     over_under = models.DecimalField(max_digits=9, decimal_places=2, default=0)
+
+class Savings(models.Model):
+    '''
+    This model holds the actual amount the user has in savings. This way a user can remove 
+    arbitrary amounts from savings if they wish.
+
+    Records of "deposits" and "withdrawals" from savings are kept in SavingsTransactions objects.
+    '''
+    owner = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='savings')
+    amount = models.DecimalField(max_digits=11, decimal_places=2)
+
+class SavingsTransaction(models.Model):
+    '''
+    Records of savings "deposits" and "withdrawals".
+    '''
+    owner = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='savingstransactions')
+    date = models.DateField(default=now)
+    # positive -> deposit, negative -> withdrawal
+    amount = models.DecimalField(max_digits=11, decimal_places=2)
 
 class Feedback(models.Model):
     # No foreign key to User since user can submit feedback after canceling sub.
@@ -153,7 +175,21 @@ class EditExpenditureForm(ModelForm):
 class NewUserSetupForm(ModelForm):
     class Meta:
         model = Employee
-        exclude = ['user', 'new_user', 'signup_date']
+        exclude = ['user', 'new_user', 'signup_date', 'savings_percent']
         labels = {
             'init_avg_daily_tips': _('Estimated daily tips'),
         }
+
+class SavingsSetupForm(ModelForm):
+    class Meta:
+        model = Employee
+        exclude = ['user', 'new_user', 'signup_date', 'init_avg_daily_tips']
+        labels = {
+            'savings_percent': _('Percent of income to save'),
+        }
+
+class SavingsTransactionForm(ModelForm):
+    class Meta:
+        model = SavingsTransaction
+        exclude = ['owner']
+

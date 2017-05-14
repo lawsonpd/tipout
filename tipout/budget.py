@@ -71,6 +71,7 @@ def budget(request):
                     yesterday_exps = Expenditure.objects.filter(owner=emp, date=now().date()-timedelta(1))
                     yesterday_budget.over_under = yesterday_budget.amount - sum([exp.cost for exp in yesterday_exps])
                     yesterday_budget.save()
+
                     budget, created = Budget.objects.update_or_create(owner=emp,
                                                                       date=now().date(),
                                                                       defaults={'amount': today_budget(emp)}
