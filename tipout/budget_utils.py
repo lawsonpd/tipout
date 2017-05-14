@@ -69,6 +69,9 @@ def pretty_dollar_amount(amount):
 def balancer(over_unders):
     return sum(map(lambda x: float(x)/7, over_unders))
 
+def spendable(emp):
+    return  (100 - emp.savings_percent) / 100
+
 def update_budgets(emp, date):
     '''
     date is the date to *start* with. go from date through yesterday (now()date() - timedelta(1)).
@@ -131,15 +134,15 @@ def today_budget(emp):
     tips = Tip.objects.filter(owner=emp).order_by('-date_earned')[:30]
     tip_values = [ tip.amount for tip in tips ]
     if (now().date() - emp.signup_date).days <= 30:
-        tips_for_day = tips_available_per_day_initial(emp.init_avg_daily_tips, tip_values, emp.signup_date)
+        tips_for_day = tips_available_per_day_initial(emp.init_avg_daily_tips, tip_values, emp.signup_date) * spendable(emp)
     else:
-        tips_for_day = tips_available_per_day(tip_values)
+        tips_for_day = tips_available_per_day(tip_values) * spendable(emp)
 
     # user's paychecks from last 30 days
     recent_paychecks = Paycheck.objects.filter(owner=emp,
                                                date_earned__gt=(now().date()-timedelta(30)))
     paycheck_amts = [ paycheck.amount for paycheck in recent_paychecks ]
-    daily_from_paycheck = daily_avg_from_paycheck(paycheck_amts)
+    daily_from_paycheck = daily_avg_from_paycheck(paycheck_amts) * spendable(emp)
 
     # getting over/unders
     past_budgets = Budget.objects.filter(owner=emp).order_by('-date')[:7]
@@ -163,6 +166,10 @@ def budget_for_specific_day(emp, date):
     # --> '-date_earned' is descending (newest first)
     tips = Tip.objects.filter(owner=emp, date_earned__lte=(date)).order_by('-date_earned')[:30]
     tip_values = [ tip.amount for tip in tips ]
+    if now().date() - emp.signup_date <= timedelta(30):
+        tips_for_day = tips_available_per_day_initial(emp.init_avg_daily_tips, tip_values, emp.signup_date) * spendable(emp)
+    else:
+        tips_for_day = tips_available_per_day(tip_values) * spendable(emp)
 
     # user's paychecks from last 30 days
     recent_paychecks = Paycheck.objects.filter(owner=emp,
@@ -170,17 +177,13 @@ def budget_for_specific_day(emp, date):
                                                date_earned__lte=(date)
                                                )
     paycheck_amts = [ paycheck.amount for paycheck in recent_paychecks ]
-    # daily_avg_from_paycheck = (sum(paycheck_amts) / len(paycheck_amts))
+    daily_from_paycheck = daily_avg_from_paycheck(paycheck_amts) * spendable(emp)
 
     # getting over/unders
     past_budgets = Budget.objects.filter(owner=emp, date__lt=date).order_by('-date')[:7]
     over_unders = [budget.over_under for budget in past_budgets]
 
-    if now().date() - emp.signup_date <= timedelta(30):
-        tips_for_day = tips_available_per_day_initial(emp.init_avg_daily_tips, tip_values, emp.signup_date)
-    else:
-        tips_for_day = tips_available_per_day(tip_values)
-    return tips_for_day + daily_avg_from_paycheck(paycheck_amts) - expense_cost_for_today + Decimal(balancer(over_unders))
+    return tips_for_day + daily_from_paycheck - expense_cost_for_today + Decimal(balancer(over_unders))
 
 def daily_expense_cost(expenses):
     dailies = sum([e.cost for e in expenses if e.frequency == 'DAILY'])
@@ -198,12 +201,12 @@ def expenditures_sum_for_specific_day(emp, date):
 def weekly_budget_amount(emp):
     recent_paychecks = Paycheck.objects.filter(owner=emp, date_earned__gt=(now().date()-timedelta(21)))
     paycheck_amts = [ paycheck.amount for paycheck in recent_paychecks ]
-    paycheck_amts_to_add = sum(paycheck_amts/len(paycheck_amts))
+    paycheck_amts_to_add = (sum(paycheck_amts/len(paycheck_amts))) * spendable(emp)
 
     # tips = Tip.objects.filter(owner=emp).order_by('-date_earned')[:30]
     tips = Tip.objects.filter(owner=emp, date_earned__gt=(now().date()-timedelta(21)))
     tip_values = [ tip.amount for tip in tips ]
-    tips_avg_to_add = sum(tip_values/len(tip_values)) * 7
+    tips_avg_to_add = (sum(tip_values/len(tip_values)) * 7) * spendable(emp)
 
     expenditures_for_day_query = Expenditure.objects.filter(owner=emp, date=now().date())
     expenditures_for_day = sum([ exp.cost for exp in expenditures_for_day_query ])
@@ -236,19 +239,19 @@ def monthly_budget_amount(emp):
     past_budgets = Budget.objects.filter(owner=emp, date__lt=now().date()).order_by('-date')[:30]
     over_unders = [budget.over_under for budget in past_budgets]
 
-    return sum(tip_values) + sum(paycheck_amts) - (expense_cost_for_today * 30) - expenditures_for_day - sum(over_unders)
+    return (sum(tip_values) * spendable(emp)) + (sum(paycheck_amts) * spendable(emp)) - (expense_cost_for_today * 30) - expenditures_for_day - sum(over_unders)
 
 def weekly_budget_simple(emp):
     recent_paychecks = Paycheck.objects.filter(owner=emp, date_earned__gte=(now().date()-timedelta(30)))
     paycheck_amts = [ paycheck.amount for paycheck in recent_paychecks ]
-    daily_from_paycheck = daily_avg_from_paycheck(paycheck_amts)
+    daily_from_paycheck = daily_avg_from_paycheck(paycheck_amts) * spendable(emp)
 
     tips = Tip.objects.filter(owner=emp, date_earned__gte=(now().date()-timedelta(30)))
     tip_values = [ tip.amount for tip in tips ]
     if (now().date() - emp.signup_date).days <= 30:
-        tips_for_day = tips_available_per_day_initial(emp.init_avg_daily_tips, tip_values, emp.signup_date)
+        tips_for_day = tips_available_per_day_initial(emp.init_avg_daily_tips, tip_values, emp.signup_date) * spendable(emp)
     else:
-        tips_for_day = tips_available_per_day(tip_values)
+        tips_for_day = tips_available_per_day(tip_values) * spendable(emp)
 
     expenses = Expense.objects.filter(owner=emp)
     expense_cost_per_day = daily_expense_cost(expenses)

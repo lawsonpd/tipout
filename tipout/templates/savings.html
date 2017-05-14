@@ -2,15 +2,11 @@
 
 {% block content %}
 
-{% if savings %}
   <h1 style="font-family: 'Lobster', cursive">Savings</h1>
     <div class="lead">
-      <p>Money you've saved: {{ savings.amount }}</p>
+      <p>Money you've saved: ${{ savings_amount }}</p>
     </div>
 
-{% else %}
-    <h2 style="font-family: 'Lobster', cursive">You haven't set up your savings yet</h2>
-    <p><a href='/savings-setup/'>Setup savings</a></p>
-{% endif %}
+    <a href="/savings-transaction-history/">Savings history</a> | <a href="/savings-setup/">Savings setup</a>
 
 {% endblock %}

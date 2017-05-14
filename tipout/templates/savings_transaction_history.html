@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+  <h1 style="font-family: 'Lobster', cursive">Savings transactions</h1>
+	<table class="table table-striped">
+		<tr>
+	    	<td><strong>Date</strong></td>
+	    	<td><strong>Amount</strong></td>
+	    	<td><strong>Deposit/Withdraw</strong></td>
+	    </tr>
+		{% for t in trans %}
+		<tr>
+			<td>{{ t.date }}</td>
+			<td>${{ t.amount }}</td>
+			{% if t.amount < 0 %}
+			<td>Withdraw</td>
+			{% else %}
+			<td>Deposit</td>
+			{% endif %}
+		</tr>
+		{% endfor %}
+	</table>
+
+{% endblock %}

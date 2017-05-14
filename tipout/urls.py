@@ -43,6 +43,8 @@ urlpatterns = [
     url(r'^delete-paycheck/(?P<p>[0-9]+)/$', paychecks.delete_paycheck, name='delete-paycheck'),
     url(r'^savings/$', savings.savings, name='savings'),
     url(r'^savings-setup/$', savings.savings_setup, name='savings-setup'),
+    url(r'^savings-transaction/$', savings.savings_transaction, name='deposit-withdraw-savings'),
+    url(r'^savings-transaction-history/$', savings.savings_transaction_history, name='savings-transaction-history'),
     #
     url(r'^new-user-setup/$', general_views.new_user_setup, name='new-user-setup'),
     # url(r'^register/$',

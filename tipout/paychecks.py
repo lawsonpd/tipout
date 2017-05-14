@@ -73,8 +73,11 @@ def enter_paycheck(request):
                             )
                 p.save()
 
+                # update paycheck cache
                 all_paychecks = Paycheck.objects.filter(owner=emp)
                 cache.set('all_paychecks', all_paychecks)
+                recent_paychecks = all_paychecks.filter(date_earned__gt=now().date()-timedelta(30))
+                cache.set('recent_paychecks', recent_paychecks)
 
                 if p.date_earned > now().date()-timedelta(30):
                     recent_paychecks = all_paychecks.filter(date_earned__gt=now().date()-timedelta(30))
@@ -127,8 +130,11 @@ def edit_paycheck(request, p, *args):
             paycheck.date_earned = paycheck_data['date_earned']
             paycheck.save()
 
+            # update paycheck cache
             all_paychecks = Paycheck.objects.filter(owner=emp)
             cache.set('all_paychecks', all_paychecks)
+            recent_paychecks = all_paychecks.filter(date_earned__gt=now().date()-timedelta(30))
+            cache.set('recent_paychecks', recent_paychecks)
 
             # update_budgets return today's budget amount
             budget_today = update_budgets(emp, paycheck.date_earned)
@@ -178,8 +184,11 @@ def delete_paycheck(request, p):
         
         paycheck_to_delete.delete()
 
+        # update paycheck cache
         all_paychecks = Paycheck.objects.filter(owner=emp)
         cache.set('all_paychecks', all_paychecks)
+        recent_paychecks = all_paychecks.filter(date_earned__gt=now().date()-timedelta(30))
+        cache.set('recent_paychecks', recent_paychecks)
 
         # update_budgets return today's budget amount
         budget_today = update_budgets(emp, paycheck_date)
