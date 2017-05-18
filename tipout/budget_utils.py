@@ -222,9 +222,9 @@ def weekly_budget_amount(emp):
     expense_cost_for_week = daily_expense_cost(expenses) * 7
 
     past_budgets = Budget.objects.filter(owner=emp, date__lt=now().date()).order_by('-date')[:6]
-    over_unders = [budget.over_under for budget in past_budgets]
+    over_unders = float(sum([budget.over_under for budget in past_budgets]))
 
-    return tips_avg_to_add + paycheck_avg_to_add - expense_cost_for_week - expenditures_for_day - sum(over_unders)
+    return tips_avg_to_add + paycheck_avg_to_add - expense_cost_for_week - expenditures_for_day - over_unders
 
 def monthly_budget_amount(emp):
     '''
@@ -266,7 +266,7 @@ def weekly_budget_simple(emp):
     expenditures_for_day_query = Expenditure.objects.filter(owner=emp, date=now().date())
     expenditures_for_day = sum([ exp.cost for exp in expenditures_for_day_query ])
 
-    over_unders = ou_contribs(emp)
+    over_unders = Decimal(ou_contribs(emp))
 
     return (tips_for_day * 7) + (daily_from_paycheck * 7) - (expense_cost_per_day * 7) - expenditures_for_day + over_unders
 
@@ -275,6 +275,6 @@ def ou_contribs(emp):
     # [0] in return is most recent
     ous = []
     for i in xrange(7):
-        ous.append(budgets[i].over_under / 7.0 * (7-i))
+        ous.append(float(budgets[i].over_under) / 7.0 * (7-i))
     return sum(ous)
 
