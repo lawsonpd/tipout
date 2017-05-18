@@ -85,14 +85,10 @@ def update_budgets(emp, date):
         for i in range(number_of_days):
             budget_amount = budget_for_specific_day(emp, date+timedelta(i))
             expends_sum = expenditures_sum_for_specific_day(emp, date+timedelta(i))
-            if expends_sum == 0:
-                over_under = 0
-            else:
-                over_under = budget_amount - expends_sum
             Budget.objects.update_or_create(owner=emp,
                                             date=date+timedelta(i),
                                             defaults={'amount': budget_amount,
-                                                      'over_under': over_under}
+                                                      'over_under': budget_amount - expends_sum}
             )
             # try:
             #     budget = Budget.objects.get(owner=emp,
