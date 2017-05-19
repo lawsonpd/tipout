@@ -5,7 +5,7 @@ from django.utils.timezone import now, timedelta
 from django.core.cache import cache
 from django.views.decorators.cache import cache_control
 
-from tipout.models import Tip, Paycheck, Employee, Expense, Expenditure, Budget
+from tipout.models import Tip, Paycheck, Employee, Expense, Expenditure, Budget, OtherIncome
 from budget_utils import (today_budget,
                           pretty_dollar_amount,
                           expenditures_sum_for_specific_day,
@@ -117,7 +117,11 @@ def budget(request):
         try:
             yesterday_budget = Budget.objects.get(owner=emp, date=now().date()-timedelta(1))
             # negative over_under means they went over
-            if yesterday_budget.over_under < 0:
+            if budget.amount < 0:
+                negative_budget = True
+            if yesterday_budget.amount < 0:
+                yesterday_budget_negative = True
+            elif yesterday_budget.over_under < 0:
                 over = -1
             elif yesterday_budget.over_under > 0:
                 over = 1
@@ -125,6 +129,8 @@ def budget(request):
                 over = 0
             return render(request, 'budget.html', {'budget': pretty_dollar_amount(current_budget),
                                                    'over': over,
+                                                   'negative_budget': negative_budget,
+                                                   'yesterday_budget_negative': yesterday_budget_negative,
                                                    'over_under_amount': abs(yesterday_budget.over_under)})
         except:
             return render(request, 'budget.html', {'budget': pretty_dollar_amount(current_budget)})
