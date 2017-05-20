@@ -2,7 +2,7 @@ from django.conf.urls import url, include
 from django.contrib.auth import views as auth_views
 
 # from . import views
-from . import budget, expenditures, expenses, general_views, paychecks, subscription, tips, subscription_test, savings
+from . import budget, expenditures, expenses, general_views, paychecks, subscription, tips, subscription_test, savings, misc_income
 
 urlpatterns = [
     url(r'^enter-tips/$', tips.enter_tips, name='enter-tips'),
@@ -14,6 +14,8 @@ urlpatterns = [
     url(r'^tips/archive/(?P<year>[0-9]{4})/(?P<month>[0-9]{1,2})/$', tips.tips_archive, name='tips-archive'),
     url(r'^tips/archive/(?P<year>[0-9]{4})/(?P<month>[0-9]{1,2})/(?P<day>[0-9]{1,2})/$', tips.tips_archive, name='tips-archive'),
     url(r'^tips/archive/$', tips.tips_archive, name='tips-archive'),
+    url(r'^other-funds/$', misc_income.other_funds, name='other-funds'),
+    url(r'^enter-other-funds/$', misc_income.enter_other_funds, name='enter-other-funds'),
     url(r'^budget/$', budget.budget, name='budget'),
     url(r'^balance/$', budget.balance, name='balance'),
     url(r'^edit-balance/$', budget.edit_balance, name='edit-balance'),

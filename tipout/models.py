@@ -56,7 +56,7 @@ class Balance(models.Model):
     amount = models.DecimalField(max_digits=9, decimal_places=2, default=0)
 
 class OtherFunds(models.Model):
-    owner = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='otherincome')
+    owner = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='otherfunds')
     amount = models.DecimalField(max_digits=9, decimal_places=2)
     date_earned = models.DateField(default=now)
     note = models.CharField(max_length=100)
@@ -212,5 +212,10 @@ class SavingsTransactionForm(ModelForm):
 class EditBalanceForm(ModelForm):
     class Meta:
         model = Balance
+        exclude = ['owner']
+
+class EnterOtherFundsForm(ModelForm):
+    class Meta:
+        model = OtherFunds
         exclude = ['owner']
 

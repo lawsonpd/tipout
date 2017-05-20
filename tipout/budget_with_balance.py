@@ -49,7 +49,7 @@ def update_budgets(emp, date):
     # if the budget hasn't been created yet, create it
     budget_today, created = Budget.objects.update_or_create(owner=emp,
                                                             date=now().date(),
-                                                            defaults={'amount': budget_for_specific_day(emp now().date())}
+                                                            defaults={'amount': budget_for_specific_day(emp, now().date())}
     )
     # try:
     #     budget_today = Budget.objects.get(owner=emp, date=now().date())

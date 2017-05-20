@@ -9,9 +9,13 @@ from tipout.models import Tip, Paycheck, Employee, Expense, Expenditure, Budget,
 from budget_utils import (today_budget,
                           pretty_dollar_amount,
                           expenditures_sum_for_specific_day,
-                          budget_for_specific_day,
-                          update_budgets,
-                          weekly_budget_simple
+                          # budget_for_specific_day,
+                          # update_budgets,
+                          # weekly_budget_simple
+)
+from budget_with_balance import (budget_for_specific_day,
+                                 update_budgets,
+                                 weekly_budget_simple
 )
 from custom_auth.models import TipoutUser
 
