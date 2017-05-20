@@ -82,11 +82,6 @@ def enter_paycheck(request):
                             )
                 p.save()
 
-                # update balance
-                balance = Balance.objects.get(owner=emp)
-                balance.amount += p.amount
-                balance.save()
-
                 # update savings
                 if emp.savings_percent > 0:
                     # not sure if this should count as a savings 'deposit'
@@ -97,6 +92,17 @@ def enter_paycheck(request):
                     emp_savings = Savings.objects.get(owner=emp)
                     emp_savings.amount += p.amount * (emp.savings_percent/100)
                     emp_savings.save()
+
+                    # update balance
+                    balance = Balance.objects.get(owner=emp)
+                    balance.amount += p.amount * (1 - (emp.savings_percent/100))
+                    balance.save()
+
+                else:
+                    # update balance for when savings percent == 0
+                    balance = Balance.objects.get(owner=emp)
+                    balance.amount += p.amount
+                    balance.save()
 
                 # update paycheck cache
                 all_paychecks = Paycheck.objects.filter(owner=emp)
@@ -154,13 +160,19 @@ def edit_paycheck(request, p, *args):
             # do this before updating paycheck so we can compare amounts
             if emp.savings_percent > 0 and paycheck_data['amount'] != paycheck.amount:
                 emp_savings = Savings.objects.get(owner=emp)
-                emp_savings.amount += ((paycheck_data['amount']-paycheck.amount) * (emp.savings_percent/100))
+                emp_savings.amount += ((paycheck_data['amount'] - paycheck.amount) * (emp.savings_percent/100))
                 emp_savings.save()
 
-            # update balance
-            balance = Balance.objects.get(owner=emp)
-            balance.amount += paycheck_data['amount'] - paycheck.amount
-            balance.save()
+                # update balance
+                balance = Balance.objects.get(owner=emp)
+                balance.amount += (paycheck_data['amount'] - paycheck.amount) * (1 - emp.savings_percent/100)
+                balance.save()
+
+            elif emp.savings_percent == 0 and paycheck_data['amount'] != paycheck.amount:
+                # update balance for when savings percent == 0
+                balance = Balance.objects.get(owner=emp)
+                balance.amount += paycheck_data['amount'] - paycheck.amount
+                balance.save()
 
             paycheck.amount = paycheck_data['amount']
             paycheck.hours_worked = paycheck_data['hours_worked']
@@ -219,18 +231,24 @@ def delete_paycheck(request, p):
         # need date for budgets update
         paycheck_date = paycheck_to_delete.date_earned
 
-        # update balance
-        balance = Balance.objects.get(owner=emp)
-        balance.amount -= paycheck_to_delete.amount
-        balance.save()
-
         # update savings
         # do this before deleting the paycheck so we can get the amount
         if emp.savings_percent > 0:
             emp_savings = Savings.objects.get(owner=emp)
             emp_savings.amount -= (paycheck_to_delete.amount * (emp.savings_percent/100))
             emp_savings.save()
-        
+
+            # update balance
+            balance = Balance.objects.get(owner=emp)
+            balance.amount -= paycheck_to_delete.amount * (1 - emp.savings_percent/100)
+            balance.save()
+
+        else:
+            # update balance for when savings percent == 0
+            balance = Balance.objects.get(owner=emp)
+            balance.amount -= paycheck_to_delete.amount
+            balance.save()
+
         paycheck_to_delete.delete()
 
         # update paycheck cache

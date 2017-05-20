@@ -5,7 +5,7 @@ from django.utils.timezone import now, timedelta
 from django.core.cache import cache
 from django.views.decorators.cache import cache_control
 
-from tipout.models import OtherFunds, EnterOtherFundsForm, Employee, Balance
+from tipout.models import OtherFunds, EnterOtherFundsForm, Employee, Balance, Savings
 
 from custom_auth.models import TipoutUser
 
@@ -27,9 +27,26 @@ def enter_other_funds(request):
 														note=other_funds_data['note']
 			)
 
-			balance = Balance.objects.get(owner=emp)
-			balance.amount += new_other_funds.amount
-			balance.save()
+			if emp.savings_percent > 0:
+			    # not sure if this should count as a savings 'deposit'
+			    # s = SavingsTransaction.objects.create(owner=emp,
+			    #                                       date=t.date_earned,
+			    #                                       amount=t.amount * (emp.savings_percent/100)
+			    # )
+			    emp_savings = Savings.objects.get(owner=emp)
+			    emp_savings.amount += new_other_funds.amount * (emp.savings_percent/100)
+			    emp_savings.save()
+
+			    # update balance
+			    balance = Balance.objects.get(owner=emp)
+			    balance.amount += new_other_funds.amount * (1 - (emp.savings_percent/100))
+			    balance.save()
+
+			else:
+				# update balance for case when savings percent is 0
+				balance = Balance.objects.get(owner=emp)
+				balance.amount += new_other_funds.amount
+				balance.save()
 
 			return redirect('/other-funds/')
 		else:

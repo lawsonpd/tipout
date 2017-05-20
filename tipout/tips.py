@@ -38,11 +38,6 @@ def enter_tips(request):
                     owner=emp)
             t.save()
 
-            # update balance
-            balance = Balance.objects.get(owner=emp)
-            balance.amount += t.amount
-            balance.save()
-
             if emp.savings_percent > 0:
                 # not sure if this should count as a savings 'deposit'
                 # s = SavingsTransaction.objects.create(owner=emp,
@@ -52,6 +47,17 @@ def enter_tips(request):
                 emp_savings = Savings.objects.get(owner=emp)
                 emp_savings.amount += t.amount * (emp.savings_percent/100)
                 emp_savings.save()
+
+                # update balance
+                balance = Balance.objects.get(owner=emp)
+                balance.amount += t.amount * (1 - (emp.savings_percent/100))
+                balance.save()
+
+            else:
+                # update balance for case when savings percent is 0
+                balance = Balance.objects.get(owner=emp)
+                balance.amount += t.amount
+                balance.save()
 
             tips = Tip.objects.filter(owner=emp)
             cache.set('tips', tips)
@@ -142,6 +148,11 @@ def delete_tip(request, tip_id, *args):
             emp_savings = Savings.objects.get(owner=emp)
             emp_savings.amount -= (t.amount * (emp.savings_percent/100))
             emp_savings.save()
+
+            # update balance
+            balance = Balance.objects.get(owner=emp)
+            balance.amount -= t.amount * (1 - (emp.savings_percent/100))
+            balance.save()
 
         # update balance
         balance = Balance.objects.get(owner=emp)

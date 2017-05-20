@@ -34,6 +34,8 @@ def savings_setup(request):
 
             savings_data = form.cleaned_data
 
+            # make sure percent > 0
+
             emp.savings_percent = savings_data['savings_percent']
             emp.save()
 
