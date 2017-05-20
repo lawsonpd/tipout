@@ -4,6 +4,12 @@
 
 <h1 style="font-family: 'Lobster', cursive">Edit balance</h1>
 
+<div style="padding: 10px; margin-top: 15px;" class='bg-info'>
+	<p>
+		If you notice your balance is not correct, then you can edit it here.
+	</p>
+</div>
+
 <form action='/edit-balance/' method='post'>
   {% csrf_token %}
   {{ form.as_p }}
