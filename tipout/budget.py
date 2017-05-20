@@ -5,7 +5,7 @@ from django.utils.timezone import now, timedelta
 from django.core.cache import cache
 from django.views.decorators.cache import cache_control
 
-from tipout.models import Tip, Paycheck, Employee, Expense, Expenditure, Budget, OtherFunds, Balance
+from tipout.models import Tip, Paycheck, Employee, Expense, Expenditure, Budget, OtherFunds, Balance, EditBalanceForm
 from budget_utils import (today_budget,
                           pretty_dollar_amount,
                           expenditures_sum_for_specific_day,
@@ -25,6 +25,45 @@ def balance(request):
     balance = Balance.objects.get(owner=emp)
 
     return render(request, 'balance.html', {'balance': pretty_dollar_amount(balance.amount)})
+
+@cache_control(private=True)
+@login_required(login_url='/login/')
+@require_http_methods(['GET', 'POST'])
+def edit_balance(request):
+    u = TipoutUser.objects.get(email=request.user)
+    emp = Employee.objects.get(user=u)
+
+    balance = Balance.objects.get(owner=emp)
+
+    if request.method == 'POST':
+        form = EditBalanceForm(request.POST)
+        if form.is_valid():
+            new_balance = form.cleaned_data
+
+            # update balance
+            balance.amount = new_balance['amount']
+            balance.save()
+
+            # update_budgets return today's budget amount
+            budget_today = update_budgets(emp, now().date())
+
+            # update cached budget
+            today_expends = cache.get('today_expends')
+            if not today_expends:
+                today_expends = Expenditure.objects.filter(owner=emp, date=now().date())
+                cache.set('today_expends', today_expends)
+
+            # update cached expends for budget cache
+            expends_sum = sum([exp.cost for exp in today_expends])
+            current_budget = budget_today - expends_sum
+
+            cache.set('current_budget', current_budget)
+
+            return redirect('/balance/')
+
+    else:
+        form = EditBalanceForm(initial={'amount': balance.amount})
+        return render(request, 'edit_balance.html', {'form': form})
 
 @cache_control(private=True)
 @login_required(login_url='/login/')

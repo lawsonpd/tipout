@@ -209,3 +209,8 @@ class SavingsTransactionForm(ModelForm):
         model = SavingsTransaction
         exclude = ['owner']
 
+class EditBalanceForm(ModelForm):
+    class Meta:
+        model = Balance
+        exclude = ['owner']
+

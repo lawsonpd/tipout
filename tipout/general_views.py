@@ -8,7 +8,7 @@ from django.core.mail import send_mail
 from django.utils.timezone import now
 
 from tipout.models import Tip, Employee, NewUserSetupForm, Budget, Feedback
-from tipout.budget_utils import today_budget
+from tipout.budget_utils import update_budgets
 # from django.conf import settings
 
 @require_http_methods(['GET'])
