@@ -7,7 +7,7 @@
 <form action="/edit-expense{{ expense.get_absolute_url }}/" method="post">
   {% csrf_token %}
   <h3 class='lead'>{{ expense.expense_name }}</h3>
-  {{ form }}
+  {{ form.as_p }}
   <input type="submit" class="btn btn-primary" value="Submit" />
 </form>
 

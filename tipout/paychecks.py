@@ -5,7 +5,16 @@ from django.core.cache import cache
 from django.views.decorators.cache import cache_control
 from django.utils.timezone import now, timedelta
 
-from tipout.models import Employee, Paycheck, Expenditure, EnterPaycheckForm, EditPaycheckForm, Savings, SavingsTransaction
+from tipout.models import (Employee,
+                           Paycheck,
+                           Balance,
+                           Expenditure,
+                           EnterPaycheckForm,
+                           EditPaycheckForm,
+                           Savings,
+                           SavingsTransaction
+)
+
 from tipout.budget_utils import update_budgets
 from custom_auth.models import TipoutUser
 
@@ -72,6 +81,11 @@ def enter_paycheck(request):
                              hours_worked=paycheck_data['hours_worked'],
                             )
                 p.save()
+
+                # update balance
+                balance = Balance.objects.get(owner=emp)
+                balance.amount += p.amount
+                balance.save()
 
                 # update savings
                 if emp.savings_percent > 0:
@@ -143,6 +157,11 @@ def edit_paycheck(request, p, *args):
                 emp_savings.amount += ((paycheck_data['amount']-paycheck.amount) * (emp.savings_percent/100))
                 emp_savings.save()
 
+            # update balance
+            balance = Balance.objects.get(owner=emp)
+            balance.amount += paycheck_data['amount'] - paycheck.amount
+            balance.save()
+
             paycheck.amount = paycheck_data['amount']
             paycheck.hours_worked = paycheck_data['hours_worked']
             paycheck.date_earned = paycheck_data['date_earned']
@@ -199,6 +218,11 @@ def delete_paycheck(request, p):
 
         # need date for budgets update
         paycheck_date = paycheck_to_delete.date_earned
+
+        # update balance
+        balance = Balance.objects.get(owner=emp)
+        balance.amount -= paycheck_to_delete.amount
+        balance.save()
 
         # update savings
         # do this before deleting the paycheck so we can get the amount

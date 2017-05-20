@@ -5,7 +5,7 @@ from django.utils.timezone import now, timedelta
 from django.core.cache import cache
 from django.views.decorators.cache import cache_control
 
-from tipout.models import Tip, Paycheck, Employee, Expense, Expenditure, Budget, OtherIncome
+from tipout.models import Tip, Paycheck, Employee, Expense, Expenditure, Budget, OtherFunds, Balance
 from budget_utils import (today_budget,
                           pretty_dollar_amount,
                           expenditures_sum_for_specific_day,
@@ -14,6 +14,17 @@ from budget_utils import (today_budget,
                           weekly_budget_simple
 )
 from custom_auth.models import TipoutUser
+
+@cache_control(private=True)
+@login_required(login_url='/login/')
+@require_http_methods(['GET'])
+def balance(request):
+    u = TipoutUser.objects.get(email=request.user)
+    emp = Employee.objects.get(user=u)
+
+    balance = Balance.objects.get(owner=emp)
+
+    return render(request, 'balance.html', {'balance': pretty_dollar_amount(balance.amount)})
 
 @cache_control(private=True)
 @login_required(login_url='/login/')
@@ -106,7 +117,7 @@ def budget(request):
                     # still want to set the budget _amount_ for today
                     budget, created = Budget.objects.update_or_create(owner=emp,
                                                                       date=now().date(),
-                                                                      defaults={'amount': today_budget(emp)}
+                                                                      defaults={'amount': budget_for_specific_day(emp, now().date())}
                     )
 
                     exps = Expenditure.objects.filter(owner=emp, date=now().date())

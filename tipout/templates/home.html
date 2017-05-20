@@ -1,9 +1,15 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
 {% block content %}
 
     <div class='jumbotron'>
-      <h1 style="font-family: 'Lobster', cursive">Tipout</h1>
+      {# <h1 style="font-family: 'Lobster', cursive">Tipout</h1> #}
+      <div>
+        <img src="{% static 'tipout/tipout.ico' %}" alt="tipout logo"/>
+      </div>
+
       <div>
 
         <p class='lead'>daily budgeting for servers & bartenders</p>

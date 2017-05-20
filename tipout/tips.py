@@ -7,7 +7,7 @@ from django.views.decorators.cache import cache_control
 
 from decimal import Decimal
 
-from tipout.models import Tip, Expenditure, EnterTipsForm, Employee, SavingsTransaction, Savings
+from tipout.models import Tip, Expenditure, EnterTipsForm, Employee, SavingsTransaction, Savings, Balance
 from custom_auth.models import TipoutUser
 from budget_utils import (avg_daily_tips_earned,
                           avg_daily_tips_earned_initial,
@@ -37,6 +37,11 @@ def enter_tips(request):
                     date_earned=tip_data['date_earned'],
                     owner=emp)
             t.save()
+
+            # update balance
+            balance = Balance.objects.get(owner=emp)
+            balance.amount += t.amount
+            balance.save()
 
             if emp.savings_percent > 0:
                 # not sure if this should count as a savings 'deposit'
@@ -137,6 +142,11 @@ def delete_tip(request, tip_id, *args):
             emp_savings = Savings.objects.get(owner=emp)
             emp_savings.amount -= (t.amount * (emp.savings_percent/100))
             emp_savings.save()
+
+        # update balance
+        balance = Balance.objects.get(owner=emp)
+        balance.amount -= t.amount
+        balance.save()
 
         t.delete()
 

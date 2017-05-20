@@ -7,7 +7,7 @@ from django.core.cache import cache
 from django.views.decorators.cache import cache_control
 from string import strip
 
-from tipout.models import Employee, Expenditure, EnterExpenditureForm, EditExpenditureForm
+from tipout.models import Employee, Expenditure, EnterExpenditureForm, EditExpenditureForm, Balance
 from tipout.budget_utils import update_budgets
 from custom_auth.models import TipoutUser
 
@@ -59,6 +59,11 @@ def enter_expenditure(request):
                 if e.date == now().date():
                     today_expends = expends.filter(date=now().date())
                     cache.set('today_expends', today_expends)
+
+                # update balance
+                balance = Balance.objects.get(owner=emp)
+                balance.amount -= e.cost
+                balance.save()
 
                 # update_budgets return today's budget amount
                 budget_today = update_budgets(emp, e.date)
@@ -131,6 +136,12 @@ def delete_expenditure(request, exp, *args):
         # for exp in es:
         #     if strip(exp.get_absolute_url(), '/') == args[0]:
         #         e = exp
+
+        # update balance before deleting expend
+        balance = Balance.objects.get(owner=emp)
+        balance.amount += exp_to_delete.cost
+        balance.save()
+
         exp_to_delete.delete()
 
         expends = Expenditure.objects.filter(owner=emp)
@@ -190,6 +201,11 @@ def edit_expenditure(request, exp, *args):
             if exp_to_edit.date == now().date():
                 today_expends = expends.filter(date=now().date())
                 cache.set('today_expends', today_expends)
+
+            # update balance
+            balance = Balance.objects.get(owner=emp)
+            balance.amount -= exp_data['cost'] - exp_to_edit.cost
+            balance.save()
 
             # update_budgets return today's budget amount
             budget_today = update_budgets(emp, exp_to_edit.date)

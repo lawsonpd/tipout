@@ -51,7 +51,11 @@ class Paycheck(models.Model):
     def get_absolute_url(self):
         return '/%s-paycheck-%s/' % (str(self.owner), slugify(self.date_earned))
 
-class OtherIncome(models.Model):
+class Balance(models.Model):
+    owner = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='balance')
+    amount = models.DecimalField(max_digits=9, decimal_places=2, default=0)
+
+class OtherFunds(models.Model):
     owner = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='otherincome')
     amount = models.DecimalField(max_digits=9, decimal_places=2)
     date_earned = models.DateField(default=now)
@@ -62,6 +66,7 @@ class Expense(models.Model):
     expense_name = models.CharField(max_length=100)
     cost = models.DecimalField(max_digits=9, decimal_places=2)
     date_added = models.DateField(auto_now_add=True)
+    paid_on = models.DateField(default=now)
     FREQ_CHOICES = (
         ('DAILY', 'Daily'),
         ('WEEKLY', 'Weekly'),
@@ -161,12 +166,17 @@ class EditPaycheckForm(ModelForm):
 class EnterExpenseForm(ModelForm):
     class Meta:
         model = Expense
-        exclude = ['owner']
+        exclude = ['owner', 'last_paid_on']
 
 class EditExpenseForm(ModelForm):
     class Meta:
         model = Expense
-        exclude = ['owner', 'expense_name', 'frequency']
+        exclude = ['owner', 'expense_name', 'frequency', 'last_paid_on']
+
+class PayExpenseForm(ModelForm):
+    class Meta:
+        model = Expense
+        exclude = ['owner', 'expense_name', 'frequency', 'cost']
 
 class EnterExpenditureForm(ModelForm):
     class Meta:

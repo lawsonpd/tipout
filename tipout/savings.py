@@ -1,4 +1,4 @@
-from tipout.models import Savings, SavingsTransaction, Employee, SavingsSetupForm, SavingsTransactionForm
+from tipout.models import Savings, SavingsTransaction, Balance, Employee, SavingsSetupForm, SavingsTransactionForm
 
 from custom_auth.models import TipoutUser
 
@@ -58,7 +58,7 @@ def savings_transaction(request):
             trans_data = form.cleaned_data
             if request.POST['inlineRadioOptions'] == 'withdraw':
                 amt = trans_data['amount'] * -1
-            else:
+            elif request.POST['inlineRadioOptions'] == 'deposit':
                 amt = trans_data['amount']
 
             t = SavingsTransaction.objects.create(owner=emp,
@@ -69,6 +69,10 @@ def savings_transaction(request):
             savings = Savings.objects.get(owner=emp)
             savings.amount += amt
             savings.save()
+
+            balance = Balance.objects.get(owner=emp)
+            balance.amount -= amt
+            balance.save()
 
             return redirect('/savings/')
 

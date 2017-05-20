@@ -1,6 +1,6 @@
 from django.utils.timezone import now, timedelta
 from custom_auth.models import TipoutUser
-from tipout.models import Paycheck, Employee, Expense, Expenditure, Tip, Budget
+from tipout.models import Paycheck, Employee, Expense, Expenditure, Tip, Budget, Balance, OtherFunds
 from decimal import Decimal
 
 def avg_daily_tips_earned_initial(init_avg_daily_tips, tips_so_far, signup_date):
@@ -17,7 +17,7 @@ def avg_daily_tips_earned(tips):
     '''
     # calculate tips for last 30 days
     if tips:
-        return sum(tips) / 21.3
+        return sum(tips) / Decimal(21.3)
     else:
         return 0
 
@@ -66,7 +66,7 @@ def pretty_dollar_amount(amount):
     else:
         return '$' + '{0:.2f}'.format(amount)
 
-def balancer(over_unders):
+def budget_corrector(over_unders):
     return sum(map(lambda x: float(x)/7, over_unders))
 
 def spendable(emp):
@@ -147,7 +147,7 @@ def today_budget(emp):
     # getting over/unders
     past_budgets = Budget.objects.filter(owner=emp, date__lt=now().date()).order_by('-date')[:7]
     over_unders = [budget.over_under for budget in past_budgets]
-    ous = Decimal(balancer(over_unders))
+    ous = Decimal(budget_corrector(over_unders))
 
     return tips_for_day + daily_from_paycheck - expense_cost_for_today + ous
 
@@ -183,7 +183,7 @@ def budget_for_specific_day(emp, date):
     # getting over/unders
     past_budgets = Budget.objects.filter(owner=emp, date__lt=date).order_by('-date')[:7]
     over_unders = [budget.over_under for budget in past_budgets]
-    ous = Decimal(balancer(over_unders))
+    ous = Decimal(budget_corrector(over_unders))
 
     return tips_for_day + daily_from_paycheck - expense_cost_for_today + ous
 

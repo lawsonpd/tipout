@@ -5,7 +5,7 @@ from django.core.cache import cache
 from django.views.decorators.cache import cache_control
 from django.utils.timezone import now
 
-from tipout.models import Employee, Expense, Expenditure, EnterExpenseForm, EditExpenseForm
+from tipout.models import Employee, Expense, Balance, Expenditure, EnterExpenseForm, EditExpenseForm, PayExpenseForm
 from tipout.budget_utils import update_budgets
 from custom_auth.models import TipoutUser
 
@@ -43,7 +43,6 @@ def enter_expense(request):
             expense_data = form.cleaned_data
 
             expenses = cache.get('expenses')
-
             if not expenses:
                 expenses = Expense.objects.filter(owner=emp)
                 cache.set('expenses', expenses)
@@ -144,7 +143,6 @@ def delete_expense(request, *args):
         emp = Employee.objects.get(user=u)
 
         expenses = cache.get('expenses')
-
         if not expenses:
             expenses = Expense.objects.filter(owner=emp)
             cache.set('expenses', expenses)
@@ -174,3 +172,56 @@ def delete_expense(request, *args):
         cache.set('current_budget', current_budget)
         
         return redirect('/expenses/')
+
+@cache_control(private=True)
+@login_required(login_url='/login/')
+@require_http_methods(['GET', 'POST'])
+def pay_expense(request, exp=None):
+    u = TipoutUser.objects.get(email=request.user)
+    emp = Employee.objects.get(user=u)
+
+    expenses = cache.get('expenses')
+    if not expenses:
+        expenses = Expense.objects.filter(owner=emp)
+        cache.set('expenses', expenses)
+
+    if request.method == 'POST':
+        form = PayExpenseForm(request.POST)
+
+        if form.is_valid():
+            exp_data = form.cleaned_data
+
+            # update paid-on date for expense
+            exp_to_pay = expenses.get(pk=exp)
+            exp_to_pay.paid_on = exp_data['paid_on']
+            exp_to_pay.save()
+
+            # update cached expenses
+            expenses = Expense.objects.filter(owner=emp)
+            cache.set('expenses', expenses)
+
+            # update emp's balance
+            balance = Balance.objects.get(owner=emp)
+            balance.amount -= exp_to_pay.cost
+            balance.save()
+
+            # update_budgets return today's budget amount
+            budget_today = update_budgets(emp, now().date())
+
+            # update cached budget
+            today_expends = cache.get('today_expends')
+            if not today_expends:
+                today_expends = Expenditure.objects.filter(owner=emp, date=now().date())
+                cache.set('today_expends', today_expends)
+
+            # update cached expends for budget cache
+            expends_sum = sum([exp.cost for exp in today_expends])
+            current_budget = budget_today - expends_sum
+
+            cache.set('current_budget', current_budget)
+
+            return redirect('/expenses/')
+
+    else:
+        form = PayExpenseForm(initial={'paid_on': now().date()})
+        return render(request, 'pay_expense.html', {'form': form, 'expenses': expenses})

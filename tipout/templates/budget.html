@@ -13,7 +13,6 @@
     {% endif %}
     {% if yesterday_budget_negative %}
         <p style="padding: 10px" class='bg-warning'> (See the <a href="/faq">FAQ</a> for more info.</p>
-    {% endif %}
     {% elif over == -1 %}
     	<p style="padding: 10px" class='bg-warning'>Be careful! Yesterday you went over your budget by ${{ over_under_amount }}.</p>
     {% elif over == 1 %}
