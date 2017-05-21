@@ -8,6 +8,7 @@ from custom_auth.models import TipoutUser
 from tipout.models import Employee, Budget, Balance
 from tipout.stripe_utils import pretty_date, pretty_stripe_dollar_amount, refund_approved, most_recent_invoice
 import stripe
+
 from budgettool.settings import STRIPE_KEYS
 stripe.api_key = STRIPE_KEYS['secret_key']
 
@@ -95,8 +96,8 @@ def signup(request, template_name):
             )
 
             new_emp = Employee.objects.create(user=new_user)
-            emp_first_budget = Budget.objects.create(owner=new_emp, date=now().date(), amount=0)
-            emp_balance = Balance.objects.create(owner=new_emp, amount=0)
+            emp_first_budget = Budget.objects.create(owner=new_emp, amount=0)
+            emp_balance = Balance.objects.create(owner=new_emp)
 
             user = authenticate(email=user_data['email'], password=user_data['password1'])
             if user is not None:

@@ -5,10 +5,11 @@ from django.contrib.auth.decorators import login_required
 
 from custom_auth.admin import UserCreationForm
 from custom_auth.models import TipoutUser
+from tipout.models import Employee, Budget, Balance
 from stripe_utils import pretty_date, pretty_stripe_dollar_amount, refund_approved, most_recent_invoice
 import stripe
-from budgettool.test_settings import STRIPE_KEYS
 
+from budgettool.test_settings import STRIPE_KEYS
 # stripe.api_key=STRIPE_KEYS['test_sk']
 
 @require_http_methods(['GET', 'POST'])
@@ -46,7 +47,9 @@ def signup_test(request, template_name):
                                                       state=user_data['state']
             )
 
-            Employee.objects.create(user=new_user)
+            new_emp = Employee.objects.create(user=new_user)
+            emp_first_budget = Budget.objects.create(owner=new_emp, amount=0)
+            emp_balance = Balance.objects.create(owner=new_emp)
 
             user = authenticate(email=user_data['email'], password=user_data['password1'])
             if user is not None:
