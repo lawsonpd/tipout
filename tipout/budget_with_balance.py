@@ -1,4 +1,4 @@
-from django.utils.timezone import now
+from django.utils.timezone import now, timedelta
 from tipout.models import Balance, Expenditure, Expense
 from tipout.budget_utils import daily_expense_cost, ou_contribs
 from decimal import Decimal
