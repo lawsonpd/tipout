@@ -136,10 +136,10 @@ def delete_expenditure(request, exp, *args):
 
         emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
 
-        expends = cache.get('expends')
+        expends = cache.get(emp_cache_key+'expends')
         if not expends:
             expends = Expenditure.objects.filter(owner=emp)
-            cache.set('expends', expends)
+            cache.set(emp_cache_key+'expends', expends)
 
         exp_to_delete = expends.get(pk=exp)
         exp_date = exp_to_delete.date
@@ -155,25 +155,25 @@ def delete_expenditure(request, exp, *args):
         exp_to_delete.delete()
 
         expends = Expenditure.objects.filter(owner=emp)
-        cache.set('expends', expends)
+        cache.set(emp_cache_key+'expends', expends)
 
         # update today_expends if expend was for today
         if exp_date == now().date():
             today_expends = expends.filter(date=now().date())
-            cache.set('today_expends', today_expends)
+            cache.set(emp_cache_key+'today_expends', today_expends)
 
         # update_budgets return today's budget amount
         budget_today = update_budgets(emp, exp_date)
 
         # update cached budget
-        today_expends = cache.get('today_expends')
+        today_expends = cache.get(emp_cache_key+'today_expends')
         if not today_expends:
             today_expends = Expenditure.objects.filter(owner=emp, date=now().date())
-            cache.set('today_expends', today_expends)
+            cache.set(emp_cache_key+'today_expends', today_expends)
         expends_sum = sum([exp.cost for exp in today_expends])
 
         current_budget = budget_today - expends_sum
-        cache.set('current_budget', current_budget)
+        cache.set(emp_cache_key+'current_budget', current_budget)
 
         return redirect('/expenditures/')
 
@@ -189,10 +189,10 @@ def edit_expenditure(request, exp, *args):
 
     emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
 
-    expends = cache.get('expends')
+    expends = cache.get(emp_cache_key+'expends')
     if not expends:
         expends = Expenditure.objects.filter(owner=emp)
-        cache.set('expends', expends)
+        cache.set(emp_cache_key+'expends', expends)
 
     exp_to_edit = expends.get(pk=exp)
 
@@ -207,12 +207,12 @@ def edit_expenditure(request, exp, *args):
             exp_to_edit.save()
 
             expends = Expenditure.objects.filter(owner=emp)
-            cache.set('expends', expends)
+            cache.set(emp_cache_key+'expends', expends)
 
             # update today_expends if expend was for today
             if exp_to_edit.date == now().date():
                 today_expends = expends.filter(date=now().date())
-                cache.set('today_expends', today_expends)
+                cache.set(emp_cache_key+'today_expends', today_expends)
 
             # update balance
             balance = Balance.objects.get(owner=emp)
@@ -223,14 +223,14 @@ def edit_expenditure(request, exp, *args):
             budget_today = update_budgets(emp, exp_to_edit.date)
 
             # update cached budget
-            today_expends = cache.get('today_expends')
+            today_expends = cache.get(emp_cache_key+'today_expends')
             if not today_expends:
                 today_expends = Expenditure.objects.filter(owner=emp, date=now().date())
-                cache.set('today_expends', today_expends)
+                cache.set(emp_cache_key+'today_expends', today_expends)
             expends_sum = sum([exp.cost for exp in today_expends])
 
             current_budget = budget_today - expends_sum
-            cache.set('current_budget', current_budget)
+            cache.set(emp_cache_key+'current_budget', current_budget)
 
             return redirect('/expenditures/')
     else:
@@ -253,10 +253,10 @@ def expenditures_archive(request, *args):
 
     emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
 
-    expends = cache.get('expends')
+    expends = cache.get(emp_cache_key+'expends')
     if not expends:
         expends = Expenditure.objects.filter(owner=emp)
-        cache.set('expends', expends)
+        cache.set(emp_cache_key+'expends', expends)
 
     all_years = [e.date.year for e in expends]
     years = set(all_years)
@@ -274,10 +274,10 @@ def expenditures_year_archive(request, year, *args):
 
     emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
 
-    expends = cache.get('expends')
+    expends = cache.get(emp_cache_key+'expends')
     if not expends:
         expends = Expenditure.objects.filter(owner=emp)
-        cache.set('expends', expends)
+        cache.set(emp_cache_key+'expends', expends)
 
     # all_months = [e.month_name for e in Expenditure.objects.filter(owner=u)
     #                            if e.date.year == year]
@@ -299,10 +299,10 @@ def expenditures_month_archive(request, year, month, *args):
 
     emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
 
-    expends = cache.get('expends')
+    expends = cache.get(emp_cache_key+'expends')
     if not expends:
         expends = Expenditure.objects.filter(owner=emp)
-        cache.set('expends', expends)
+        cache.set(emp_cache_key+'expends', expends)
 
     dates = expends.filter(date__year=year,
                            date__month=month).dates('date', 'day')
@@ -322,10 +322,10 @@ def expenditures_day_archive(request, year, month, day, *args):
 
     emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
 
-    expends = cache.get('expends')
+    expends = cache.get(emp_cache_key+'expends')
     if not expends:
         expends = Expenditure.objects.filter(owner=emp)
-        cache.set('expends', expends)
+        cache.set(emp_cache_key+'expends', expends)
 
     day_expends = expends.filter(date__year=year,
                                  date__month=month,
@@ -349,10 +349,10 @@ def expenditure_detail(request, year, month, day, exp, *args):
 
     emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
 
-    expends = cache.get('expends')
+    expends = cache.get(emp_cache_key+'expends')
     if not expends:
         expends = Expenditure.objects.filter(owner=emp)
-        cache.set('expends', expends)
+        cache.set(emp_cache_key+'expends', expends)
 
     exp = expends.get(date__year=year,
                       date__month=month,
