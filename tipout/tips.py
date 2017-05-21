@@ -14,10 +14,9 @@ from budget_utils import (avg_daily_tips_earned,
                           tips_available_per_day_initial,
                           tips_available_per_day,
                           daily_avg_from_paycheck,
-                          pretty_dollar_amount,
-                          update_budgets
+                          pretty_dollar_amount
                          )
-
+from budget_with_balance import update_budgets
 from budgettool.settings import CACHE_HASH_KEY
 from hashlib import md5
 import hmac

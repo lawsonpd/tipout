@@ -13,6 +13,10 @@ from budgettool.settings import CACHE_HASH_KEY
 from hashlib import md5
 import hmac
 
+#
+# Don't update budgets in savings views, since savings isn't accounted for in budgets
+#
+
 @cache_control(private=True)
 @login_required(login_url='/login/')
 @require_http_methods(['GET'])

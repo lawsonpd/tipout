@@ -6,7 +6,7 @@ from django.views.decorators.cache import cache_control
 from django.utils.timezone import now
 
 from tipout.models import Employee, Expense, Balance, Expenditure, EnterExpenseForm, EditExpenseForm, PayExpenseForm
-from tipout.budget_utils import update_budgets
+from budget_with_balance import update_budgets
 from custom_auth.models import TipoutUser
 
 from budgettool.settings import CACHE_HASH_KEY

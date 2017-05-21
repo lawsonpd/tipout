@@ -15,7 +15,7 @@ from tipout.models import (Employee,
                            SavingsTransaction
 )
 
-from tipout.budget_utils import update_budgets
+from tipout.budget_with_balance import update_budgets
 from custom_auth.models import TipoutUser
 
 from budgettool.settings import CACHE_HASH_KEY
