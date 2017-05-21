@@ -1,6 +1,6 @@
 from django.utils.timezone import now, timedelta
-from tipout.models import Balance, Expenditure, Expense
-from tipout.budget_utils import daily_expense_cost, ou_contribs
+from tipout.models import Balance, Expenditure, Expense, Budget
+from tipout.budget_utils import daily_expense_cost, ou_contribs, budget_corrector, expenditures_sum_for_specific_day
 from decimal import Decimal
 
 def budget_for_specific_day(emp, date):
@@ -16,7 +16,7 @@ def budget_for_specific_day(emp, date):
     # getting over/unders
     past_budgets = Budget.objects.filter(owner=emp, date__lt=date).order_by('-date')[:7]
     over_unders = [budget.over_under for budget in past_budgets]
-    ous = Decimal(balancer(over_unders))
+    ous = Decimal(budget_corrector(over_unders))
 
     return balance/30 - expense_cost_for_today + ous
 
