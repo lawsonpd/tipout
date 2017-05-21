@@ -270,7 +270,7 @@ def ou_contribs(emp):
     budgets = Budget.objects.filter(owner=emp, date__lt=now().date()).order_by('-date')[:7]
     # [0] in return is most recent
     ous = []
-    for i in xrange(7):
+    for i in xrange(len(budgets)):
         ous.append(float(budgets[i].over_under) / 7.0 * (7-i))
     return sum(ous)
 
