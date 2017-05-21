@@ -7,7 +7,7 @@ from custom_auth.admin import UserCreationForm
 from custom_auth.models import TipoutUser
 from stripe_utils import pretty_date, pretty_stripe_dollar_amount, refund_approved, most_recent_invoice
 import stripe
-from budgettool.settings import STRIPE_KEYS
+from budgettool.test_settings import STRIPE_KEYS
 
 # stripe.api_key=STRIPE_KEYS['test_sk']
 

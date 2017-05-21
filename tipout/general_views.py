@@ -13,6 +13,10 @@ from tipout.models import Tip, Employee, NewUserSetupForm, Budget, Feedback
 from tipout.budget_with_balance import update_budgets
 # from django.conf import settings
 
+from budgettool.settings import CACHE_HASH_KEY
+from hashlib import md5
+import hmac
+
 @require_http_methods(['GET'])
 def home(request, template_name):
     '''
