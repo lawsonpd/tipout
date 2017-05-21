@@ -2,6 +2,8 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login
 from django.views.decorators.http import require_http_methods
+from django.core.cache import cache
+from django.views.decorators.cache import cache_control
 
 from custom_auth.models import TipoutUser
 from django.core.mail import send_mail
@@ -45,11 +47,13 @@ def feedback(request):
         )
         return redirect('/thankyou/')
 
+@cache_control(private=True)
 @login_required(login_url='/login/')
 @require_http_methods(['GET', 'POST'])
 def new_user_setup(request):
     u = TipoutUser.objects.get(email=request.user)
     emp = Employee.objects.get(user=u)
+    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
 
     if request.method == 'GET':
         if not emp.new_user:
@@ -58,7 +62,7 @@ def new_user_setup(request):
             form = NewUserSetupForm()
             return render(request, 'new_user_setup.html', {'new_user': True, 'form': form})
 
-    else:
+    elif request.method == 'POST':
         form = NewUserSetupForm(request.POST)
         if form.is_valid():
             form_data = form.cleaned_data

@@ -18,6 +18,10 @@ from budget_utils import (avg_daily_tips_earned,
                           update_budgets
                          )
 
+from budgettool.settings import CACHE_HASH_KEY
+from hashlib import md5
+import hmac
+
 @cache_control(private=True)
 @login_required(login_url='/login/')
 @require_http_methods(['GET', 'POST'])
@@ -32,6 +36,7 @@ def enter_tips(request):
 
             u = TipoutUser.objects.get(email=request.user)
             emp = Employee.objects.get(user=u)
+            emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
 
             t = Tip(amount=tip_data['amount'],
                     date_earned=tip_data['date_earned'],
@@ -60,20 +65,20 @@ def enter_tips(request):
                 balance.save()
 
             tips = Tip.objects.filter(owner=emp)
-            cache.set('tips', tips)
+            cache.set(emp_cache_key+'tips', tips)
 
             # update_budgets return today's budget amount
             budget_today = update_budgets(emp, t.date_earned)
 
             # update cached budget
-            today_expends = cache.get('today_expends')
+            today_expends = cache.get(emp_cache_key+'today_expends')
             if not today_expends:
                 today_expends = Expenditure.objects.filter(owner=emp, date=now().date())
-                cache.set('today_expends', today_expends)
+                cache.set(emp_cache_key+'today_expends', today_expends)
             expends_sum = sum([exp.cost for exp in today_expends])
 
             current_budget = budget_today - expends_sum
-            cache.set('current_budget', current_budget)
+            cache.set(emp_cache_key+'current_budget', current_budget)
 
             return redirect('/tips/')
 
@@ -94,12 +99,14 @@ def tips(request):
     if request.method == 'GET':
         u = TipoutUser.objects.get(email=request.user)
         emp = Employee.objects.get(user=u)
+        emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
+
         t = now().date()
 
-        tips = cache.get('tips')
+        tips = cache.get(emp_cache_key+'tips')
         if not tips:
             tips = Tip.objects.filter(owner=emp)
-            cache.set('tips', tips)
+            cache.set(emp_cache_key+'tips', tips)
 
         # tips = Tip.objects.filter(owner=emp,
         #                           date_earned__month=now().date().month).order_by('date_earned')[::-1]
@@ -134,11 +141,12 @@ def delete_tip(request, tip_id, *args):
     if request.method == 'POST':
         u = TipoutUser.objects.get(email=request.user)
         emp = Employee.objects.get(user=u)
+        emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
 
-        tips = cache.get('tips')
+        tips = cache.get(emp_cache_key+'tips')
         if not tips:
             tips = Tip.objects.filter(owner=emp)
-            cache.set('tips', tips)
+            cache.set(emp_cache_key+'tips', tips)
 
         t = tips.get(owner=emp, pk=tip_id)
         tip_date = t.date_earned
@@ -162,20 +170,20 @@ def delete_tip(request, tip_id, *args):
         t.delete()
 
         tips = Tip.objects.filter(owner=emp)
-        cache.set('tips', tips)
+        cache.set(emp_cache_key+'tips', tips)
 
         # update_budgets return today's budget amount
         budget_today = update_budgets(emp, tip_date)
 
         # update cached budget
-        today_expends = cache.get('today_expends')
+        today_expends = cache.get(emp_cache_key+'today_expends')
         if not today_expends:
             today_expends = Expenditure.objects.filter(owner=emp, date=now().date())
-            cache.set('today_expends', today_expends)
+            cache.set(emp_cache_key+'today_expends', today_expends)
         expends_sum = sum([exp.cost for exp in today_expends])
 
         current_budget = budget_today - expends_sum
-        cache.set('current_budget', current_budget)
+        cache.set(emp_cache_key+'current_budget', current_budget)
 
         return redirect('/tips/')
 
@@ -192,11 +200,12 @@ def tips_archive(request, year=None, month=None, day=None, *args):
 
     u = TipoutUser.objects.get(email=request.user)
     emp = Employee.objects.get(user=u)
+    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
 
-    tips = cache.get('tips')
+    tips = cache.get(emp_cache_key+'tips')
     if not tips:
         tips = Tip.objects.filter(owner=emp)
-        cache.set('tips', tips)
+        cache.set(emp_cache_key+'tips', tips)
 
     if not year:
         all_years = [tip.date_earned.year for tip in tips]

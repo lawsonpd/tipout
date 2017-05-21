@@ -18,6 +18,10 @@ from tipout.models import (Employee,
 from tipout.budget_utils import update_budgets
 from custom_auth.models import TipoutUser
 
+from budgettool.settings import CACHE_HASH_KEY
+from hashlib import md5
+import hmac
+
 # need to be able to view paychecks by month & year
 @cache_control(private=True)
 @login_required(login_url='/login/')
@@ -25,15 +29,16 @@ from custom_auth.models import TipoutUser
 def paychecks(request):
     u = TipoutUser.objects.get(email=request.user)
     emp = Employee.objects.get(user=u)
+    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
 
-    recent_paychecks = cache.get('recent_paychecks')
+    recent_paychecks = cache.get(emp_cache_key+'recent_paychecks')
     if not recent_paychecks:
-        all_paychecks = cache.get('all_paychecks')
+        all_paychecks = cache.get(emp_cache_key+'all_paychecks')
         if not all_paychecks:
             all_paychecks = Paycheck.objects.filter(owner=emp)
-            cache.set('all_paychecks', all_paychecks)
+            cache.set(emp_cache_key+'all_paychecks', all_paychecks)
         recent_paychecks = all_paychecks.filter(date_earned__gt=now().date()-timedelta(30))
-        cache.set('recent_paychecks', recent_paychecks)
+        cache.set(emp_cache_key+'recent_paychecks', recent_paychecks)
 
     return render(request, 'paychecks.html', {'paychecks': recent_paychecks})
 
@@ -43,11 +48,12 @@ def paychecks(request):
 def paychecks_archive(request):
     u = TipoutUser.objects.get(email=request.user)
     emp = Employee.objects.get(user=u)
+    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
 
-    all_paychecks = cache.get('all_paychecks')
+    all_paychecks = cache.get(emp_cache_key+'all_paychecks')
     if not all_paychecks:
         all_paychecks = Paycheck.objects.filter(owner=emp)
-        cache.set('all_paychecks', all_paychecks)
+        cache.set(emp_cache_key+'all_paychecks', all_paychecks)
 
     return render(request, 'paychecks_archive.html', {'paychecks': all_paychecks})
 
@@ -60,13 +66,14 @@ def enter_paycheck(request):
         if form.is_valid():
             u = TipoutUser.objects.get(email=request.user)
             emp = Employee.objects.get(user=u)
+            emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
 
             paycheck_data = form.cleaned_data
 
-            all_paychecks = cache.get('all_paychecks')
+            all_paychecks = cache.get(emp_cache_key+'all_paychecks')
             if not all_paychecks:
                 all_paychecks = Paycheck.objects.filter(owner=emp)
-                cache.set('all_paychecks', all_paychecks)
+                cache.set(emp_cache_key+'all_paychecks', all_paychecks)
 
             dupe = all_paychecks.filter(date_earned=paycheck_data['date_earned'])
             if dupe:
@@ -106,26 +113,26 @@ def enter_paycheck(request):
 
                 # update paycheck cache
                 all_paychecks = Paycheck.objects.filter(owner=emp)
-                cache.set('all_paychecks', all_paychecks)
+                cache.set(emp_cache_key+'all_paychecks', all_paychecks)
                 recent_paychecks = all_paychecks.filter(date_earned__gt=now().date()-timedelta(30))
-                cache.set('recent_paychecks', recent_paychecks)
+                cache.set(emp_cache_key+'recent_paychecks', recent_paychecks)
 
                 if p.date_earned > now().date()-timedelta(30):
                     recent_paychecks = all_paychecks.filter(date_earned__gt=now().date()-timedelta(30))
-                    cache.set('recent_paychecks', recent_paychecks)
+                    cache.set(emp_cache_key+'recent_paychecks', recent_paychecks)
 
                 # update_budgets return today's budget amount
                 budget_today = update_budgets(emp, p.date_earned)
 
                 # update cached budget
-                today_expends = cache.get('today_expends')
+                today_expends = cache.get(emp_cache_key+'today_expends')
                 if not today_expends:
                     today_expends = Expenditure.objects.filter(owner=emp, date=now().date())
-                    cache.set('today_expends', today_expends)
+                    cache.set(emp_cache_key+'today_expends', today_expends)
                 expends_sum = sum([exp.cost for exp in today_expends])
 
                 current_budget = budget_today - expends_sum
-                cache.set('current_budget', current_budget)
+                cache.set(emp_cache_key+'current_budget', current_budget)
 
                 return redirect('/paychecks/')
     else:
@@ -140,14 +147,15 @@ def enter_paycheck(request):
 def edit_paycheck(request, p, *args):
     u = TipoutUser.objects.get(email=request.user)
     emp = Employee.objects.get(user=u)
+    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
 
     # split paycheck url into (email, 'paycheck', year, month, day)
     # paycheck_data_split = args[0].split('-')
 
-    all_paychecks = cache.get('all_paychecks')
+    all_paychecks = cache.get(emp_cache_key+'all_paychecks')
     if not all_paychecks:
         all_paychecks = Paycheck.objects.filter(owner=emp)
-        cache.set('all_paychecks', all_paychecks)
+        cache.set(emp_cache_key+'all_paychecks', all_paychecks)
 
     paycheck = all_paychecks.get(pk=p)
 
@@ -181,22 +189,22 @@ def edit_paycheck(request, p, *args):
 
             # update paycheck cache
             all_paychecks = Paycheck.objects.filter(owner=emp)
-            cache.set('all_paychecks', all_paychecks)
+            cache.set(emp_cache_key+'all_paychecks', all_paychecks)
             recent_paychecks = all_paychecks.filter(date_earned__gt=now().date()-timedelta(30))
-            cache.set('recent_paychecks', recent_paychecks)
+            cache.set(emp_cache_key+'recent_paychecks', recent_paychecks)
 
             # update_budgets return today's budget amount
             budget_today = update_budgets(emp, paycheck.date_earned)
 
             # update cached budget
-            today_expends = cache.get('today_expends')
+            today_expends = cache.get(emp_cache_key+'today_expends')
             if not today_expends:
                 today_expends = Expenditure.objects.filter(owner=emp, date=now().date())
-                cache.set('today_expends', today_expends)
+                cache.set(emp_cache_key+'today_expends', today_expends)
             expends_sum = sum([exp.cost for exp in today_expends])
 
             current_budget = budget_today - expends_sum
-            cache.set('current_budget', current_budget)
+            cache.set(emp_cache_key+'current_budget', current_budget)
 
             return redirect('/paychecks/')
 
@@ -217,11 +225,12 @@ def delete_paycheck(request, p):
     if request.method == 'POST':
         u = TipoutUser.objects.get(email=request.user)
         emp = Employee.objects.get(user=u)
+        emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
 
-        all_paychecks = cache.get('all_paychecks')
+        all_paychecks = cache.get(emp_cache_key+'all_paychecks')
         if not all_paychecks:
             all_paychecks = Paycheck.objects.filter(owner=emp)
-            cache.set('all_paychecks', all_paychecks)
+            cache.set(emp_cache_key+'all_paychecks', all_paychecks)
 
         paycheck_to_delete = all_paychecks.get(pk=p)
         # for exp in es:
@@ -253,21 +262,21 @@ def delete_paycheck(request, p):
 
         # update paycheck cache
         all_paychecks = Paycheck.objects.filter(owner=emp)
-        cache.set('all_paychecks', all_paychecks)
+        cache.set(emp_cache_key+'all_paychecks', all_paychecks)
         recent_paychecks = all_paychecks.filter(date_earned__gt=now().date()-timedelta(30))
-        cache.set('recent_paychecks', recent_paychecks)
+        cache.set(emp_cache_key+'recent_paychecks', recent_paychecks)
 
         # update_budgets return today's budget amount
         budget_today = update_budgets(emp, paycheck_date)
 
         # update cached budget
-        today_expends = cache.get('today_expends')
+        today_expends = cache.get(emp_cache_key+'today_expends')
         if not today_expends:
             today_expends = Expenditure.objects.filter(owner=emp, date=now().date())
-            cache.set('today_expends', today_expends)
+            cache.set(emp_cache_key+'today_expends', today_expends)
         expends_sum = sum([exp.cost for exp in today_expends])
 
         current_budget = budget_today - expends_sum
-        cache.set('current_budget', current_budget)
+        cache.set(emp_cache_key+'current_budget', current_budget)
 
         return redirect('/paychecks/')

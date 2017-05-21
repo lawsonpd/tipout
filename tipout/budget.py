@@ -19,12 +19,22 @@ from budget_with_balance import (budget_for_specific_day,
 )
 from custom_auth.models import TipoutUser
 
+from budgettool.settings import CACHE_HASH_KEY
+from hashlib import md5
+import hmac
+
 @cache_control(private=True)
 @login_required(login_url='/login/')
 @require_http_methods(['GET'])
 def balance(request):
     u = TipoutUser.objects.get(email=request.user)
     emp = Employee.objects.get(user=u)
+    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
+
+    balance = cache.get(emp_cache_key+'balance')
+    if not balance:
+        balance = Balance.objects.get(owner=emp)
+        cache.set(emp_cache_key+'balance', balance)
 
     balance = Balance.objects.get(owner=emp)
 
@@ -36,6 +46,7 @@ def balance(request):
 def edit_balance(request):
     u = TipoutUser.objects.get(email=request.user)
     emp = Employee.objects.get(user=u)
+    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
 
     balance = Balance.objects.get(owner=emp)
 
@@ -52,16 +63,16 @@ def edit_balance(request):
             budget_today = update_budgets(emp, now().date())
 
             # update cached budget
-            today_expends = cache.get('today_expends')
+            today_expends = cache.get(emp_cache_key+'today_expends')
             if not today_expends:
                 today_expends = Expenditure.objects.filter(owner=emp, date=now().date())
-                cache.set('today_expends', today_expends)
+                cache.set(emp_cache_key+'today_expends', today_expends)
 
             # update cached expends for budget cache
             expends_sum = sum([exp.cost for exp in today_expends])
             current_budget = budget_today - expends_sum
 
-            cache.set('current_budget', current_budget)
+            cache.set(emp_cache_key+'current_budget', current_budget)
 
             return redirect('/balance/')
 
@@ -89,6 +100,7 @@ def budget(request):
     # get user, employee
     u = TipoutUser.objects.get(email=request.user)
     emp = Employee.objects.get(user=u)
+    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
 
     # if user is new, send to new-user-setup
     if emp.new_user:
@@ -108,7 +120,7 @@ def budget(request):
         #   (saving the budgets & over/unders for those days)
         # if there are fewer than 7 budgets, do all of them
 
-        current_budget = cache.get('current_budget')
+        current_budget = cache.get(emp_cache_key+'current_budget')
 
         if not current_budget:
             try:
@@ -117,7 +129,7 @@ def budget(request):
                 exps = Expenditure.objects.filter(owner=emp, date=now().date())
                 exps_sum = sum([exp.cost for exp in exps])
                 current_budget = budget.amount - exps_sum
-                cache.set('current_budget', current_budget)
+                cache.set(emp_cache_key+'current_budget', current_budget)
 
             except:
                 try:
@@ -134,7 +146,7 @@ def budget(request):
                     exps = Expenditure.objects.filter(owner=emp, date=now().date())
                     exps_sum = sum([exp.cost for exp in exps])
                     current_budget = budget.amount - exps_sum
-                    cache.set('current_budget', current_budget)
+                    cache.set(emp_cache_key+'current_budget', current_budget)
 
                 except:
                     most_recent_budget = Budget.objects.filter(owner=emp).order_by('-date')[0]
@@ -166,7 +178,7 @@ def budget(request):
                     exps = Expenditure.objects.filter(owner=emp, date=now().date())
                     exps_sum = sum([exp.cost for exp in exps])
                     current_budget = budget.amount - exps_sum
-                    cache.set('current_budget', current_budget)
+                    cache.set(emp_cache_key+'current_budget', current_budget)
 
         try:
             yesterday_budget = Budget.objects.get(owner=emp, date=now().date()-timedelta(1))
@@ -195,6 +207,7 @@ def budget(request):
 def budget_history(request):
     u = TipoutUser.objects.get(email=request.user)
     emp = Employee.objects.get(user=u)
+    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
 
     all_budgets = Budget.objects.filter(owner=emp)
 
@@ -206,20 +219,21 @@ def budget_history(request):
 def reset_budgets(request):
     u = TipoutUser.objects.get(email=request.user)
     emp = Employee.objects.get(user=u)
+    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
 
     if request.method == 'POST':
         start_date = emp.signup_date
         budget_today = update_budgets(emp, start_date)
 
         # update cached budget
-        today_expends = cache.get('today_expends')
+        today_expends = cache.get(emp_cache_key+'today_expends')
         if not today_expends:
             today_expends = Expenditure.objects.filter(owner=emp, date=now().date())
-            cache.set('today_expends', today_expends)
+            cache.set(emp_cache_key+'today_expends', today_expends)
         expends_sum = sum([exp.cost for exp in today_expends])
 
         current_budget = budget_today - expends_sum
-        cache.set('current_budget', current_budget)
+        cache.set(emp_cache_key+'current_budget', current_budget)
 
         return redirect('/budget/')
 
@@ -232,6 +246,7 @@ def reset_budgets(request):
 def weekly_budget(request):
     u = TipoutUser.objects.get(email=request.user)
     emp = Employee.objects.get(user=u)
+    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
 
     # if user is new, send to new-user-setup
     if emp.new_user:
@@ -246,6 +261,7 @@ def weekly_budget(request):
 def monthly_budget(request):
     u = TipoutUser.objects.get(email=request.user)
     emp = Employee.objects.get(user=u)
+    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
 
     # if user is new, send to new-user-setup
     if emp.new_user:

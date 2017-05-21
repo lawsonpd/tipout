@@ -9,12 +9,17 @@ from tipout.models import OtherFunds, EnterOtherFundsForm, Employee, Balance, Sa
 
 from custom_auth.models import TipoutUser
 
+from budgettool.settings import CACHE_HASH_KEY
+from hashlib import md5
+import hmac
+
 @cache_control(private=True)
 @login_required(login_url='/login/')
 @require_http_methods(['GET', 'POST'])
 def enter_other_funds(request):
 	u = TipoutUser.objects.get(email=request.user)
 	emp = Employee.objects.get(user=u)
+	emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
 
 	if request.method == 'POST':
 		form = EnterOtherFundsForm(request.POST)
@@ -62,6 +67,7 @@ def enter_other_funds(request):
 def other_funds(request):
 	u = TipoutUser.objects.get(email=request.user)
 	emp = Employee.objects.get(user=u)
+	emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
 
 	emp_other_funds = OtherFunds.objects.filter(owner=emp)
 

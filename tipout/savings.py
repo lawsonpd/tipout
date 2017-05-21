@@ -9,12 +9,17 @@ from django.utils.timezone import now, timedelta
 from django.core.cache import cache
 from django.views.decorators.cache import cache_control
 
+from budgettool.settings import CACHE_HASH_KEY
+from hashlib import md5
+import hmac
+
 @cache_control(private=True)
 @login_required(login_url='/login/')
 @require_http_methods(['GET'])
 def savings(request):
     u = TipoutUser.objects.get(email=request.user)
     emp = Employee.objects.get(user=u)
+    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
 
     savings, created = Savings.objects.get_or_create(owner=emp,
                                             defaults={'amount': 0})
@@ -27,6 +32,7 @@ def savings(request):
 def savings_setup(request):
     u = TipoutUser.objects.get(email=request.user)
     emp = Employee.objects.get(user=u)
+    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
 
     if request.method == 'POST':
     	form = SavingsSetupForm(request.POST)
@@ -56,6 +62,7 @@ def savings_transaction(request):
         if form.is_valid():
             u = TipoutUser.objects.get(email=request.user)
             emp = Employee.objects.get(user=u)
+            emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
 
             trans_data = form.cleaned_data
             if request.POST['inlineRadioOptions'] == 'withdraw':
@@ -88,6 +95,7 @@ def savings_transaction(request):
 def savings_transaction_history(request):
     u = TipoutUser.objects.get(email=request.user)
     emp = Employee.objects.get(user=u)
+    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
 
     trans = SavingsTransaction.objects.filter(owner=emp).order_by('-date')
 

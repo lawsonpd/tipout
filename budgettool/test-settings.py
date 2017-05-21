@@ -205,6 +205,9 @@ def get_cache():
 
 CACHES = get_cache()
 
+with open(os.path.join(BASE_DIR, 'cache_hash_key.txt')) as f:
+    CACHE_HASH_KEY = f.read().strip()
+
 # CACHE_MIDDLEWARE_ALIAS
 
 # CACHE_MIDDLEWARE_SECONDS = 60
