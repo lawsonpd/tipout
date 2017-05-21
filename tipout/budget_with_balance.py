@@ -69,10 +69,15 @@ def weekly_budget_simple(emp):
     emp_balance = Balance.objects.get(owner=emp)
     balance = emp_balance.amount
 
+    if balance == 0:
+        balance_amt = 0
+    else:
+        balance_amt = (balance / 30 * 7)
+
     expenses = Expense.objects.filter(owner=emp)
     expense_cost_per_day = daily_expense_cost(expenses)
 
     over_unders = Decimal(ou_contribs(emp))
 
-    return (balance / 30 * 7) - (expense_cost_per_day * 7) + over_unders
+    return balance_amt - (expense_cost_per_day * 7) + over_unders
 
