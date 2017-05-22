@@ -1,4 +1,10 @@
 from django.utils.timezone import now, timedelta
+from django.core.cache import cache
+
+from budgettool.settings import CACHE_HASH_KEY
+from hashlib import md5
+import hmac
+
 from tipout.models import Balance, Expenditure, Expense, Budget
 from tipout.budget_utils import daily_expense_cost, ou_contribs, budget_corrector, expenditures_sum_for_specific_day
 from decimal import Decimal
@@ -66,14 +72,23 @@ def update_budgets(emp, date):
     return budget_today.amount
 
 def weekly_budget_simple(emp):
-    balance = Balance.objects.get(owner=emp)
+    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
+
+    balance = cache.get(emp_cache_key+'balance')
+    if not balance:
+        balance = Balance.objects.get(owner=emp)
+        cache.set(emp_cache_key+'balance', balance)
 
     if balance.amount == 0:
         balance_amt = 0
     else:
         balance_amt = (balance.amount / 30 * 7)
 
-    expenses = Expense.objects.filter(owner=emp)
+    expenses = cache.get(emp_cache_key+'expenses')
+    if not expenses:
+        expenses = Expense.objects.filter(owner=emp)
+        cache.set(emp_cache_key+'expenses', expenses)
+
     expense_cost_per_day = daily_expense_cost(expenses)
 
     over_unders = Decimal(ou_contribs(emp))

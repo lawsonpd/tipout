@@ -36,8 +36,6 @@ def balance(request):
         balance = Balance.objects.get(owner=emp)
         cache.set(emp_cache_key+'balance', balance)
 
-    balance = Balance.objects.get(owner=emp)
-
     return render(request, 'balance.html', {'balance': pretty_dollar_amount(balance.amount)})
 
 @cache_control(private=True)
@@ -48,7 +46,10 @@ def edit_balance(request):
     emp = Employee.objects.get(user=u)
     emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
 
-    balance = Balance.objects.get(owner=emp)
+    balance = cache.get(emp_cache_key+'balance')
+    if not balance:
+        balance = Balance.objects.get(owner=emp)
+        cache.set(emp_cache_key+'balance', balance)
 
     if request.method == 'POST':
         form = EditBalanceForm(request.POST)
