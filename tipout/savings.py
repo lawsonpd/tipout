@@ -25,8 +25,10 @@ def savings(request):
     emp = Employee.objects.get(user=u)
     emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
 
-    savings, created = Savings.objects.get_or_create(owner=emp,
-                                            defaults={'amount': 0})
+    savings = cache.get(emp_cache_key+'savings')
+    if not savings:
+        savings = Savings.objects.get(owner=emp)
+        cache.set(emp_cache_key+'savings', savings)
 
     return render(request, 'savings.html', {'savings_amount': savings.amount})
 
@@ -79,11 +81,19 @@ def savings_transaction(request):
                                                   amount = amt
             )
 
-            savings = Savings.objects.get(owner=emp)
+            savings = cache.get(emp_cache_key+'savings')
+            if not savings:
+                savings = Savings.objects.get(owner=emp)
+                cache.set(emp_cache_key+'savings', savings)
+
             savings.amount += amt
             savings.save()
 
-            balance = Balance.objects.get(owner=emp)
+            balance = cache.get(emp_cache_key+'balance')
+            if not balance:
+                balance = Balance.objects.get(owner=emp)
+                cache.set(emp_cache_key+'balance', balance)
+
             balance.amount -= amt
             balance.save()
 
@@ -101,6 +111,9 @@ def savings_transaction_history(request):
     emp = Employee.objects.get(user=u)
     emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
 
-    trans = SavingsTransaction.objects.filter(owner=emp).order_by('-date')
+    savings_trans = cache.get(emp_cache_key+'savings_trans')
+    if not savings_trans:
+        savings_trans = SavingsTransaction.objects.filter(owner=emp).order_by('-date')
+        cache.set(emp_cache_key+'savings_trans', savings_trans)
 
     return render(request, 'savings_transaction_history.html', {'trans': trans})

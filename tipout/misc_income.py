@@ -54,11 +54,13 @@ def enter_other_funds(request):
 				balance.amount += new_other_funds.amount
 				balance.save()
 
-				update_budgets(emp, now().date())
+			# update cache
+			other_funds = OtherFunds.objects.filter(owner=emp)
+			cache.set(emp_cache_key+'other_funds', other_funds)
+
+			update_budgets(emp, now().date())
 
 			return redirect('/other-funds/')
-		else:
-			return render(request, "There was an error.")
 
 	else:
 		form = EnterOtherFundsForm()
@@ -72,7 +74,10 @@ def other_funds(request):
 	emp = Employee.objects.get(user=u)
 	emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
 
-	emp_other_funds = OtherFunds.objects.filter(owner=emp)
+	other_funds = cache.get(emp_cache_key+'other_funds')
+	if not other_funds:
+		other_funds = OtherFunds.objects.filter(owner=emp)
+		cache.set(emp_cache_key+'other_funds', other_funds)
 
-	return render(request, 'other_funds.html', {'other_funds': emp_other_funds})
+	return render(request, 'other_funds.html', {'other_funds': other_funds})
 

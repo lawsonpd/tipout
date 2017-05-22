@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 
 from custom_auth.admin import UserCreationForm
 from custom_auth.models import TipoutUser
-from tipout.models import Employee, Budget, Balance
+from tipout.models import Employee, Budget, Balance, Savings
 from tipout.stripe_utils import pretty_date, pretty_stripe_dollar_amount, refund_approved, most_recent_invoice
 import stripe
 
@@ -100,6 +100,7 @@ def signup(request, template_name):
             new_emp = Employee.objects.create(user=new_user)
             emp_first_budget = Budget.objects.create(owner=new_emp, amount=0)
             emp_balance = Balance.objects.create(owner=new_emp)
+            emp_savings = Savings.objects.create(owner=new_emp)
 
             # coupon to pass to 'thankyou' template
             stripe_coupon = new_user.coupon
