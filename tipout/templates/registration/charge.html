@@ -4,7 +4,9 @@
 
 <h1 style="font-family: 'Lobster', cursive">Thank you!</h1>
 
-<p class="lead">You paid <strong>${{ amount }}</strong>.</p>
+{% if not coupon %}
+	<p class="lead">You paid <strong>${{ amount }}</strong>.</p>
+{% endif %}
 
 <p>Now <a href="/budget/">get started</a> with Tipout!</p>
 

@@ -24,6 +24,7 @@ def signup_test(request, template_name):
                     email = request.POST['stripeEmail'],
                     source = request.POST['stripeToken'],
                     plan='paid-plan',
+                    coupon=user_data['coupon'],
                 )
             except stripe.error.CardError as e:
                 return render('registration/signup_error.html', {'message': e['message']})
@@ -42,6 +43,7 @@ def signup_test(request, template_name):
             new_user = TipoutUser.objects.create_user(email=user_data['email'],
                                                       stripe_email=customer.email,
                                                       stripe_id=customer.id,
+                                                      coupon=user_data['coupon'],
                                                       password=user_data['password1'],
                                                       city=user_data['city'],
                                                       state=user_data['state']

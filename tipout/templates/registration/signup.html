@@ -37,6 +37,11 @@
     {{ form.state.label_tag }}
     {{ form.state }}
   </div>
+  <div class="form-group">
+    {{ form.coupon.errors }}
+    {{ form.coupon.label_tag }}
+    {{ form.coupon }}
+  </div>
   <script
     src="https://checkout.stripe.com/checkout.js" class="stripe-button"
     data-key="{{ key }}"

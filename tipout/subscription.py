@@ -72,6 +72,7 @@ def signup(request, template_name):
                     email = request.POST['stripeEmail'],
                     source = request.POST['stripeToken'],
                     plan='paid-plan',
+                    coupon=user_data['coupon'],
                 )
             except stripe.error.CardError as e:
                 return render('registration/signup_error.html', {'message': e['message']})
@@ -90,6 +91,7 @@ def signup(request, template_name):
             new_user = TipoutUser.objects.create_user(email=user_data['email'],
                                                       stripe_email=customer.email,
                                                       stripe_id=customer.id,
+                                                      coupon=user_data['coupon'],
                                                       password=user_data['password1'],
                                                       city=user_data['city'],
                                                       state=user_data['state']
@@ -99,11 +101,15 @@ def signup(request, template_name):
             emp_first_budget = Budget.objects.create(owner=new_emp, amount=0)
             emp_balance = Balance.objects.create(owner=new_emp)
 
+            # coupon to pass to 'thankyou' template
+            stripe_coupon = new_user.coupon
+
             user = authenticate(email=user_data['email'], password=user_data['password1'])
             if user is not None:
                 login(request, user)
-
-            return redirect('/thankyou/')
+                return redirect('/thankyou/')
+            else:
+                return render (request, 'registration/signup_error.html', {'message': "Something went wrong. The registration was unsuccessful."})
 
     else:
         form = UserCreationForm()
@@ -115,7 +121,7 @@ def thank_you(request):
         u = TipoutUser.objects.get(email=request.user)
         emp = Employee.objects.get(user=u)
         if emp.new_user:
-            return render(request, 'registration/charge.html', {'amount': '5.00'})
+            return render(request, 'registration/charge.html', {'amount': '5.00', 'coupon': u.coupon})
         else:
             return render(request, 'thankyou.html')
     return render(request, 'thankyou.html')
