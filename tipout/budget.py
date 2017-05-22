@@ -253,7 +253,11 @@ def weekly_budget(request):
         return redirect('/new-user-setup/')
 
     else:
-        return render(request, 'weekly_budget.html', {'weekly_budget': pretty_dollar_amount(weekly_budget_simple(emp))})
+        wk_budget = cache.get(emp_cache_key+'weekly_budget')
+        if not wk_budget:
+            wk_budget = weekly_budget_simple(emp)
+            cache.set(emp_cache_key+'weekly_budget', wk_budget)
+        return render(request, 'weekly_budget.html', {'weekly_budget': pretty_dollar_amount(wk_budget)})
 
 @cache_control(private=True)
 @login_required(login_url='/login/')
