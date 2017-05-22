@@ -65,6 +65,7 @@ urlpatterns = [
     url(r'^subscription/$', subscription.manage_subscription, name='manage-subscription'),
     url(r'^cancel-subscription/$', subscription.cancel_subscription, name='cancel-subscription'),
     url(r'^feedback/$', general_views.feedback, name='feedback'),
+    url(r'^view-feedback/$', general_views.view_feedback, name='view-feedback'),
     url(
         r'^login/$',
         auth_views.login,

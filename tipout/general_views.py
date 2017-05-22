@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth import login
 from django.views.decorators.http import require_http_methods
 from django.core.cache import cache
@@ -88,3 +88,15 @@ def new_user_setup(request):
 def faq(request):
     if request.method == 'GET':
         return render(request, 'faq.html')
+
+
+@login_required(login_url='/login/')
+@require_http_methods(['GET'])
+def view_feedback(request):
+    u = TipoutUser.objects.get(email=request.user)
+
+    if u.is_staff:
+        all_feedback = Feedback.objects.all().order_by('-date')
+        return render(request, 'view_feedback.html', {'feedback': all_feedback})
+    else:
+        return render(request, '404.html')

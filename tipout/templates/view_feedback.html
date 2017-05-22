@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+  <h1 style="font-family: 'Lobster', cursive">All feedback</h1>
+  <table class='table table-striped'>
+    <tr>
+      <td>User</td>
+      <td>Date</td>
+      <td>Feedback</td>
+      <td>Refer likelihood</td>
+    </tr>
+    {% for item in feedback %}
+    <tr>
+      <td>item.email</td>
+      <td>item.date</td>
+      <td>item.feedback</td>
+      <td>item.refer_likelihood</td>
+    </tr>
+    {% endfor %}
+  </table>
+
+{% endblock %}
