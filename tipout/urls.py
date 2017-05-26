@@ -89,4 +89,5 @@ urlpatterns = [
     # ),
     # url(r'^how-it-works/$', general_views.how_it_works, name='how-it-works'),
     url(r'^faq/$', general_views.faq, name='faq'),
+    url(r'^homepage-link/$', general_views.homepage_link, name='homepage-link'),
 ]

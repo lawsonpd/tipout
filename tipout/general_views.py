@@ -100,3 +100,8 @@ def view_feedback(request):
         return render(request, 'view_feedback.html', {'feedback': all_feedback})
     else:
         return render(request, '404.html')
+
+@require_http_methods(['GET'])
+def homepage_link(request):
+    if request.method == 'GET':
+        return render(request, 'homepage_link.html')
