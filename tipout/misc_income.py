@@ -6,7 +6,7 @@ from django.core.cache import cache
 from django.views.decorators.cache import cache_control
 
 from tipout.models import OtherFunds, EnterOtherFundsForm, Employee, Balance, Savings
-from tipout.budget_with_balance import update_budgets
+from tipout.budget_with_balance import update_budgets, weekly_budget_simple
 
 from custom_auth.models import TipoutUser
 
@@ -59,6 +59,9 @@ def enter_other_funds(request):
 			cache.set(emp_cache_key+'other_funds', other_funds)
 
 			update_budgets(emp, now().date())
+			wk_budget = weekly_budget_simple(emp)
+			cache.set(emp_cache_key+'current_budget', current_budget)
+			cache.set(emp_cache_key+'weekly_budget', wk_budget)
 
 			return redirect('/other-funds/')
 
