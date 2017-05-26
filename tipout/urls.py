@@ -16,6 +16,7 @@ urlpatterns = [
     url(r'^tips/archive/$', tips.tips_archive, name='tips-archive'),
     url(r'^other-funds/$', misc_income.other_funds, name='other-funds'),
     url(r'^enter-other-funds/$', misc_income.enter_other_funds, name='enter-other-funds'),
+    url(r'^delete-other-funds/(?P<funds_id>[0-9]+)/$', misc_income.delete_other_funds, name='delete-other-funds'),
     url(r'^budget/$', budget.budget, name='budget'),
     url(r'^balance/$', budget.balance, name='balance'),
     url(r'^edit-balance/$', budget.edit_balance, name='edit-balance'),

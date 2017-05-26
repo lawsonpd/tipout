@@ -100,16 +100,17 @@ def enter_paycheck(request):
                     emp_savings.amount += p.amount * (emp.savings_percent/100)
                     emp_savings.save()
 
-                    # update balance
-                    balance = Balance.objects.get(owner=emp)
-                    balance.amount += p.amount * (1 - (emp.savings_percent/100))
-                    balance.save()
+                # update savings cache
+                cache.set(emp_cache_key+'savings', emp_savings)
 
-                else:
-                    # update balance for when savings percent == 0
-                    balance = Balance.objects.get(owner=emp)
-                    balance.amount += p.amount
-                    balance.save()
+                # update balance
+                # if savings percent == 0, then balance is increased by paycheck amount
+                balance = Balance.objects.get(owner=emp)
+                balance.amount += p.amount * (1 - (emp.savings_percent/100))
+                balance.save()
+
+                # update balance cache
+                cache.set(emp_cache_key+'balance', balance)
 
                 # update paycheck cache
                 all_paychecks = Paycheck.objects.filter(owner=emp)
@@ -171,6 +172,8 @@ def edit_paycheck(request, p, *args):
                 emp_savings.amount += ((paycheck_data['amount'] - paycheck.amount) * (emp.savings_percent/100))
                 emp_savings.save()
 
+                cache.set(emp_cache_key+'savings', emp_savings)
+
                 # update balance
                 balance = Balance.objects.get(owner=emp)
                 balance.amount += (paycheck_data['amount'] - paycheck.amount) * (1 - emp.savings_percent/100)
@@ -181,6 +184,9 @@ def edit_paycheck(request, p, *args):
                 balance = Balance.objects.get(owner=emp)
                 balance.amount += paycheck_data['amount'] - paycheck.amount
                 balance.save()
+
+            # update balance cache
+            cache.set(emp_cache_key+'balance', balance)
 
             paycheck.amount = paycheck_data['amount']
             paycheck.hours_worked = paycheck_data['hours_worked']
@@ -247,6 +253,8 @@ def delete_paycheck(request, p):
             emp_savings.amount -= (paycheck_to_delete.amount * (emp.savings_percent/100))
             emp_savings.save()
 
+            cache.set(emp_cache_key+'savings', emp_savings)
+
             # update balance
             balance = Balance.objects.get(owner=emp)
             balance.amount -= paycheck_to_delete.amount * (1 - emp.savings_percent/100)
@@ -257,6 +265,9 @@ def delete_paycheck(request, p):
             balance = Balance.objects.get(owner=emp)
             balance.amount -= paycheck_to_delete.amount
             balance.save()
+
+        # update balance cache
+        cache.set(emp_cache_key+'balance', balance)
 
         paycheck_to_delete.delete()
 

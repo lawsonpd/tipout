@@ -219,6 +219,9 @@ def pay_expense(request, exp=None):
             balance.amount -= exp_to_pay.cost
             balance.save()
 
+            # update balance cache
+            cache.set(emp_cache_key+'balance', balance)
+
             # update_budgets return today's budget amount
             budget_today = update_budgets(emp, now().date())
 

@@ -71,6 +71,9 @@ def enter_expenditure(request):
                 balance.amount -= e.cost
                 balance.save()
 
+                # update balance cache
+                cache.set(emp_cache_key+'balance', balance)
+
                 # update_budgets return today's budget amount
                 budget_today = update_budgets(emp, e.date)
 
@@ -152,6 +155,9 @@ def delete_expenditure(request, exp, *args):
         balance.amount += exp_to_delete.cost
         balance.save()
 
+        # update balance cache
+        cache.set(emp_cache_key+'balance', balance)
+
         exp_to_delete.delete()
 
         expends = Expenditure.objects.filter(owner=emp)
@@ -218,6 +224,9 @@ def edit_expenditure(request, exp, *args):
             balance = Balance.objects.get(owner=emp)
             balance.amount -= exp_data['cost'] - exp_to_edit.cost
             balance.save()
+
+            # update balance cache
+            cache.set(emp_cache_key+'balance', balance)
 
             # update_budgets return today's budget amount
             budget_today = update_budgets(emp, exp_to_edit.date)

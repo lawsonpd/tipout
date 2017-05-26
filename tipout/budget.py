@@ -48,7 +48,7 @@ def edit_balance(request):
 
     balance = cache.get(emp_cache_key+'balance')
     if not balance:
-        balance = Balance.objects.get(owner=emp)
+        balance_object = Balance.objects.get(owner=emp)
         cache.set(emp_cache_key+'balance', balance)
 
     if request.method == 'POST':
@@ -59,6 +59,9 @@ def edit_balance(request):
             # update balance
             balance.amount = new_balance['amount']
             balance.save()
+
+            # update cached balance
+            cache.set(emp_cache_key+'balance', balance)
 
             # update_budgets return today's budget amount
             budget_today = update_budgets(emp, now().date())
@@ -78,7 +81,7 @@ def edit_balance(request):
             return redirect('/balance/')
 
     else:
-        form = EditBalanceForm(initial={'amount': balance.amount})
+        form = EditBalanceForm(initial={'amount': balance})
         return render(request, 'edit_balance.html', {'form': form})
 
 @cache_control(private=True)
@@ -141,7 +144,7 @@ def budget(request):
 
                     budget, created = Budget.objects.update_or_create(owner=emp,
                                                                       date=now().date(),
-                                                                      defaults={'amount': today_budget(emp)}
+                                                                      defaults={'amount': budget_for_specific_day(emp, now().date())}
                     )
 
                     exps = Expenditure.objects.filter(owner=emp, date=now().date())

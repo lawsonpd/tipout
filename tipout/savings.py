@@ -81,21 +81,30 @@ def savings_transaction(request):
                                                   amount = amt
             )
 
-            savings = cache.get(emp_cache_key+'savings')
-            if not savings:
-                savings = Savings.objects.get(owner=emp)
-                cache.set(emp_cache_key+'savings', savings)
-
+            savings = Savings.objects.get(owner=emp)
             savings.amount += amt
             savings.save()
 
-            balance = cache.get(emp_cache_key+'balance')
-            if not balance:
-                balance = Balance.objects.get(owner=emp)
-                cache.set(emp_cache_key+'balance', balance)
+            cache.set(emp_cache_key+'savings', savings)
 
+            balance = Balance.objects.get(owner=emp)
             balance.amount -= amt
             balance.save()
+
+            cache.set(emp_cache_key+'balance', balance)
+
+            # update_budgets return today's budget amount
+            budget_today = update_budgets(emp, now().date())
+
+            # update cached budget
+            today_expends = cache.get(emp_cache_key+'today_expends')
+            if not today_expends:
+                today_expends = Expenditure.objects.filter(owner=emp, date=now().date())
+                cache.set(emp_cache_key+'today_expends', today_expends)
+
+            expends_sum = sum([exp.cost for exp in today_expends])
+            current_budget = budget_today - expends_sum
+            cache.set(emp_cache_key+'current_budget', current_budget)
 
             return redirect('/savings/')
 

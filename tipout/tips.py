@@ -52,16 +52,16 @@ def enter_tips(request):
                 emp_savings.amount += t.amount * (emp.savings_percent/100)
                 emp_savings.save()
 
-                # update balance
-                balance = Balance.objects.get(owner=emp)
-                balance.amount += t.amount * (1 - (emp.savings_percent/100))
-                balance.save()
+                cache.set(emp_cache_key+'savings', emp_savings)
 
-            else:
-                # update balance for case when savings percent is 0
-                balance = Balance.objects.get(owner=emp)
-                balance.amount += t.amount
-                balance.save()
+            # update balance
+            # if savings percent == 0, then balance is increased by t.amount
+            balance = Balance.objects.get(owner=emp)
+            balance.amount += t.amount * (1 - (emp.savings_percent/100))
+            balance.save()
+
+            # update balance cache
+            cache.set(emp_cache_key+'balance', balance)
 
             tips = Tip.objects.filter(owner=emp)
             cache.set(emp_cache_key+'tips', tips)
@@ -156,6 +156,8 @@ def delete_tip(request, tip_id, *args):
             emp_savings.amount -= (t.amount * (emp.savings_percent/100))
             emp_savings.save()
 
+            cache.set(emp_cache_key+'savings', emp_savings)
+
             # update balance
             balance = Balance.objects.get(owner=emp)
             balance.amount -= t.amount * (1 - (emp.savings_percent/100))
@@ -165,6 +167,9 @@ def delete_tip(request, tip_id, *args):
         balance = Balance.objects.get(owner=emp)
         balance.amount -= t.amount
         balance.save()
+
+        # update balance cache
+        cache.set(emp_cache_key+'balance', balance)
 
         t.delete()
 

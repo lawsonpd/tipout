@@ -7,7 +7,13 @@
   <div class='row'>
     <div class='col-md-4 col-md-offset-4'>
       {% for funds in other_funds %}
-      <p>{{ funds.note }}: $<strong>{{ funds.amount }}</strong> on {{ funds.date_earned }}</p>
+      <p>
+      	{{ funds.note }}: $<strong>{{ funds.amount }}</strong> on {{ funds.date_earned }}
+      	<form action='/delete-other-funds/{{ funds.pk }}/' method='post'>
+      	    {% csrf_token %}
+      	    <input type='submit' class='btn btn-sm btn-danger' value='Delete' />
+      	</form>
+      </p>
       {% endfor %}
     </div>
   </div>
