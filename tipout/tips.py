@@ -16,7 +16,7 @@ from budget_utils import (avg_daily_tips_earned,
                           daily_avg_from_paycheck,
                           pretty_dollar_amount
                          )
-from budget_with_balance import update_budgets
+from budget_with_balance import update_budgets, weekly_budget_simple
 from budgettool.settings import CACHE_HASH_KEY
 from hashlib import md5
 import hmac
@@ -78,6 +78,9 @@ def enter_tips(request):
 
             current_budget = budget_today - expends_sum
             cache.set(emp_cache_key+'current_budget', current_budget)
+
+            wk_budget = weekly_budget_simple(emp)
+            cache.set(emp_cache_key+'weekly_budget', wk_budget)
 
             return redirect('/tips/')
 
@@ -188,6 +191,9 @@ def delete_tip(request, tip_id, *args):
 
         current_budget = budget_today - expends_sum
         cache.set(emp_cache_key+'current_budget', current_budget)
+
+        wk_budget = weekly_budget_simple(emp)
+        cache.set(emp_cache_key+'weekly_budget', wk_budget)
 
         return redirect('/tips/')
 

@@ -1,4 +1,5 @@
 from tipout.models import Savings, SavingsTransaction, Balance, Employee, SavingsSetupForm, SavingsTransactionForm
+from budget_with_balance import weekly_budget_simple
 
 from custom_auth.models import TipoutUser
 
@@ -106,6 +107,9 @@ def savings_transaction(request):
             current_budget = budget_today - expends_sum
             cache.set(emp_cache_key+'current_budget', current_budget)
 
+            wk_budget = weekly_budget_simple(emp)
+            cache.set(emp_cache_key+'weekly_budget', wk_budget)
+
             return redirect('/savings/')
 
     else:
@@ -125,4 +129,4 @@ def savings_transaction_history(request):
         savings_trans = SavingsTransaction.objects.filter(owner=emp).order_by('-date')
         cache.set(emp_cache_key+'savings_trans', savings_trans)
 
-    return render(request, 'savings_transaction_history.html', {'trans': trans})
+    return render(request, 'savings_transaction_history.html', {'trans': savings_trans})

@@ -17,8 +17,10 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 from tipout import urls as tipout_urls
+from tipout_demo import urls as tipout_demo_urls
 
 urlpatterns = [
     url(r'^', include(tipout_urls)),
+    url(r'^demo/', include(tipout_demo_urls)),
     url(r'^admin/', admin.site.urls),
 ]

@@ -1,6 +1,8 @@
 from django.conf.urls import url, include
 from django.contrib.auth import views as auth_views
 
+from tipout_demo import subscription as demo_subscription
+
 # from . import views
 from . import budget, expenditures, expenses, general_views, paychecks, subscription, tips, subscription_test, savings, misc_income
 
@@ -58,6 +60,7 @@ urlpatterns = [
     #     subscription.register,
     #     {'template_name': 'registration/register.html'}
     # ),
+    url(r'^launch-demo/$', demo_subscription.launch_demo, name='launch-demo'),
     url(r'^signup/$',
         subscription.signup,
         {'template_name': 'registration/signup.html'}
@@ -66,7 +69,7 @@ urlpatterns = [
     url(r'^subscription/$', subscription.manage_subscription, name='manage-subscription'),
     url(r'^cancel-subscription/$', subscription.cancel_subscription, name='cancel-subscription'),
     url(r'^feedback/$', general_views.feedback, name='feedback'),
-    url(r'^view-feedback/$', general_views.view_feedback, name='view-feedback'),
+    # url(r'^view-feedback/$', general_views.view_feedback, name='view-feedback'),
     url(
         r'^login/$',
         auth_views.login,
@@ -89,5 +92,5 @@ urlpatterns = [
     # ),
     # url(r'^how-it-works/$', general_views.how_it_works, name='how-it-works'),
     url(r'^faq/$', general_views.faq, name='faq'),
-    url(r'^homepage-link/$', general_views.homepage_link, name='homepage-link'),
+    url(r'^add-to-homescreen/$', general_views.add_to_homescreen, name='add-to-homescreen'),
 ]

@@ -1,4 +1,4 @@
-from tipout.models import Tip, Expenditure, Expense, Paycheck, Budget
+from tipout_demo.models import Tip, Expenditure, Expense, Paycheck, Budget
 from django.contrib.contenttypes.models import ContentType
 
 tip_content_type = ContentType.objects.get_for_model(Tip)

@@ -1,0 +1,26 @@
+{% extends 'base-with-container.html' %}
+
+{% block content %}
+
+{% if exps %}
+  <h1 style="font-family: 'Lobster', cursive">Today's expenditures</h1>
+
+    {% for exp in exps %}
+    <form action='/delete-expenditure/{{ exp.pk }}/' method='post'>
+        {% csrf_token %}
+        {# <p id="{{ exp.pk }}"> #}
+        <p>
+        {{ exp.note }} cost <strong>${{ exp.cost }}</strong>
+        <a class="btn btn-sm btn-default" href="/edit-expenditure/{{ exp.pk }}/">Edit</a>
+        <input type='submit' class='btn btn-sm btn-danger' value='DELETE' />
+        </p>
+    </form>
+    {% endfor %}
+
+{% else %}
+  <h3 style="font-family: 'Lobster', cursive">No expenditures for today yet.</h3>
+{% endif %}
+
+<p><a href="/enter-expenditure/">Enter expenditure</a> | <a href="/expenditures/archive/">Past expenditures</a></p>
+
+{% endblock %}

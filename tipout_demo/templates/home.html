@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+    <div class='jumbotron'>
+      {# <h1 style="font-family: 'Lobster', cursive">Tipout</h1> #}
+      <div>
+        <img src="{% static 'tipout/tipout.ico' %}" alt="tipout logo" style="margin-bottom: 20px;"/>
+      </div>
+
+      <div>
+
+        <p class='lead'>daily budgeting for servers & bartenders</p>
+
+      </div>
+
+      <a class="btn btn-lg btn-primary" href='/signup/' role="button">Create an account</a>
+
+    </div>
+
+    <!-- <hr /> -->
+    <!-- <p><h2 style="font-family: 'Lobster', cursive">Features</h2></p> -->
+    <div class='row'>
+      <div class='col-md-4'>
+          <h3 style="font-family: 'Lobster', cursive">Track your earnings</h3>
+          <p class='lead'>
+            Enter the tips and paychecks you earn to build a personal earnings profile and see how much you've earned for the month and year. This data is used to build your budget so you know what you can spend each day, week, or month.
+          </p>
+      </div>
+
+      <div class='col-md-4'>
+          <h3 style="font-family: 'Lobster', cursive">Keep up with expenses</h3>
+          <p class='lead'>
+            Make a list of your monthly bills and make sure you save enough money to pay all of your recurring expenses.
+          </p>
+      </div>
+
+      <div class='col-md-4'>
+          <h3 style="font-family: 'Lobster', cursive">Manage your spending</h3>
+          <p class='lead'>
+            Use daily expenditures (like coffee, lunch, and dinner) to keep your daily budget in check. You'll always know what you have left to spend today and still be able to pay your bills tomorrow.
+          </p>
+      </div>
+    </div>
+
+    <div class='row'>
+      <h4>See the <a href='/faq/'>FAQ</a> for more info.</h4>
+    </div>
+
+{% endblock %}

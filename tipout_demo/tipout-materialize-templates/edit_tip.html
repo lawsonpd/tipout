@@ -1,0 +1,19 @@
+{% extends "base-with-container.html" %}
+
+{% block content %}
+
+<h1 style="font-family: 'Lobster', cursive">Edit tip</h1>
+
+<form action="/edit-tip/{{ tip.get_absolute_url }}/" method="post">
+    {% csrf_token %}
+    <h3>Tip from {{ tip.date_earned }}</h3>
+    {{ form }}
+    <input type="submit" class="btn btn-primary" value="Submit" />
+</form>
+
+<form action="/delete-tip/{{ tip.get_absolue_url }}/" method="post">
+    {% csrf_token %}
+    <input type="submit" class="btn btn-sm btn-danger" value="Delete Tip" />
+</form>
+
+{% endblock %}

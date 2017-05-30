@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% if other_funds %}
+  <h1 style="font-family: 'Lobster', cursive">Your other funds</h1>
+  <div class='row'>
+    <div class='col-md-4 col-md-offset-4'>
+      {% for funds in other_funds %}
+      <p>
+      	{{ funds.note }}: $<strong>{{ funds.amount }}</strong> on {{ funds.date_earned }}
+      	<form action='/delete-other-funds/{{ funds.pk }}/' method='post'>
+      	    {% csrf_token %}
+      	    <input type='submit' class='btn btn-sm btn-danger' value='Delete' />
+      	</form>
+      </p>
+      {% endfor %}
+    </div>
+  </div>
+{% else %}
+  <h1 style="font-family: 'Lobster', cursive">No other funds logged yet.</h1>
+{% endif %}
+
+<a href="/enter-other-funds/">Enter funds</a>
+
+{% endblock %}

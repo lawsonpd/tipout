@@ -26,7 +26,7 @@ with open(os.path.join(BASE_DIR, 'secret_key.txt')) as f:
     SECRET_KEY = f.read().strip()
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
@@ -69,6 +69,7 @@ ALLOWED_HOSTS = [
 
 INSTALLED_APPS = [
     'tipout.apps.TipoutConfig',
+    'tipout_demo.apps.TipoutDemoConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -166,7 +167,7 @@ STATICFILES_DIRS = [
 # Simplified static file serving
 # https://warehouse.python.org/project/whitenoise/
 
-STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
+# STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 
 # Login redirect URL to override '/accounts/profile/'
 LOGIN_REDIRECT_URL = '/budget/'
@@ -236,8 +237,8 @@ with open(os.path.join(BASE_DIR, 'cache_hash_key.txt')) as f:
 STRIPE_KEYS = {
     'secret_key': 'sk_live_VZuuKr51mjqssdIYBtNWU0nq',
     'publishable_key': 'pk_live_WLB0pXGykT9BM5tJ1EixjZF1',
-    # 'test_sk': 'sk_test_GVCFYxcWaAZq3zBnEifLXeJd',
-    # 'test_pk': 'pk_test_p5rrucKiZvMX19wKoUGVDbRd'
+    'test_sk': 'sk_test_GVCFYxcWaAZq3zBnEifLXeJd',
+    'test_pk': 'pk_test_p5rrucKiZvMX19wKoUGVDbRd'
 }
 
 PLAID_KEYS = {

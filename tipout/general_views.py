@@ -102,6 +102,6 @@ def view_feedback(request):
         return render(request, '404.html')
 
 @require_http_methods(['GET'])
-def homepage_link(request):
+def add_to_homescreen(request):
     if request.method == 'GET':
-        return render(request, 'homepage_link.html')
+        return render(request, 'add_to_homescreen.html')

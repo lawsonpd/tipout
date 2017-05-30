@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <h1 style="font-family: 'Lobster', cursive">Weekly Budget</h1>
+
+    <p style='font-size:72px'>{{ weekly_budget }}</p>
+
+    <p><a href='/budget/'>Today's budget</a></p>
+    	
+    <p style="padding: 10px" class='bg-info'>Note: this amount is an estimate. It's based on your recent tips and paychecks, as well as your expense costs per day and your expenditures for today. Your actual budget could be different depending on your tips, paychecks, and expenditures over the next 6 days.</p>
+
+{% endblock %}

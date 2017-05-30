@@ -121,7 +121,7 @@ class Savings(models.Model):
     Records of "deposits" and "withdrawals" from savings are kept in SavingsTransactions objects.
     '''
     owner = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='savings')
-    amount = models.DecimalField(max_digits=11, decimal_places=2)
+    amount = models.DecimalField(max_digits=11, decimal_places=2, default=0)
 
 class SavingsTransaction(models.Model):
     '''

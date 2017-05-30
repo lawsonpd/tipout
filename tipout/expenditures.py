@@ -8,7 +8,7 @@ from django.views.decorators.cache import cache_control
 from string import strip
 
 from tipout.models import Employee, Expenditure, EnterExpenditureForm, EditExpenditureForm, Balance
-from budget_with_balance import update_budgets
+from budget_with_balance import update_budgets, weekly_budget_simple
 from custom_auth.models import TipoutUser
 
 from budgettool.settings import CACHE_HASH_KEY
@@ -86,6 +86,9 @@ def enter_expenditure(request):
                 expends_sum = sum([exp.cost for exp in today_expends])
                 current_budget = budget_today - expends_sum
                 cache.set(emp_cache_key+'current_budget', current_budget)
+
+                wk_budget = weekly_budget_simple(emp)
+                cache.set(emp_cache_key+'weekly_budget', wk_budget)
 
                 return redirect('/budget/')
     else:
@@ -181,6 +184,9 @@ def delete_expenditure(request, exp, *args):
         current_budget = budget_today - expends_sum
         cache.set(emp_cache_key+'current_budget', current_budget)
 
+        wk_budget = weekly_budget_simple(emp)
+        cache.set(emp_cache_key+'weekly_budget', wk_budget)
+
         return redirect('/expenditures/')
 
 # To edit an expenditure, you'll have to use pk to identify it, since the note and amount could change.
@@ -240,6 +246,9 @@ def edit_expenditure(request, exp, *args):
 
             current_budget = budget_today - expends_sum
             cache.set(emp_cache_key+'current_budget', current_budget)
+
+            wk_budget = weekly_budget_simple(emp)
+            cache.set(emp_cache_key+'weekly_budget', wk_budget)
 
             return redirect('/expenditures/')
     else:

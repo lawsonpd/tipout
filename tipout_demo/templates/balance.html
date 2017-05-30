@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <h1 style="font-family: 'Lobster', cursive">Your balance</h1>
+
+    <p style='font-size:72px'>{{ balance }}</p>
+
+    <a href='/edit-balance/'>Edit balance</a>
+
+    <div style="padding: 10px; margin-top: 15px;" class='bg-info'>
+    	<p>Your balance is the amount of money you currently have (<em>not</em> including savings). It is tracked from the date you signed up until the present and roughly equals your total income (tips, paychecks, & other funds) minus your total spending (expenses & expenditures).</p>
+    	<p>If it doesn't seem correct, make sure you have all of your tips, paychecks, & other funds entered, as well as all of your expenditures & expenses.</p>
+    </div>
+
+{% endblock %}

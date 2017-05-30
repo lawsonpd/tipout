@@ -15,7 +15,7 @@ from tipout.models import (Employee,
                            SavingsTransaction
 )
 
-from tipout.budget_with_balance import update_budgets
+from tipout.budget_with_balance import update_budgets, weekly_budget_simple
 from custom_auth.models import TipoutUser
 
 from budgettool.settings import CACHE_HASH_KEY
@@ -135,6 +135,9 @@ def enter_paycheck(request):
                 current_budget = budget_today - expends_sum
                 cache.set(emp_cache_key+'current_budget', current_budget)
 
+                wk_budget = weekly_budget_simple(emp)
+                cache.set(emp_cache_key+'weekly_budget', wk_budget)
+
                 return redirect('/paychecks/')
     else:
         return render(request,
@@ -211,6 +214,9 @@ def edit_paycheck(request, p, *args):
 
             current_budget = budget_today - expends_sum
             cache.set(emp_cache_key+'current_budget', current_budget)
+
+            wk_budget = weekly_budget_simple(emp)
+            cache.set(emp_cache_key+'weekly_budget', wk_budget)
 
             return redirect('/paychecks/')
 
@@ -290,4 +296,8 @@ def delete_paycheck(request, p):
         current_budget = budget_today - expends_sum
         cache.set(emp_cache_key+'current_budget', current_budget)
 
+        wk_budget = weekly_budget_simple(emp)
+        cache.set(emp_cache_key+'weekly_budget', wk_budget)
+
         return redirect('/paychecks/')
+

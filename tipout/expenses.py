@@ -6,7 +6,7 @@ from django.views.decorators.cache import cache_control
 from django.utils.timezone import now
 
 from tipout.models import Employee, Expense, Balance, Expenditure, EnterExpenseForm, EditExpenseForm, PayExpenseForm
-from budget_with_balance import update_budgets
+from budget_with_balance import update_budgets, weekly_budget_simple
 from custom_auth.models import TipoutUser
 
 from budgettool.settings import CACHE_HASH_KEY
@@ -85,6 +85,9 @@ def enter_expense(request):
 
                 cache.set(emp_cache_key+'current_budget', current_budget)
 
+                wk_budget = weekly_budget_simple(emp)
+                cache.set(emp_cache_key+'weekly_budget', wk_budget)
+
                 return redirect('/expenses/')
     else:
         form = EnterExpenseForm()
@@ -140,6 +143,9 @@ def edit_expense(request, *args):
 
             cache.set(emp_cache_key+'current_budget', current_budget)
 
+            wk_budget = weekly_budget_simple(emp)
+            cache.set(emp_cache_key+'weekly_budget', wk_budget)
+
             return redirect('/expenses/')
 
 @cache_control(private=True)
@@ -182,6 +188,9 @@ def delete_expense(request, *args):
         current_budget = budget_today - expends_sum
 
         cache.set(emp_cache_key+'current_budget', current_budget)
+
+        wk_budget = weekly_budget_simple(emp)
+        cache.set(emp_cache_key+'weekly_budget', wk_budget)
         
         return redirect('/expenses/')
 
@@ -236,6 +245,9 @@ def pay_expense(request, exp=None):
             current_budget = budget_today - expends_sum
 
             cache.set(emp_cache_key+'current_budget', current_budget)
+
+            wk_budget = weekly_budget_simple(emp)
+            cache.set(emp_cache_key+'weekly_budget', wk_budget)
 
             return redirect('/expenses/')
 

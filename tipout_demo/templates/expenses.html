@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% if expenses %}
+
+  <h1 style="font-family: 'Lobster', cursive">Your expenses</h1>
+
+    <table class='table table-striped'>
+      <tr>
+      	<td><strong>Expense</strong></td>
+      	<td><strong>Cost</strong></td>
+      	<td><strong>Frequency</strong></td>
+      	<td><strong>Last paid</strong></td>
+      	<td><strong>Options</strong></td>
+      </tr>
+        {% for exp in expenses %}
+        <tr>
+	        <td>{{ exp.expense_name }}</td>
+	        <td>${{ exp.cost }}</td>
+	        <td>{{ exp.get_frequency_display }}</td>
+	        <td>{{ exp.paid_on }}</td>
+	        <td><a href="/edit-expense{{ exp.get_absolute_url }}/">Edit</a></p></td>
+	     </tr>
+        {% endfor %}
+    </table>
+
+{% else %}
+
+  <h1 style="font-family: 'Lobster', cursive">No expenses logged.</h1>
+
+{% endif %}
+
+<p><a href="/enter-expense/">Enter expense</a> | <a href="/pay-expense/"/>Pay expenses</a></p>
+
+{% endblock %}
+
+
+
+{% block old_content %}
+
+{% if expenses %}
+
+  <h1 style="font-family: 'Lobster', cursive">Your expenses</h1>
+
+    <div class='row'>
+      <div class='col-md-4 col-md-offset-4'>
+        {% for exp in expenses %}
+        <p>{{ exp.expense_name }} <strong>${{ exp.cost }}</strong> paid {{ exp.get_frequency_display }} | <a href="/edit-expense{{ exp.get_absolute_url }}/">Edit</a></p>
+        {% endfor %}
+      </div>
+    </div>
+
+{% else %}
+
+  <h1 style="font-family: 'Lobster', cursive">No expenses logged.</h1>
+
+{% endif %}
+
+<p><a href="/enter-expense/">Enter expense</a>
+
+{% endblock %}

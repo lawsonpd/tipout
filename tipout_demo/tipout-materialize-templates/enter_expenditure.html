@@ -1,0 +1,19 @@
+{% extends "base-with-container.html" %}
+
+{% block content %}
+
+<h1 style="font-family: 'Lobster', cursive">Enter an expenditure</h1>
+
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+<div class='row'>
+<form class='col s12' action='/enter-expenditure/' method='post'>
+  <div class='col s12'>
+    {% csrf_token %}
+    {{ form.as_p }}
+  <input type='submit' class="btn btn-primary" value='Submit' />
+  </div>
+</form>
+</div>
+
+{% endblock %}
