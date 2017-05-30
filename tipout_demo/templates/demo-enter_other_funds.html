@@ -1,0 +1,17 @@
+{% extends 'demo-base.html' %}
+
+{% block content %}
+
+<h1 style="font-family: 'Lobster', cursive">Enter other funds</h1>
+
+{% if error_message %}<p class="text-warning"><strong>{{ error_message }}</strong></p>{% endif %}
+
+<form class='form-horizontal' action='/demo/enter-other-funds/' method='post'>
+  <div>
+    {% csrf_token %}
+    {{ form.as_p }}
+  <input type='submit' class="btn btn-primary" value='Submit' />
+  </div>
+</form>
+
+{% endblock %}

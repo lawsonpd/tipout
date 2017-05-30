@@ -1,0 +1,21 @@
+{% extends 'demo-base.html' %}
+
+{% block content %}
+
+<h1 style="font-family: 'Lobster', cursive">Pay expense</h1>
+
+<ul class="list-group">
+	{% for expense in expenses %}
+		<li class="list-group-item">
+			<form action="/demo/pay-expense/{{ expense.pk }}/" method="post">
+			  {% csrf_token %}
+			  <h3 class='lead'>{{ expense.expense_name }} ${{ expense.cost }}</h3>
+			  <p>Last paid on {{ expense.paid_on }}</p>
+			  {{ form }}
+			  <input type="submit" class="btn btn-primary" value="Mark paid" />
+			</form>
+		</li>
+	{% endfor %}
+</ul>
+
+{% endblock %}

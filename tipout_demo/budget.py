@@ -36,7 +36,7 @@ def balance(request):
         balance = Balance.objects.get(owner=emp)
         cache.set(emp_cache_key+'balance', balance)
 
-    return render(request, 'balance.html', {'balance': pretty_dollar_amount(balance.amount)})
+    return render(request, 'demo-balance.html', {'balance': pretty_dollar_amount(balance.amount)})
 
 @cache_control(private=True)
 @login_required(login_url='/login/')
@@ -78,11 +78,11 @@ def edit_balance(request):
 
             cache.set(emp_cache_key+'current_budget', current_budget)
 
-            return redirect('/balance/')
+            return redirect('/demo/balance/')
 
     else:
         form = EditBalanceForm(initial={'amount': balance})
-        return render(request, 'edit_balance.html', {'form': form})
+        return render(request, 'demo-edit_balance.html', {'form': form})
 
 @cache_control(private=True)
 @login_required(login_url='/login/')
@@ -108,7 +108,7 @@ def budget(request):
 
     # if user is new, send to new-user-setup
     if emp.new_user:
-        return redirect('/new-user-setup/')
+        return redirect('/demo/new-user-setup/')
 
     else:
         # avg_daily_tips = pretty_dollar_amount(emp.init_avg_daily_tips)
@@ -197,13 +197,13 @@ def budget(request):
                 over = 1
             elif yesterday_budget.over_under == 0:
                 over = 0
-            return render(request, 'budget.html', {'budget': pretty_dollar_amount(current_budget),
+            return render(request, 'demo-budget.html', {'budget': pretty_dollar_amount(current_budget),
                                                    'over': over,
                                                    'negative_budget': negative_budget,
                                                    'yesterday_budget_negative': yesterday_budget_negative,
                                                    'over_under_amount': abs(yesterday_budget.over_under)})
         except:
-            return render(request, 'budget.html', {'budget': pretty_dollar_amount(current_budget)})
+            return render(request, 'demo-budget.html', {'budget': pretty_dollar_amount(current_budget)})
 
 @cache_control(private=True)
 @login_required(login_url='/login/')
@@ -215,7 +215,7 @@ def budget_history(request):
 
     all_budgets = Budget.objects.filter(owner=emp)
 
-    return render(request, 'budget_history.html', {'budgets': all_budgets})
+    return render(request, 'demo-budget_history.html', {'budgets': all_budgets})
 
 @cache_control(private=True)
 @login_required(login_url='/login/')
@@ -239,10 +239,10 @@ def reset_budgets(request):
         current_budget = budget_today - expends_sum
         cache.set(emp_cache_key+'current_budget', current_budget)
 
-        return redirect('/budget/')
+        return redirect('/demo/budget/')
 
     else:
-        return render(request, 'reset_budget.html')
+        return render(request, 'demo-reset_budget.html')
 
 @cache_control(private=True)
 @login_required(login_url='/login/')
@@ -254,14 +254,14 @@ def weekly_budget(request):
 
     # if user is new, send to new-user-setup
     if emp.new_user:
-        return redirect('/new-user-setup/')
+        return redirect('/demo/new-user-setup/')
 
     else:
         wk_budget = cache.get(emp_cache_key+'weekly_budget')
         if not wk_budget:
             wk_budget = weekly_budget_simple(emp)
             cache.set(emp_cache_key+'weekly_budget', wk_budget)
-        return render(request, 'weekly_budget.html', {'weekly_budget': pretty_dollar_amount(wk_budget)})
+        return render(request, 'demo-weekly_budget.html', {'weekly_budget': pretty_dollar_amount(wk_budget)})
 
 @cache_control(private=True)
 @login_required(login_url='/login/')
@@ -273,7 +273,7 @@ def monthly_budget(request):
 
     # if user is new, send to new-user-setup
     if emp.new_user:
-        return redirect('/new-user-setup/')
+        return redirect('/demo/new-user-setup/')
 
     else:
-        return render(request, 'monthly_budget.html', {'monthly_budget': pretty_dollar_amount(monthly_budget_amount(emp))})
+        return render(request, 'demo-monthly_budget.html', {'monthly_budget': pretty_dollar_amount(monthly_budget_amount(emp))})

@@ -1,0 +1,27 @@
+{% extends 'demo-base.html' %}
+
+{% block content %}
+
+  <h1 style="font-family: 'Lobster', cursive">Savings transactions</h1>
+	<table class="table table-striped">
+		<tr>
+	    	<td><strong>Date</strong></td>
+	    	<td><strong>Amount</strong></td>
+	    	<td><strong>Deposit/Withdraw</strong></td>
+	    </tr>
+		{% for t in trans %}
+		<tr>
+			<td>{{ t.date }}</td>
+			<td>${{ t.amount }}</td>
+			{% if t.amount < 0 %}
+			<td>Withdraw</td>
+			{% else %}
+			<td>Deposit</td>
+			{% endif %}
+		</tr>
+		{% endfor %}
+	</table>
+
+	<p style="padding: 10px" class='bg-info'>This table only accounts for manual deposits and withdrawals. When you enter a paycheck, a portion of that may be added to your savings (if you've set a percentage to save on the <a href="/demo/savings-setup/">savings setup</a> page), but that won't be reflected on this page.</p>
+
+{% endblock %}

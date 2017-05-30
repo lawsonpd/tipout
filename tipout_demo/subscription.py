@@ -22,26 +22,32 @@ def launch_demo(request):
         2. don't show signup form; just create new user with unique name (e.g. demo8472795@tipoutapp.com)
     '''
     demo_email = 'demo' + get_random_string(length=8) + '@tipoutapp.com'
-    demo_user = {
-        'email': demo_email,
-        'stripe_email': demo_email,
-        'stripe_id': 'Demo',
-        'coupon': '',
-        'password': get_random_string(length=12),
-        'city': 'Demo',
-        'state': 'Demo',
-    }
-    new_user = TipoutUser.objects.create_user(demo_user)
+    demo_pw = get_random_string(length=12)
+    print demo_pw
+    new_user = TipoutUser.objects.create_user(email=demo_email,
+                                              stripe_email=demo_email,
+                                              stripe_id='Demo',
+                                              coupon='',
+                                              password=demo_pw,
+                                              city='Demo',
+                                              state='Demo',
+    )
 
-    user = authenticate(email=new_user.email, password=new_user.password)
+    user = authenticate(email=new_user.email, password=demo_pw)
     if user is not None:
         login(request, user)
+        
+        new_emp = DemoEmployee.objects.create(user=new_user)
+        emp_first_budget = Budget.objects.create(owner=new_emp, amount=0)
+        emp_balance = Balance.objects.create(owner=new_emp)
+        emp_savings = Savings.objects.create(owner=new_emp)
+
         request.session['demo_alive'] = 'True'
         request.session.set_expiry(60)
-        return redirect('/thankyou/')
+        return redirect('/demo/thankyou/')
     else:
-        return render (request, 'registration/signup_error.html', {'message': "Something went wrong."})
-    return redirect('/new-user-setup/')
+        return render (request, 'registration/demo-signup_error.html', {'message': "Something went wrong."})
+    return redirect('/demo/new-user-setup/')
 
 @require_http_methods(['GET', 'POST'])
 def register(request, template_name):
@@ -153,10 +159,10 @@ def thank_you(request):
         u = TipoutUser.objects.get(email=request.user)
         emp = DemoEmployee.objects.get(user=u)
         if emp.new_user:
-            return render(request, 'registration/charge.html', {'amount': '5.00', 'coupon': u.coupon})
+            return render(request, 'registration/demo-charge.html', {'amount': '5.00', 'coupon': u.coupon})
         else:
-            return render(request, 'thankyou.html')
-    return render(request, 'thankyou.html')
+            return render(request, 'demo-thankyou.html')
+    return render(request, 'demo-thankyou.html')
 
 @login_required(login_url='/login/')
 @require_http_methods(['GET'])
@@ -170,13 +176,13 @@ def manage_subscription(request):
     customer_invoices = filter(lambda invoice: invoice.customer == customer.id, invoices)
     invoice_data = [(pretty_date(invoice.date), pretty_stripe_dollar_amount(invoice.amount_due)) for invoice in customer_invoices]
 
-    return render(request, 'registration/subscription.html', {'invoice_data': invoice_data})
+    return render(request, 'registration/demo-subscription.html', {'invoice_data': invoice_data})
 
 @login_required(login_url='/login/')
 @require_http_methods(['GET', 'POST'])
 def cancel_subscription(request):
     if request.method == 'GET':
-        return render(request, 'registration/cancel.html')
+        return render(request, 'registration/demo-cancel.html')
     if request.method == 'POST':
         u = TipoutUser.objects.get(email=request.user)
         u.delete()
@@ -192,4 +198,4 @@ def cancel_subscription(request):
             re = stripe.Refund.create(charge=invoice_to_refund.charge)
 
         # redirect to feedback page
-        return redirect('/feedback/')
+        return redirect('/demo/feedback/')

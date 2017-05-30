@@ -1,0 +1,35 @@
+{% extends "demo-base-no_text_center.html" %}
+
+{% block content %}
+
+<h1 style="font-family: 'Lobster', cursive">Savings withdrawal/deposit</h1>
+
+<form class='form-horizontal' action="/demo/savings-transaction/" method="post">
+    <div>
+      {% csrf_token %}
+      {{ form.as_p }}
+    <fieldset>
+	    <label class="radio-inline">
+	      <input type="radio" name="inlineRadioOptions" id="inlineRadio1" value="deposit"> Deposit
+	    </label>
+	    <label class="radio-inline">
+	      <input type="radio" name="inlineRadioOptions" id="inlineRadio2" value="withdraw"> Withdraw
+	    </label>
+	    <input type="submit" class="btn btn-primary" value="Submit"/>
+    </fieldset>
+    </div>
+</form>
+
+<div style="padding: 10px; margin-top: 15px" class='bg-info'>
+	<p>
+		Keep in mind:
+	</p>
+	<p>
+		Anytime you <strong>deposit</strong> money into savings, Tipout assumes that money has already been entered in the form of tips, paychecks, or other funds, so your balance (the amount of money you have <em>not</em> including savings) will <em>decrease</em> to reflect the deposit.
+	</p>
+	<p>
+		On the other hand, if you <strong>withdraw</strong> money from savings, your balance will <em>increase</em>, since that money is assumed to be spendable after it's withdrawn.
+	</p>
+</div>
+
+{% endblock %}

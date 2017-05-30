@@ -1,0 +1,24 @@
+{% extends 'demo-base.html' %}
+
+{% block content %}
+
+{% if paychecks %}
+  <h1 style="font-family: 'Lobster', cursive">Your paychecks</h1>
+  <p class="lead">from the past 30 days</p>
+    {% for paycheck in paychecks %}
+    <form action='/demo/delete-paycheck/{{ paycheck.pk }}/' method='post'>
+        {% csrf_token %}
+        <p>
+        <strong>${{ paycheck.amount }}</strong> on {{ paycheck.date_earned }}
+        <a class="btn btn-sm btn-default" href="/demo/edit-paycheck/{{ paycheck.pk }}/">Edit</a>
+        <input type='submit' class='btn btn-sm btn-danger' value='DELETE' />
+        </p>
+    </form>
+    {% endfor %}
+{% else %}
+  <h2 style="font-family: 'Lobster', cursive">No recent paychecks (last 30 days)</h2>
+{% endif %}
+
+<p><a href='/demo/enter-paycheck/'>Enter a paycheck</a> | <a href='/demo/paychecks-archive/'>See archive</a></p>
+
+{% endblock %}

@@ -26,14 +26,14 @@ def home(request, template_name):
     # django was seeing anonymous user as an authenticated user and
     # was redirecting to budget, which then redirected to signup page
     if request.user.has_module_perms('tipout'):
-        return redirect('/budget/')
+        return redirect('/demo/budget/')
     else:
         return render(request, template_name)
 
 @require_http_methods(['GET', 'POST'])
 def feedback(request):
     if request.method == 'GET':
-        return render(request, 'feedback.html')
+        return render(request, 'demo-feedback.html')
     if request.method == 'POST':
         # could use request.META['HTTP_REFERER'] to get referring page
         # form_data = form.cleaned_data
@@ -49,7 +49,7 @@ def feedback(request):
             feedback=request.POST['feedback'],
             refer_likelihood=request.POST['inlineRadioOptions']
         )
-        return redirect('/thankyou/')
+        return redirect('/demo/thankyou/')
 
 @cache_control(private=True)
 @login_required(login_url='/login/')
@@ -59,7 +59,6 @@ def new_user_setup(request):
     demo_alive = request.session.get('demo_alive', False)
 
     if not demo_alive:
-        logout(request)
         u.delete()
     
     emp = DemoEmployee.objects.get(user=u)
@@ -67,10 +66,10 @@ def new_user_setup(request):
 
     if request.method == 'GET':
         if not emp.new_user:
-            return render(request, 'new_user_setup.html', {'new_user': False})
+            return render(request, 'demo-new_user_setup.html', {'new_user': False})
         else:
             form = NewUserSetupForm()
-            return render(request, 'new_user_setup.html', {'new_user': True, 'form': form})
+            return render(request, 'demo-new_user_setup.html', {'new_user': True, 'form': form})
 
     elif request.method == 'POST':
         form = NewUserSetupForm(request.POST)
@@ -83,7 +82,7 @@ def new_user_setup(request):
             # update all budgets since emp signed up
             update_budgets(emp, emp.signup_date)
 
-            return redirect('/other-funds/')
+            return redirect('/demo-other-funds/')
 
 # @require_http_methods(['GET'])
 # def how_it_works(request):
@@ -93,7 +92,7 @@ def new_user_setup(request):
 @require_http_methods(['GET'])
 def faq(request):
     if request.method == 'GET':
-        return render(request, 'faq.html')
+        return render(request, 'demo-faq.html')
 
 
 @login_required(login_url='/login/')
@@ -105,9 +104,9 @@ def view_feedback(request):
         all_feedback = Feedback.objects.all().order_by('-date')
         return render(request, 'view_feedback.html', {'feedback': all_feedback})
     else:
-        return render(request, '404.html')
+        return render(request, 'demo-404.html')
 
 @require_http_methods(['GET'])
 def add_to_homescreen(request):
     if request.method == 'GET':
-        return render(request, 'add_to_homescreen.html')
+        return render(request, 'demo-add_to_homescreen.html')

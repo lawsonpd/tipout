@@ -69,7 +69,7 @@ urlpatterns = [
     url(
         r'^login/$',
         auth_views.login,
-        {'template_name': 'registration/login.html'}
+        {'template_name': 'registration/demo-login.html'}
     ),
     url(
         r'^logout/$',
@@ -80,7 +80,7 @@ urlpatterns = [
     url(
         r'^$',
         general_views.home,
-        {'template_name': 'home.html'}
+        {'template_name': 'demo-home.html'}
     ),
     # url(r'^signup-test/$',
     #     subscription_test.signup_test,

@@ -1,0 +1,26 @@
+{% extends 'demo-base.html' %}
+
+{% block content %}
+
+{% if tips %}
+  <h1 style="font-family: 'Lobster', cursive">Your recent tips</h1>
+    <div class="lead">
+      <p>Average daily tips*: {{ avg_daily_tips }}</p>
+    </div>
+  <p><a href='/demo/enter-tips/'>Enter tips</a> | <a href='/demo/tips/archive/'>See past tips</a></p>
+  <div class='row'>
+    <div class='col-md-4 col-md-offset-4'>
+      {% for tip in tips %}
+      <p>$<strong>{{ tip.amount }}</strong> on {{ tip.date_earned }}</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <p class="small">* Based on past 30 days</p>
+
+{% else %}
+    <h2 style="font-family: 'Lobster', cursive">No recent tips (last 30 days)</h2>
+    <p><a href='/demo/enter-tips/'>Enter tips</a> | <a href='/demo/tips/archive/'>See past tips</a></p>
+{% endif %}
+
+{% endblock %}
