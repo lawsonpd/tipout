@@ -60,6 +60,7 @@ def new_user_setup(request):
 
     if not demo_alive:
         u.delete()
+        return render(request, 'home.html')
     
     emp = DemoEmployee.objects.get(user=u)
     emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
@@ -82,7 +83,7 @@ def new_user_setup(request):
             # update all budgets since emp signed up
             update_budgets(emp, emp.signup_date)
 
-            return redirect('/demo-other-funds/')
+            return redirect('/demo/other-funds/')
 
 # @require_http_methods(['GET'])
 # def how_it_works(request):
