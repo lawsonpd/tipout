@@ -151,7 +151,7 @@ USE_L10N = True
 
 
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.9/howto/static-files/
+# https://docs.djangoproject.com/en/1.10/howto/static-files/
 #
 # Not sure if this stuff is needed with whitenoise
 
