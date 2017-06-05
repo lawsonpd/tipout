@@ -14,7 +14,7 @@ from hashlib import md5
 import hmac
 
 @cache_control(private=True)
-@login_required(login_url='/login/')
+@login_required(login_url='/demo/login/')
 @require_http_methods(['GET'])
 def expenses(request):
     '''
@@ -30,10 +30,10 @@ def expenses(request):
         expenses = Expense.objects.filter(owner=emp)
         cache.set(emp_cache_key+'expenses', expenses)
 
-    return render(request, 'expenses.html', {'expenses': expenses})
+    return render(request, 'demo-expenses.html', {'expenses': expenses})
 
 @cache_control(private=True)
-@login_required(login_url='/login/')
+@login_required(login_url='/demo/login/')
 @require_http_methods(['GET', 'POST'])
 def enter_expense(request):
     '''
@@ -57,7 +57,7 @@ def enter_expense(request):
 
             if expenses.filter(expense_name=expense_data['expense_name']).exists():
                 return render(request,
-                              'enter_expense.html',
+                              'demo-enter_expense.html',
                               {'form': EnterExpenseForm(),
                                'error_message': 'An expense with that name already exists.'}
                 )
@@ -88,13 +88,13 @@ def enter_expense(request):
                 wk_budget = weekly_budget_simple(emp)
                 cache.set(emp_cache_key+'weekly_budget', wk_budget)
 
-                return redirect('/expenses/')
+                return redirect('/demo/expenses/')
     else:
         form = EnterExpenseForm()
-        return render(request, 'enter_expense.html', {'form': form})
+        return render(request, 'demo-enter_expense.html', {'form': form})
 
 @cache_control(private=True)
-@login_required(login_url='/login/')
+@login_required(login_url='/demo/login/')
 @require_http_methods(['GET', 'POST'])
 def edit_expense(request, *args):
     exp_name = args[0].replace('-', ' ')
@@ -113,7 +113,7 @@ def edit_expense(request, *args):
 
     if request.method == 'GET':
         form = EditExpenseForm(initial={'cost': exp.cost})
-        return render(request, 'edit_expense.html', {'form': form, 'expense': exp})
+        return render(request, 'demo-edit_expense.html', {'form': form, 'expense': exp})
 
     if request.method == 'POST':
         form = EditExpenseForm(request.POST)
@@ -146,10 +146,10 @@ def edit_expense(request, *args):
             wk_budget = weekly_budget_simple(emp)
             cache.set(emp_cache_key+'weekly_budget', wk_budget)
 
-            return redirect('/expenses/')
+            return redirect('/demo/expenses/')
 
 @cache_control(private=True)
-@login_required(login_url='/login/')
+@login_required(login_url='/demo/login/')
 @require_http_methods(['POST'])
 def delete_expense(request, *args):
     exp_name = args[0].replace('-', ' ')
@@ -192,10 +192,10 @@ def delete_expense(request, *args):
         wk_budget = weekly_budget_simple(emp)
         cache.set(emp_cache_key+'weekly_budget', wk_budget)
         
-        return redirect('/expenses/')
+        return redirect('/demo/expenses/')
 
 @cache_control(private=True)
-@login_required(login_url='/login/')
+@login_required(login_url='/demo/login/')
 @require_http_methods(['GET', 'POST'])
 def pay_expense(request, exp=None):
     u = TipoutUser.objects.get(email=request.user)
@@ -249,8 +249,8 @@ def pay_expense(request, exp=None):
             wk_budget = weekly_budget_simple(emp)
             cache.set(emp_cache_key+'weekly_budget', wk_budget)
 
-            return redirect('/expenses/')
+            return redirect('/demo/expenses/')
 
     else:
         form = PayExpenseForm(initial={'paid_on': now().date()})
-        return render(request, 'pay_expense.html', {'form': form, 'expenses': expenses})
+        return render(request, 'demo-pay_expense.html', {'form': form, 'expenses': expenses})

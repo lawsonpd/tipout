@@ -16,7 +16,7 @@ from hashlib import md5
 import hmac
 
 @cache_control(private=True)
-@login_required(login_url='/login/')
+@login_required(login_url='/demo/login/')
 @require_http_methods(['GET', 'POST'])
 def enter_expenditure(request):
     '''
@@ -39,14 +39,14 @@ def enter_expenditure(request):
 
             if expends.filter(date=exp_data['date'], note=exp_data['note'].lower()).exists():
                 return render(request,
-                              'enter_expenditure.html',
+                              'demo-enter_expenditure.html',
                               {'form': EnterExpenditureForm(initial={'date': exp_data['date'],
                                                                      'cost': exp_data['cost']}),
                                'error_message': 'An expenditure for today with that note already exists.'}
                               )
             if exp_data['date'] > now().date():
                 return render(request,
-                              'enter_expenditure.html',
+                              'demo-enter_expenditure.html',
                               {'form': EnterExpenditureForm(initial={'note': exp_data['note'],
                                                                      'cost': exp_data['cost']}),
                                'error_message': "Please enter a date that isn't in the future."}
@@ -90,15 +90,15 @@ def enter_expenditure(request):
                 wk_budget = weekly_budget_simple(emp)
                 cache.set(emp_cache_key+'weekly_budget', wk_budget)
 
-                return redirect('/budget/')
+                return redirect('/demo/budget/')
     else:
         return render(request,
-                      'enter_expenditure.html',
+                      'demo-enter_expenditure.html',
                       {'form': EnterExpenditureForm(initial={'date': now().date()})}
                       )
 
 @cache_control(private=True)
-@login_required(login_url='/login/')
+@login_required(login_url='/demo/login/')
 @require_http_methods(['GET'])
 def expenditures(request):
     '''
@@ -114,7 +114,7 @@ def expenditures(request):
         today_expends = Expenditure.objects.filter(owner=emp, date=now().date())
         cache.set(emp_cache_key+'today_expends', today_expends)
 
-    return render(request, 'expenditures.html', {'exps': today_expends})
+    return render(request, 'demo-expenditures.html', {'exps': today_expends})
 
 # @login_required(login_url='/login/')
 # @require_http_methods(['POST'])
@@ -133,7 +133,7 @@ def expenditures(request):
 #         return redirect('/expenditures/')
 
 @cache_control(private=True)
-@login_required(login_url='/login/')
+@login_required(login_url='/demo/login/')
 @require_http_methods(['POST'])
 def delete_expenditure(request, exp, *args):
     if request.method == 'POST':
@@ -187,13 +187,13 @@ def delete_expenditure(request, exp, *args):
         wk_budget = weekly_budget_simple(emp)
         cache.set(emp_cache_key+'weekly_budget', wk_budget)
 
-        return redirect('/expenditures/')
+        return redirect('/demo/expenditures/')
 
 # To edit an expenditure, you'll have to use pk to identify it, since the note and amount could change.
 # This would effectively be deleting an expenditure and creating a new one, which might be enough anyway.
 #
 @cache_control(private=True)
-@login_required(login_url='/login/')
+@login_required(login_url='/demo/login/')
 @require_http_methods(['GET', 'POST'])
 def edit_expenditure(request, exp, *args):
     u = TipoutUser.objects.get(email=request.user)
@@ -250,17 +250,17 @@ def edit_expenditure(request, exp, *args):
             wk_budget = weekly_budget_simple(emp)
             cache.set(emp_cache_key+'weekly_budget', wk_budget)
 
-            return redirect('/expenditures/')
+            return redirect('/demo/expenditures/')
     else:
         form = EditExpenditureForm(initial={'note': exp_to_edit.note,
                                             'cost': exp_to_edit.cost,
                                             'date': exp_to_edit.date
                                            }
                                   )
-        return render(request, 'edit_expenditure.html', {'form': form, 'exp': exp_to_edit})
+        return render(request, 'demo-edit_expenditure.html', {'form': form, 'exp': exp_to_edit})
 
 @cache_control(private=True)
-@login_required(login_url='/login/')
+@login_required(login_url='/demo/login/')
 @require_http_methods(['GET'])
 def expenditures_archive(request, *args):
     '''
@@ -278,10 +278,10 @@ def expenditures_archive(request, *args):
 
     all_years = [e.date.year for e in expends]
     years = set(all_years)
-    return render(request, 'expenditures_archive.html', {'years': years})
+    return render(request, 'demo-expenditures_archive.html', {'years': years})
 
 @cache_control(private=True)
-@login_required(login_url='/login/')
+@login_required(login_url='/demo/login/')
 @require_http_methods(['GET'])
 def expenditures_year_archive(request, year, *args):
     '''
@@ -302,11 +302,11 @@ def expenditures_year_archive(request, year, *args):
     # months = set(all_months)
     dates = expends.filter(date__year=year).dates('date', 'month')
     months = [date.month for date in dates]
-    return render(request, 'expenditures_archive.html', {'year': year,
+    return render(request, 'demo-expenditures_archive.html', {'year': year,
                                                          'months': months})
 
 @cache_control(private=True)
-@login_required(login_url='/login/')
+@login_required(login_url='/demo/login/')
 @require_http_methods(['GET'])
 def expenditures_month_archive(request, year, month, *args):
     '''
@@ -325,12 +325,12 @@ def expenditures_month_archive(request, year, month, *args):
     dates = expends.filter(date__year=year,
                            date__month=month).dates('date', 'day')
     days = [date.day for date in dates]
-    return render(request, 'expenditures_archive.html', {'year': year,
+    return render(request, 'demo-expenditures_archive.html', {'year': year,
                                                          'month': month,
                                                          'days': days})
 
 @cache_control(private=True)
-@login_required(login_url='/login/')
+@login_required(login_url='/demo/login/')
 def expenditures_day_archive(request, year, month, day, *args):
     '''
     Shows a list of expenditures
@@ -349,13 +349,13 @@ def expenditures_day_archive(request, year, month, day, *args):
                                  date__month=month,
                                  date__day=day)
     # expends_notes = [date.note for exp in expends]
-    return render(request, 'expenditures_archive.html', {'year': year,
+    return render(request, 'demo-expenditures_archive.html', {'year': year,
                                                          'month': month,
                                                          'day': day,
                                                          'exps': day_expends})
 
 @cache_control(private=True)
-@login_required(login_url='/login/')
+@login_required(login_url='/demo/login/')
 def expenditure_detail(request, year, month, day, exp, *args):
     '''
     Shows details about a particular expenditure
@@ -376,7 +376,7 @@ def expenditure_detail(request, year, month, day, exp, *args):
                       date__month=month,
                       date__day=day,
                       note=exp_note)
-    return render(request, 'expenditures_archive.html', {'year': year,
+    return render(request, 'demo-expenditures_archive.html', {'year': year,
                                                          'month': month,
                                                          'day': day,
                                                          'exp': exp})

@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
+from django.utils.timezone import now
 
 from django.utils.crypto import get_random_string
 
@@ -163,38 +164,38 @@ def thank_you(request):
             return render(request, 'demo-thankyou.html')
     return render(request, 'demo-thankyou.html')
 
-@login_required(login_url='/login/')
+@login_required(login_url='/demo/login/')
 @require_http_methods(['GET'])
 def manage_subscription(request):
-    u = TipoutUser.objects.get(email=request.user)
-    customer = stripe.Customer.retrieve(u.stripe_id)
-    # sub_id = customer.subscriptions.data[0].id
-    # invoices = stripe.Invoice.list(customer) # this doesn't seem to work
-    invoices = stripe.Invoice.list()
+    # u = TipoutUser.objects.get(email=request.user)
+    # customer = stripe.Customer.retrieve(u.stripe_id)
+    # # sub_id = customer.subscriptions.data[0].id
+    # # invoices = stripe.Invoice.list(customer) # this doesn't seem to work
+    # invoices = stripe.Invoice.list()
 
-    customer_invoices = filter(lambda invoice: invoice.customer == customer.id, invoices)
-    invoice_data = [(pretty_date(invoice.date), pretty_stripe_dollar_amount(invoice.amount_due)) for invoice in customer_invoices]
+    # customer_invoices = filter(lambda invoice: invoice.customer == customer.id, invoices)
+    # invoice_data = [(pretty_date(invoice.date), pretty_stripe_dollar_amount(invoice.amount_due)) for invoice in customer_invoices]
 
-    return render(request, 'registration/demo-subscription.html', {'invoice_data': invoice_data})
+    return render(request, 'registration/demo-subscription.html', {'date': now().date()})
 
-@login_required(login_url='/login/')
-@require_http_methods(['GET', 'POST'])
+@login_required(login_url='/demo/login/')
+@require_http_methods(['GET'])
 def cancel_subscription(request):
     if request.method == 'GET':
         return render(request, 'registration/demo-cancel.html')
-    if request.method == 'POST':
-        u = TipoutUser.objects.get(email=request.user)
-        u.delete()
+    # if request.method == 'POST':
+    #     u = TipoutUser.objects.get(email=request.user)
+    #     u.delete()
 
-        customer = stripe.Customer.retrieve(u.stripe_id)
-        sub = stripe.Subscription.retrieve(customer.subscriptions.data[0].id)
-        sub.delete()
+    #     customer = stripe.Customer.retrieve(u.stripe_id)
+    #     sub = stripe.Subscription.retrieve(customer.subscriptions.data[0].id)
+    #     sub.delete()
 
-        customer_next_invoice = stripe.Invoice.upcoming(customer=customer.id)
-        if refund_approved(customer_next_invoice.date):
-            customer_invoices = filter(lambda invoice: invoice.customer == customer.id, invoices)
-            invoice_to_refund = most_recent_invoice(customer_invoices)
-            re = stripe.Refund.create(charge=invoice_to_refund.charge)
+    #     customer_next_invoice = stripe.Invoice.upcoming(customer=customer.id)
+    #     if refund_approved(customer_next_invoice.date):
+    #         customer_invoices = filter(lambda invoice: invoice.customer == customer.id, invoices)
+    #         invoice_to_refund = most_recent_invoice(customer_invoices)
+    #         re = stripe.Refund.create(charge=invoice_to_refund.charge)
 
-        # redirect to feedback page
-        return redirect('/demo/feedback/')
+    #     # redirect to feedback page
+    #     return redirect('/demo/feedback/')

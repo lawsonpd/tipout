@@ -24,7 +24,7 @@ import hmac
 
 # need to be able to view paychecks by month & year
 @cache_control(private=True)
-@login_required(login_url='/login/')
+@login_required(login_url='/demo/login/')
 @require_http_methods(['GET'])
 def paychecks(request):
     u = TipoutUser.objects.get(email=request.user)
@@ -40,10 +40,10 @@ def paychecks(request):
         recent_paychecks = all_paychecks.filter(date_earned__gt=now().date()-timedelta(30))
         cache.set(emp_cache_key+'recent_paychecks', recent_paychecks)
 
-    return render(request, 'paychecks.html', {'paychecks': recent_paychecks})
+    return render(request, 'demo-paychecks.html', {'paychecks': recent_paychecks})
 
 @cache_control(private=True)
-@login_required(login_url='/login/')
+@login_required(login_url='/demo/login/')
 @require_http_methods(['GET'])
 def paychecks_archive(request):
     u = TipoutUser.objects.get(email=request.user)
@@ -55,10 +55,10 @@ def paychecks_archive(request):
         all_paychecks = Paycheck.objects.filter(owner=emp)
         cache.set(emp_cache_key+'all_paychecks', all_paychecks)
 
-    return render(request, 'paychecks_archive.html', {'paychecks': all_paychecks})
+    return render(request, 'demo-paychecks_archive.html', {'paychecks': all_paychecks})
 
 @cache_control(private=True)
-@login_required(login_url='/login/')
+@login_required(login_url='/demo/login/')
 @require_http_methods(['GET', 'POST'])
 def enter_paycheck(request):
     if request.method == 'POST':
@@ -78,7 +78,7 @@ def enter_paycheck(request):
             dupe = all_paychecks.filter(date_earned=paycheck_data['date_earned'])
             if dupe:
                 return render(request,
-                              'enter_paycheck.html',
+                              'demo-enter_paycheck.html',
                               {'error_message': 'Paycheck from that date exists.',
                                'form': EnterPaycheckForm()})
             else:
@@ -138,15 +138,15 @@ def enter_paycheck(request):
                 wk_budget = weekly_budget_simple(emp)
                 cache.set(emp_cache_key+'weekly_budget', wk_budget)
 
-                return redirect('/paychecks/')
+                return redirect('/demo/paychecks/')
     else:
         return render(request,
-                      'enter_paycheck.html',
+                      'demo-enter_paycheck.html',
                       {'form': EnterPaycheckForm()}
                      )
 
 @cache_control(private=True)
-@login_required(login_url='/login/')
+@login_required(login_url='/demo/login/')
 @require_http_methods(['GET', 'POST'])
 def edit_paycheck(request, p, *args):
     u = TipoutUser.objects.get(email=request.user)
@@ -218,7 +218,7 @@ def edit_paycheck(request, p, *args):
             wk_budget = weekly_budget_simple(emp)
             cache.set(emp_cache_key+'weekly_budget', wk_budget)
 
-            return redirect('/paychecks/')
+            return redirect('/demo/paychecks/')
 
     else:
         form = EditPaycheckForm(initial={'amount': paycheck.amount,
@@ -226,12 +226,12 @@ def edit_paycheck(request, p, *args):
                                          'date_earned': paycheck.date_earned
                                         }
                                )
-        return render(request, 'edit_paycheck.html', {'form': form, 'paycheck': paycheck})
+        return render(request, 'demo-edit_paycheck.html', {'form': form, 'paycheck': paycheck})
 
 
 # May not ever need to delete a paycheck
 @cache_control(private=True)
-@login_required(login_url='/login/')
+@login_required(login_url='/demo/login/')
 @require_http_methods(['POST'])
 def delete_paycheck(request, p):
     if request.method == 'POST':
@@ -299,5 +299,5 @@ def delete_paycheck(request, p):
         wk_budget = weekly_budget_simple(emp)
         cache.set(emp_cache_key+'weekly_budget', wk_budget)
 
-        return redirect('/paychecks/')
+        return redirect('/demo/paychecks/')
 

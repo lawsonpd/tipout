@@ -19,7 +19,7 @@ import hmac
 #
 
 @cache_control(private=True)
-@login_required(login_url='/login/')
+@login_required(login_url='/demo/login/')
 @require_http_methods(['GET'])
 def savings(request):
     u = TipoutUser.objects.get(email=request.user)
@@ -31,10 +31,10 @@ def savings(request):
         savings = Savings.objects.get(owner=emp)
         cache.set(emp_cache_key+'savings', savings)
 
-    return render(request, 'savings.html', {'savings_amount': savings.amount})
+    return render(request, 'demo-savings.html', {'savings_amount': savings.amount})
 
 @cache_control(private=True)
-@login_required(login_url='/login/')
+@login_required(login_url='/demo/login/')
 @require_http_methods(['GET', 'POST'])
 def savings_setup(request):
     u = TipoutUser.objects.get(email=request.user)
@@ -52,16 +52,16 @@ def savings_setup(request):
             emp.savings_percent = savings_data['savings_percent']
             emp.save()
 
-            return redirect('/savings/')
+            return redirect('/demo/savings/')
 
     else:
         emp_savings_percent = emp.savings_percent
         form = SavingsSetupForm()
-    	return render(request, 'savings_setup.html', {'form': form,
+    	return render(request, 'demo-savings_setup.html', {'form': form,
                                                       'savings_percent': emp_savings_percent})
 
 @cache_control(private=True)
-@login_required(login_url='/login/')
+@login_required(login_url='/demo/login/')
 @require_http_methods(['GET', 'POST'])
 def savings_transaction(request):
     if request.method == 'POST':
@@ -110,14 +110,14 @@ def savings_transaction(request):
             wk_budget = weekly_budget_simple(emp)
             cache.set(emp_cache_key+'weekly_budget', wk_budget)
 
-            return redirect('/savings/')
+            return redirect('/demo/savings/')
 
     else:
         form = SavingsTransactionForm()
-        return render(request, 'savings_transaction.html', {'form': form})
+        return render(request, 'demo-savings_transaction.html', {'form': form})
 
 @cache_control(private=True)
-@login_required(login_url='/login/')
+@login_required(login_url='/demo/login/')
 @require_http_methods(['GET'])
 def savings_transaction_history(request):
     u = TipoutUser.objects.get(email=request.user)
@@ -129,4 +129,4 @@ def savings_transaction_history(request):
         savings_trans = SavingsTransaction.objects.filter(owner=emp).order_by('-date')
         cache.set(emp_cache_key+'savings_trans', savings_trans)
 
-    return render(request, 'savings_transaction_history.html', {'trans': savings_trans})
+    return render(request, 'demo-savings_transaction_history.html', {'trans': savings_trans})

@@ -2,11 +2,6 @@
 
 {% block content %}
 
-<h1 style="font-family: 'Lobster', cursive">Are you sure you'd like to cancel?</h1>
-
-<form action="/cancel-subscription/" method="post">
-    {% csrf_token %}
-    <input type="submit" class="btn btn-sm btn-danger" value="Yes, please cancel" />
-</form>
+<h3 class="lead">Once you're a subscribed user, this page will give you the option to cancel your subscription, but since the demo automatically expires, the cancel option isn't available here.</h3>
 
 {% endblock %}

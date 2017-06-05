@@ -24,7 +24,7 @@ from hashlib import md5
 import hmac
 
 @cache_control(private=True)
-@login_required(login_url='/login/')
+@login_required(login_url='/demo/login/')
 @require_http_methods(['GET'])
 def balance(request):
     u = TipoutUser.objects.get(email=request.user)
@@ -39,7 +39,7 @@ def balance(request):
     return render(request, 'demo-balance.html', {'balance': pretty_dollar_amount(balance.amount)})
 
 @cache_control(private=True)
-@login_required(login_url='/login/')
+@login_required(login_url='/demo/login/')
 @require_http_methods(['GET', 'POST'])
 def edit_balance(request):
     u = TipoutUser.objects.get(email=request.user)
@@ -85,7 +85,7 @@ def edit_balance(request):
         return render(request, 'demo-edit_balance.html', {'form': form})
 
 @cache_control(private=True)
-@login_required(login_url='/login/')
+@login_required(login_url='/demo/login/')
 @require_http_methods(['GET'])
 def budget(request):
     '''
@@ -206,7 +206,7 @@ def budget(request):
             return render(request, 'demo-budget.html', {'budget': pretty_dollar_amount(current_budget)})
 
 @cache_control(private=True)
-@login_required(login_url='/login/')
+@login_required(login_url='/demo/login/')
 @require_http_methods(['GET'])
 def budget_history(request):
     u = TipoutUser.objects.get(email=request.user)
@@ -218,7 +218,7 @@ def budget_history(request):
     return render(request, 'demo-budget_history.html', {'budgets': all_budgets})
 
 @cache_control(private=True)
-@login_required(login_url='/login/')
+@login_required(login_url='/demo/login/')
 @require_http_methods(['GET', 'POST'])
 def reset_budgets(request):
     u = TipoutUser.objects.get(email=request.user)
@@ -245,7 +245,7 @@ def reset_budgets(request):
         return render(request, 'demo-reset_budget.html')
 
 @cache_control(private=True)
-@login_required(login_url='/login/')
+@login_required(login_url='/demo/login/')
 @require_http_methods(['GET'])
 def weekly_budget(request):
     u = TipoutUser.objects.get(email=request.user)
@@ -264,7 +264,7 @@ def weekly_budget(request):
         return render(request, 'demo-weekly_budget.html', {'weekly_budget': pretty_dollar_amount(wk_budget)})
 
 @cache_control(private=True)
-@login_required(login_url='/login/')
+@login_required(login_url='/demo/login/')
 @require_http_methods(['GET'])
 def monthly_budget(request):
     u = TipoutUser.objects.get(email=request.user)

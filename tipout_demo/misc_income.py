@@ -15,7 +15,7 @@ from hashlib import md5
 import hmac
 
 @cache_control(private=True)
-@login_required(login_url='/login/')
+@login_required(login_url='/demo/login/')
 @require_http_methods(['GET', 'POST'])
 def enter_other_funds(request):
 	u = TipoutUser.objects.get(email=request.user)
@@ -60,14 +60,14 @@ def enter_other_funds(request):
 			cache.set(emp_cache_key+'current_budget', current_budget)
 			cache.set(emp_cache_key+'weekly_budget', wk_budget)
 
-			return redirect('/other-funds/')
+			return redirect('/demo/other-funds/')
 
 	else:
 		form = EnterOtherFundsForm()
-		return render(request, 'enter_other_funds.html', {'form': form})
+		return render(request, 'demo-enter_other_funds.html', {'form': form})
 
 @cache_control(private=True)
-@login_required(login_url='/login/')
+@login_required(login_url='/demo/login/')
 @require_http_methods(['GET'])
 def other_funds(request):
 	u = TipoutUser.objects.get(email=request.user)
@@ -79,10 +79,10 @@ def other_funds(request):
 		other_funds = OtherFunds.objects.filter(owner=emp)
 		cache.set(emp_cache_key+'other_funds', other_funds)
 
-	return render(request, 'other_funds.html', {'other_funds': other_funds})
+	return render(request, 'demo-other_funds.html', {'other_funds': other_funds})
 
 @cache_control(private=True)
-@login_required(login_url='/login/')
+@login_required(login_url='/demo/login/')
 @require_http_methods(['POST'])
 def delete_other_funds(request, funds_id):
 	u = TipoutUser.objects.get(email=request.user)
@@ -123,10 +123,10 @@ def delete_other_funds(request, funds_id):
 		cache.set(emp_cache_key+'current_budget', current_budget)
 		cache.set(emp_cache_key+'weekly_budget', wk_budget)
 
-		return redirect('/other-funds/')
+		return redirect('/demo/other-funds/')
 
 @cache_control(private=True)
-@login_required(login_url='/login/')
+@login_required(login_url='/demo/login/')
 @require_http_methods(['GET', 'POST'])
 def edit_other_funds(request, funds_id):
 	pass

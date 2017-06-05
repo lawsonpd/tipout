@@ -6,7 +6,7 @@ from hashlib import md5
 import hmac
 
 from tipout_demo.models import Balance, Expenditure, Expense, Budget
-from tipout.budget_utils import daily_expense_cost, ou_contribs, budget_corrector, expenditures_sum_for_specific_day
+from tipout_demo.budget_utils import daily_expense_cost, ou_contribs, budget_corrector, expenditures_sum_for_specific_day
 from decimal import Decimal
 
 def budget_for_specific_day(emp, date):
