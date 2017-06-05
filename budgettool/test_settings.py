@@ -236,8 +236,8 @@ with open(os.path.join(BASE_DIR, 'cache_hash_key.txt')) as f:
 STRIPE_KEYS = {
     'secret_key': 'sk_live_VZuuKr51mjqssdIYBtNWU0nq',
     'publishable_key': 'pk_live_WLB0pXGykT9BM5tJ1EixjZF1',
-    # 'test_sk': 'sk_test_GVCFYxcWaAZq3zBnEifLXeJd',
-    # 'test_pk': 'pk_test_p5rrucKiZvMX19wKoUGVDbRd'
+    'test_sk': 'sk_test_GVCFYxcWaAZq3zBnEifLXeJd',
+    'test_pk': 'pk_test_p5rrucKiZvMX19wKoUGVDbRd'
 }
 
 EMAIL_HOST = 'tipoutapp.com'
