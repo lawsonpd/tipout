@@ -20,7 +20,7 @@ def signup_test(request, template_name):
 
             try:
                 customer = stripe.Customer.create(
-                    api_key = STRIPE_KEYS['test_sk']
+                    api_key = STRIPE_KEYS['test_sk'],
                     email = request.POST['stripeEmail'],
                     source = request.POST['stripeToken'],
                     plan='paid-plan',
