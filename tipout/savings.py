@@ -1,5 +1,5 @@
 from tipout.models import Savings, SavingsTransaction, Balance, Employee, SavingsSetupForm, SavingsTransactionForm
-from budget_with_balance import weekly_budget_simple
+from budget_with_balance import weekly_budget_simple, update_budgets
 
 from custom_auth.models import TipoutUser
 
