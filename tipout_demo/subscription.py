@@ -42,7 +42,7 @@ def launch_demo(request):
         emp_balance = Balance.objects.create(owner=new_emp)
         emp_savings = Savings.objects.create(owner=new_emp)
 
-        request.session.set_expiry(60)
+        request.session.set_expiry(3600)
         return redirect('/demo/thankyou/')
     else:
         return render (request, 'registration/demo-signup_error.html', {'message': "Something went wrong."})
