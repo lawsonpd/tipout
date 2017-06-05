@@ -99,9 +99,8 @@ def enter_paycheck(request):
                     emp_savings = Savings.objects.get(owner=emp)
                     emp_savings.amount += p.amount * (emp.savings_percent/100)
                     emp_savings.save()
-
-                # update savings cache
-                cache.set(emp_cache_key+'savings', emp_savings)
+                    # update savings cache
+                    cache.set(emp_cache_key+'savings', emp_savings)
 
                 # update balance
                 # if savings percent == 0, then balance is increased by paycheck amount
