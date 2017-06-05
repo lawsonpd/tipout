@@ -9,10 +9,9 @@ from custom_auth.admin import UserCreationForm
 from custom_auth.models import TipoutUser
 from tipout_demo.models import DemoEmployee, Budget, Balance, Savings
 from tipout_demo.stripe_utils import pretty_date, pretty_stripe_dollar_amount, refund_approved, most_recent_invoice
-import stripe
+# import stripe
 
-from budgettool.settings import STRIPE_KEYS
-stripe.api_key = STRIPE_KEYS['test_sk']
+# from budgettool.settings import STRIPE_KEYS
 
 @require_http_methods(['GET', 'POST'])
 def launch_demo(request):

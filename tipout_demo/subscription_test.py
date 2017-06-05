@@ -10,7 +10,6 @@ from stripe_utils import pretty_date, pretty_stripe_dollar_amount, refund_approv
 import stripe
 
 from budgettool.test_settings import STRIPE_KEYS
-stripe.api_key=STRIPE_KEYS['test_sk']
 
 @require_http_methods(['GET', 'POST'])
 def signup_test(request, template_name):
@@ -21,6 +20,7 @@ def signup_test(request, template_name):
 
             try:
                 customer = stripe.Customer.create(
+                    api_key = STRIPE_KEYS['test_sk']
                     email = request.POST['stripeEmail'],
                     source = request.POST['stripeToken'],
                     plan='paid-plan',
