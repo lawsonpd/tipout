@@ -108,7 +108,7 @@ def signup(request, template_name):
             user = authenticate(email=user_data['email'], password=user_data['password1'])
             if user is not None:
                 login(request, user)
-                return redirect('/thankyou/')
+                return render(request, 'registration/charge.html', {'stripe_coupon': stripe_coupon})
             else:
                 return render (request, 'registration/signup_error.html', {'message': "Something went wrong. Registration unsuccessful."})
 
@@ -122,7 +122,7 @@ def thank_you(request):
         u = TipoutUser.objects.get(email=request.user)
         emp = Employee.objects.get(user=u)
         if emp.new_user:
-            return render(request, 'registration/charge.html', {'amount': '5.00', 'coupon': u.coupon})
+            return render(request, 'registration/charge.html', {'amount': '5.00', 'stripe_coupon': u.coupon})
         else:
             return render(request, 'thankyou.html')
     return render(request, 'thankyou.html')
@@ -131,7 +131,7 @@ def thank_you(request):
 @require_http_methods(['GET'])
 def manage_subscription(request):
     u = TipoutUser.objects.get(email=request.user)
-    customer = stripe.Customer.retrieve(u.stripe_id)
+    customer = stripe.Customer.retrieve(u.stripe_id, api_key=STRIPE_KEYS['test_sk'])
     # sub_id = customer.subscriptions.data[0].id
     # invoices = stripe.Invoice.list(customer) # this doesn't seem to work
     invoices = stripe.Invoice.list()
