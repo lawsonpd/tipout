@@ -42,12 +42,15 @@ def launch_demo(request):
         emp_balance = Balance.objects.create(owner=new_emp)
         emp_savings = Savings.objects.create(owner=new_emp)
 
-        request.session['demo_alive'] = 'True'
         request.session.set_expiry(60)
         return redirect('/demo/thankyou/')
     else:
         return render (request, 'registration/demo-signup_error.html', {'message': "Something went wrong."})
     return redirect('/demo/new-user-setup/')
+
+@require_http_methods(['GET'])
+def demo_expired(request):
+    return render(request, 'demo-expired.html')
 
 @require_http_methods(['GET', 'POST'])
 def register(request, template_name):
@@ -164,7 +167,7 @@ def thank_you(request):
             return render(request, 'demo-thankyou.html')
     return render(request, 'demo-thankyou.html')
 
-@login_required(login_url='/demo/login/')
+@login_required(login_url='/login/')
 @require_http_methods(['GET'])
 def manage_subscription(request):
     # u = TipoutUser.objects.get(email=request.user)
@@ -178,7 +181,7 @@ def manage_subscription(request):
 
     return render(request, 'registration/demo-subscription.html', {'date': now().date()})
 
-@login_required(login_url='/demo/login/')
+@login_required(login_url='/login/')
 @require_http_methods(['GET'])
 def cancel_subscription(request):
     if request.method == 'GET':

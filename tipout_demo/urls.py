@@ -65,6 +65,7 @@ urlpatterns = [
     url(r'^thankyou/$', subscription.thank_you, name='thank-you'),
     url(r'^subscription/$', subscription.manage_subscription, name='manage-subscription'),
     url(r'^cancel-subscription/$', subscription.cancel_subscription, name='cancel-subscription'),
+    url(r'^expired/$', subscription.demo_expired, name='demo-expired'),
     url(r'^feedback/$', general_views.feedback, name='feedback'),
     url(
         r'^login/$',

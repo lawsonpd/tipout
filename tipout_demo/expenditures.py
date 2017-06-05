@@ -16,7 +16,7 @@ from hashlib import md5
 import hmac
 
 @cache_control(private=True)
-@login_required(login_url='/demo/login/')
+@login_required(login_url='/login/')
 @require_http_methods(['GET', 'POST'])
 def enter_expenditure(request):
     '''
@@ -98,7 +98,7 @@ def enter_expenditure(request):
                       )
 
 @cache_control(private=True)
-@login_required(login_url='/demo/login/')
+@login_required(login_url='/login/')
 @require_http_methods(['GET'])
 def expenditures(request):
     '''
@@ -133,7 +133,7 @@ def expenditures(request):
 #         return redirect('/expenditures/')
 
 @cache_control(private=True)
-@login_required(login_url='/demo/login/')
+@login_required(login_url='/login/')
 @require_http_methods(['POST'])
 def delete_expenditure(request, exp, *args):
     if request.method == 'POST':
@@ -193,7 +193,7 @@ def delete_expenditure(request, exp, *args):
 # This would effectively be deleting an expenditure and creating a new one, which might be enough anyway.
 #
 @cache_control(private=True)
-@login_required(login_url='/demo/login/')
+@login_required(login_url='/login/')
 @require_http_methods(['GET', 'POST'])
 def edit_expenditure(request, exp, *args):
     u = TipoutUser.objects.get(email=request.user)
@@ -260,7 +260,7 @@ def edit_expenditure(request, exp, *args):
         return render(request, 'demo-edit_expenditure.html', {'form': form, 'exp': exp_to_edit})
 
 @cache_control(private=True)
-@login_required(login_url='/demo/login/')
+@login_required(login_url='/login/')
 @require_http_methods(['GET'])
 def expenditures_archive(request, *args):
     '''
@@ -281,7 +281,7 @@ def expenditures_archive(request, *args):
     return render(request, 'demo-expenditures_archive.html', {'years': years})
 
 @cache_control(private=True)
-@login_required(login_url='/demo/login/')
+@login_required(login_url='/login/')
 @require_http_methods(['GET'])
 def expenditures_year_archive(request, year, *args):
     '''
@@ -306,7 +306,7 @@ def expenditures_year_archive(request, year, *args):
                                                          'months': months})
 
 @cache_control(private=True)
-@login_required(login_url='/demo/login/')
+@login_required(login_url='/login/')
 @require_http_methods(['GET'])
 def expenditures_month_archive(request, year, month, *args):
     '''
@@ -330,7 +330,7 @@ def expenditures_month_archive(request, year, month, *args):
                                                          'days': days})
 
 @cache_control(private=True)
-@login_required(login_url='/demo/login/')
+@login_required(login_url='/login/')
 def expenditures_day_archive(request, year, month, day, *args):
     '''
     Shows a list of expenditures
@@ -355,7 +355,7 @@ def expenditures_day_archive(request, year, month, day, *args):
                                                          'exps': day_expends})
 
 @cache_control(private=True)
-@login_required(login_url='/demo/login/')
+@login_required(login_url='/login/')
 def expenditure_detail(request, year, month, day, exp, *args):
     '''
     Shows details about a particular expenditure

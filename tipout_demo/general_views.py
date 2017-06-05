@@ -56,11 +56,11 @@ def feedback(request):
 @require_http_methods(['GET', 'POST'])
 def new_user_setup(request):
     u = TipoutUser.objects.get(email=request.user)
-    demo_alive = request.session.get('demo_alive', False)
+    # demo_alive = request.session.get('demo_alive', False)
 
-    if not demo_alive:
-        u.delete()
-        return render(request, 'home.html')
+    # if not demo_alive:
+    #     u.delete()
+    #     return render(request, 'home.html')
     
     emp = DemoEmployee.objects.get(user=u)
     emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
@@ -94,7 +94,6 @@ def new_user_setup(request):
 def faq(request):
     if request.method == 'GET':
         return render(request, 'demo-faq.html')
-
 
 @login_required(login_url='/login/')
 @require_http_methods(['GET'])

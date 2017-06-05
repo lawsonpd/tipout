@@ -19,7 +19,7 @@ import hmac
 #
 
 @cache_control(private=True)
-@login_required(login_url='/demo/login/')
+@login_required(login_url='/login/')
 @require_http_methods(['GET'])
 def savings(request):
     u = TipoutUser.objects.get(email=request.user)
@@ -34,7 +34,7 @@ def savings(request):
     return render(request, 'demo-savings.html', {'savings_amount': savings.amount})
 
 @cache_control(private=True)
-@login_required(login_url='/demo/login/')
+@login_required(login_url='/login/')
 @require_http_methods(['GET', 'POST'])
 def savings_setup(request):
     u = TipoutUser.objects.get(email=request.user)
@@ -61,7 +61,7 @@ def savings_setup(request):
                                                       'savings_percent': emp_savings_percent})
 
 @cache_control(private=True)
-@login_required(login_url='/demo/login/')
+@login_required(login_url='/login/')
 @require_http_methods(['GET', 'POST'])
 def savings_transaction(request):
     if request.method == 'POST':
@@ -117,7 +117,7 @@ def savings_transaction(request):
         return render(request, 'demo-savings_transaction.html', {'form': form})
 
 @cache_control(private=True)
-@login_required(login_url='/demo/login/')
+@login_required(login_url='/login/')
 @require_http_methods(['GET'])
 def savings_transaction_history(request):
     u = TipoutUser.objects.get(email=request.user)

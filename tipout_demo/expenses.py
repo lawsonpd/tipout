@@ -14,7 +14,7 @@ from hashlib import md5
 import hmac
 
 @cache_control(private=True)
-@login_required(login_url='/demo/login/')
+@login_required(login_url='/login/')
 @require_http_methods(['GET'])
 def expenses(request):
     '''
@@ -33,7 +33,7 @@ def expenses(request):
     return render(request, 'demo-expenses.html', {'expenses': expenses})
 
 @cache_control(private=True)
-@login_required(login_url='/demo/login/')
+@login_required(login_url='/login/')
 @require_http_methods(['GET', 'POST'])
 def enter_expense(request):
     '''
@@ -94,7 +94,7 @@ def enter_expense(request):
         return render(request, 'demo-enter_expense.html', {'form': form})
 
 @cache_control(private=True)
-@login_required(login_url='/demo/login/')
+@login_required(login_url='/login/')
 @require_http_methods(['GET', 'POST'])
 def edit_expense(request, *args):
     exp_name = args[0].replace('-', ' ')
@@ -149,7 +149,7 @@ def edit_expense(request, *args):
             return redirect('/demo/expenses/')
 
 @cache_control(private=True)
-@login_required(login_url='/demo/login/')
+@login_required(login_url='/login/')
 @require_http_methods(['POST'])
 def delete_expense(request, *args):
     exp_name = args[0].replace('-', ' ')
@@ -195,7 +195,7 @@ def delete_expense(request, *args):
         return redirect('/demo/expenses/')
 
 @cache_control(private=True)
-@login_required(login_url='/demo/login/')
+@login_required(login_url='/login/')
 @require_http_methods(['GET', 'POST'])
 def pay_expense(request, exp=None):
     u = TipoutUser.objects.get(email=request.user)

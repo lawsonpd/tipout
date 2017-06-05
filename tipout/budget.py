@@ -187,20 +187,27 @@ def budget(request):
         try:
             yesterday_budget = Budget.objects.get(owner=emp, date=now().date()-timedelta(1))
             # negative over_under means they went over
-            if budget.amount < 0:
+            if current_budget < 0:
                 negative_budget = True
-            if yesterday_budget.amount < 0:
-                yesterday_budget_negative = True
-            elif yesterday_budget.over_under < 0:
+            else:
+                negative_budget = False
+            # not sure why I had this here
+            # if yesterday_budget.amount < 0:
+            #     yesterday_budget_negative = True
+
+            # negative over_under means they went over
+            #
+            # this was an elif before
+            if yesterday_budget.over_under < 0:
                 over = -1
             elif yesterday_budget.over_under > 0:
                 over = 1
             elif yesterday_budget.over_under == 0:
-                over = 0
+                over = 'on budget'
             return render(request, 'budget.html', {'budget': pretty_dollar_amount(current_budget),
                                                    'over': over,
                                                    'negative_budget': negative_budget,
-                                                   'yesterday_budget_negative': yesterday_budget_negative,
+                                                   # 'yesterday_budget_negative': yesterday_budget_negative,
                                                    'over_under_amount': abs(yesterday_budget.over_under)})
         except:
             return render(request, 'budget.html', {'budget': pretty_dollar_amount(current_budget)})

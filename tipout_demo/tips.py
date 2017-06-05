@@ -22,7 +22,7 @@ from hashlib import md5
 import hmac
 
 @cache_control(private=True)
-@login_required(login_url='/demo/login/')
+@login_required(login_url='/login/')
 @require_http_methods(['GET', 'POST'])
 def enter_tips(request):
     # if this is a POST request, we need to process the form data
@@ -90,7 +90,7 @@ def enter_tips(request):
         return render(request, 'demo-enter_tips.html', {'form': form})
 
 @cache_control(private=True)
-@login_required(login_url='/demo/login/')
+@login_required(login_url='/login/')
 @require_http_methods(['GET'])
 def tips(request):
     '''
@@ -131,12 +131,12 @@ def tips(request):
                          )
 
 @cache_control(private=True)
-@login_required(login_url='/demo/login/')
+@login_required(login_url='/login/')
 def edit_tip(request, *args):
     pass
 
 @cache_control(private=True)
-@login_required(login_url='/demo/login/')
+@login_required(login_url='/login/')
 @require_http_methods(['POST'])
 def delete_tip(request, tip_id, *args):
 
@@ -198,7 +198,7 @@ def delete_tip(request, tip_id, *args):
         return redirect('/demo/tips/')
 
 @cache_control(private=True)
-@login_required(login_url='/demo/login/')
+@login_required(login_url='/login/')
 @require_http_methods(['GET'])
 def tips_archive(request, year=None, month=None, day=None, *args):
     '''

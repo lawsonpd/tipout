@@ -24,7 +24,7 @@ import hmac
 
 # need to be able to view paychecks by month & year
 @cache_control(private=True)
-@login_required(login_url='/demo/login/')
+@login_required(login_url='/login/')
 @require_http_methods(['GET'])
 def paychecks(request):
     u = TipoutUser.objects.get(email=request.user)
@@ -43,7 +43,7 @@ def paychecks(request):
     return render(request, 'demo-paychecks.html', {'paychecks': recent_paychecks})
 
 @cache_control(private=True)
-@login_required(login_url='/demo/login/')
+@login_required(login_url='/login/')
 @require_http_methods(['GET'])
 def paychecks_archive(request):
     u = TipoutUser.objects.get(email=request.user)
@@ -58,7 +58,7 @@ def paychecks_archive(request):
     return render(request, 'demo-paychecks_archive.html', {'paychecks': all_paychecks})
 
 @cache_control(private=True)
-@login_required(login_url='/demo/login/')
+@login_required(login_url='/login/')
 @require_http_methods(['GET', 'POST'])
 def enter_paycheck(request):
     if request.method == 'POST':
@@ -146,7 +146,7 @@ def enter_paycheck(request):
                      )
 
 @cache_control(private=True)
-@login_required(login_url='/demo/login/')
+@login_required(login_url='/login/')
 @require_http_methods(['GET', 'POST'])
 def edit_paycheck(request, p, *args):
     u = TipoutUser.objects.get(email=request.user)
@@ -231,7 +231,7 @@ def edit_paycheck(request, p, *args):
 
 # May not ever need to delete a paycheck
 @cache_control(private=True)
-@login_required(login_url='/demo/login/')
+@login_required(login_url='/login/')
 @require_http_methods(['POST'])
 def delete_paycheck(request, p):
     if request.method == 'POST':
