@@ -5,7 +5,7 @@
 <h1 style="font-family: 'Lobster', cursive">Thank you!</h1>
 
 {% if stripe_coupon %}
-	<p class="lead">You signed up with coupon code {{ stripe_coupon }}.</p>
+	<p class="lead">You signed up with coupon code <strong>{{ stripe_coupon }}</strong>.</p>
 {% else %}
 	<p class="lead">You paid <strong>${{ amount }}</strong>.</p>
 {% endif %}
