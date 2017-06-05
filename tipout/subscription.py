@@ -135,11 +135,12 @@ def manage_subscription(request):
     # sub_id = customer.subscriptions.data[0].id
     # invoices = stripe.Invoice.list(customer) # this doesn't seem to work
     invoices = stripe.Invoice.list()
+    stripe_coupon = u.coupon
 
     customer_invoices = filter(lambda invoice: invoice.customer == customer.id, invoices)
     invoice_data = [(pretty_date(invoice.date), pretty_stripe_dollar_amount(invoice.amount_due)) for invoice in customer_invoices]
 
-    return render(request, 'registration/subscription.html', {'invoice_data': invoice_data})
+    return render(request, 'registration/subscription.html', {'invoice_data': invoice_data, 'stripe_coupon': stripe_coupon})
 
 @login_required(login_url='/login/')
 @require_http_methods(['GET', 'POST'])
