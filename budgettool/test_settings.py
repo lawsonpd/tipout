@@ -69,15 +69,19 @@ ALLOWED_HOSTS = [
 
 INSTALLED_APPS = [
     'tipout.apps.TipoutConfig',
+    'tipout_demo.apps.TipoutDemoConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     # 'bootstrap3',
     'custom_auth.apps.CustomAuthConfig',
 ]
+
+SITE_ID = 1
 
 MIDDLEWARE_CLASSES = [
     # 'django.middleware.cache.UpdateCacheMiddleware',

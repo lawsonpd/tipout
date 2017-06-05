@@ -76,9 +76,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     # 'bootstrap3',
     'custom_auth.apps.CustomAuthConfig',
 ]
+
+SITE_ID = 1
 
 MIDDLEWARE_CLASSES = [
     # 'django.middleware.cache.UpdateCacheMiddleware',
