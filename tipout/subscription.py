@@ -131,7 +131,7 @@ def thank_you(request):
 @require_http_methods(['GET'])
 def manage_subscription(request):
     u = TipoutUser.objects.get(email=request.user)
-    customer = stripe.Customer.retrieve(u.stripe_id, api_key=STRIPE_KEYS['test_sk'])
+    customer = stripe.Customer.retrieve(u.stripe_id)
     # sub_id = customer.subscriptions.data[0].id
     # invoices = stripe.Invoice.list(customer) # this doesn't seem to work
     invoices = stripe.Invoice.list()
