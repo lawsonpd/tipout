@@ -83,10 +83,10 @@ urlpatterns = [
         general_views.home,
         {'template_name': 'home.html'}
     ),
-    url(r'^signup-test/$',
-        subscription_test.signup_test,
-        {'template_name': 'registration/signup_test.html'}
-    ),
+    # url(r'^signup-test/$',
+    #     subscription_test.signup_test,
+    #     {'template_name': 'registration/signup_test.html'}
+    # ),
     # url(r'^how-it-works/$', general_views.how_it_works, name='how-it-works'),
     url(r'^faq/$', general_views.faq, name='faq'),
     url(r'^homepage-link/$', general_views.homepage_link, name='homepage-link'),

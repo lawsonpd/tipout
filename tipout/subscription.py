@@ -100,7 +100,7 @@ def signup(request, template_name):
             new_emp = Employee.objects.create(user=new_user)
             emp_first_budget = Budget.objects.create(owner=new_emp, amount=0)
             emp_balance = Balance.objects.create(owner=new_emp)
-            emp_savings = Savings.objects.create(owner=new_emp, default=0)
+            emp_savings = Savings.objects.create(owner=new_emp, amount=0)
 
             # coupon to pass to 'thankyou' template
             stripe_coupon = new_user.coupon

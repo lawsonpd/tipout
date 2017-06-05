@@ -54,7 +54,7 @@ class TipoutUser(AbstractBaseUser, PermissionsMixin):
     is_admin = models.BooleanField(default=False)
     stripe_id = models.CharField(max_length=127)
     stripe_email = models.CharField(max_length=255)
-    coupon = models.CharField(max_length=16)
+    coupon = models.CharField(max_length=16, blank=True)
     plan = 'paid-plan'
 
     objects = TipoutUserManager()
