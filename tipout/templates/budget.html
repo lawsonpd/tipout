@@ -2,26 +2,30 @@
 
 {% block content %}
 
-    <h1 style="font-family: 'Lobster', cursive">Today's Budget</h1>
+  <h1 style="font-family: 'Lobster', cursive">Today's Budget</h1>
 
-    <p style='font-size:72px'>{{ budget }}</p>
+  <p style='font-size:72px'>{{ budget }}</p>
 
-    <p><a href='/weekly-budget/'>Weekly budget</a></p>
+  <div class="row">
+    <div class="col-md-4 col-md-offset-4 col-xs-6 col-xs-offset-3">
+      {% if negative_budget %}
+        <p style="padding: 10px" class='bg-warning lead'>If you spend too much in a short period of time, your budget for a day can be negative. This effectively means that you shouldn't spend any money that day and instead should enter more earnings and try to get your budget back into the positive range. (See the <a href="/faq/">FAQ</a> for more info.)</p>
+      {% endif %}
+      {# not sure why I had this part here #}
+      {# {% if yesterday_budget_negative %} #}
+      {#   <p style="padding: 10px" class='bg-warning lead'> (See the <a href="/faq/">FAQ</a> for more info.)</p> #}
+      {% if over == -1 %}
+      	<p style="padding: 10px" class='bg-warning lead'>Be careful! Yesterday you went over your budget by ${{ over_under_amount }}.</p>
+      {% elif over == 1 %}
+      	<p style="padding: 10px" class='bg-success lead'>Excellent spending! Yesterday you were under your budget by ${{ over_under_amount }}!</p>
+      {% elif over == 'on budget' %}
+      	<p style="padding: 10px" class='bg-success lead'>Great job yesterday! You were right on budget!</p>
+      {% elif not over %}
+      	<p style="padding: 10px" class='bg-primary lead'>This is where we'll tell you whether you were under or over your budget for the previous day and by how much. Good luck out there :))</p>
+      {% endif %}
+    </div>
+  </div>
 
-    {% if negative_budget %}
-        <p style="padding: 10px" class='bg-warning'>If you spend too much in a short period of time, your budget for a day can be negative. This effectively means that you shouldn't spend any money that day and instead should enter more earnings and try to get your budget back into the positive range. (See the <a href="/faq/">FAQ</a> for more info.)</p>
-    {% endif %}
-    {# not sure why I had this part here #}
-    {# {% if yesterday_budget_negative %} #}
-    {#   <p style="padding: 10px" class='bg-warning'> (See the <a href="/faq/">FAQ</a> for more info.)</p> #}
-    {% if over == -1 %}
-    	<p style="padding: 10px" class='bg-warning'>Be careful! Yesterday you went over your budget by ${{ over_under_amount }}.</p>
-    {% elif over == 1 %}
-    	<p style="padding: 10px" class='bg-success'>Excellent spending! Yesterday you were under your budget by ${{ over_under_amount }}!</p>
-    {% elif over == 'on budget' %}
-    	<p style="padding: 10px" class='bg-success'>Great job yesterday! You were right on budget!</p>
-    {% elif not over %}
-    	<p style="padding: 10px" class='bg-primary'>This is where we'll tell you whether you were under or over your budget for the previous day and by how much. Good luck out there :))</p>
-    {% endif %}
+  <p><a href='/weekly-budget/'>Weekly budget</a></p>
 
 {% endblock %}
