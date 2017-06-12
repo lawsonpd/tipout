@@ -18,11 +18,13 @@
     {% endfor %}
 
 {% else %}
-  <h3 style="font-family: 'Lobster', cursive">No expenditures for today yet.</h3>
+  <h1 style="font-family: 'Lobster', cursive">No expenditures for today yet.</h1>
 {% endif %}
 
-<p><a href="/demo/enter-expenditure/">Enter expenditure</a></p>
-<p><a href="/demo/expenditures/archive/">Past expenditures</a></p>
-<p><a href="/demo/spending-profile/">Spending profile</a></p>
+<div class='row'>
+  <div style='margin-top: 40px'>
+    <a href="/demo/enter-expenditure/">Enter expenditure</a> | <a href="/demo/expenditures/archive/">Past expenditures</a> | <a href="/demo/spending-profile/">Spending profile</a>
+  </div>
+</div>
 
 {% endblock %}

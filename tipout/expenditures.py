@@ -134,7 +134,10 @@ def spending_profile(request):
     expends_sum = sum([exp.cost for exp in expends])
     days_as_user = (now().date() - emp.signup_date).days
 
-    avg_expend = expends_sum / len(expends)
+    if len(expends) == 0:
+        avg_expend = 0
+    else:
+        avg_expend = expends_sum / len(expends)
     avg_daily_spending = expends_sum / days_as_user
 
     return render(request, 'spending_profile.html', {'avg_expend': pretty_dollar_amount(avg_expend), 'avg_daily_spending': pretty_dollar_amount(avg_daily_spending)})

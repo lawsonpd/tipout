@@ -116,19 +116,20 @@ def tips(request):
             tip_values = [ tip.amount for tip in tips ]
             avg_daily_tips = pretty_dollar_amount(avg_daily_tips_earned_initial(emp.init_avg_daily_tips, tip_values, emp.signup_date))
             return render(request, 'demo-tips.html', {'avg_daily_tips': avg_daily_tips,
-                                                 'tips': tips,
-                                                 'month': t.strftime('%B')
-                                                }
-                         )
+                                                      'avg_based_on_init_avg': True,
+                                                      'tips': tips,
+                                                      'month': t.strftime('%B')
+                                                     }
+            )
         else:
             recent_tips = tips.filter(date_earned__gt=(now().date()-timedelta(30)))
             tip_values = [ tip.amount for tip in recent_tips ]
             avg_daily_tips = pretty_dollar_amount(avg_daily_tips_earned(tip_values))
             return render(request, 'demo-tips.html', {'avg_daily_tips': avg_daily_tips,
-                                                 'tips': tips,
-                                                 'month': t.strftime('%B')
-                                                }
-                         )
+                                                      'tips': tips,
+                                                      'month': t.strftime('%B')
+                                                     }
+            )
 
 @cache_control(private=True)
 @login_required(login_url='/login/')
