@@ -4,19 +4,24 @@
 
 {% if tips %}
   <h1 style="font-family: 'Lobster', cursive">Your recent tips</h1>
-    <div class="lead">
-      <p>Average daily tips*: {{ avg_daily_tips }}</p>
+    <div class='row'>
+      <div class='col-md-4 col-md-offset-4'>
+        {% for tip in tips %}
+        <p>$<strong>{{ tip.amount }}</strong> on {{ tip.date_earned }}</p>
+        {% endfor %}
+      </div>
     </div>
-  <p><a href='/enter-tips/'>Enter tips</a> | <a href='/tips/archive/'>See past tips</a></p>
-  <div class='row'>
-    <div class='col-md-4 col-md-offset-4'>
-      {% for tip in tips %}
-      <p>$<strong>{{ tip.amount }}</strong> on {{ tip.date_earned }}</p>
-      {% endfor %}
-    </div>
-  </div>
 
-  <p class="small">* Based on past 30 days</p>
+    <hr style='width: 50%' />
+
+    <div class="row">
+      <p class='lead'>Average daily tips: {{ avg_daily_tips }}</p>
+      <div class="col-md-4 col-md-offset-4 col-xs-8 col-xs-offset-2">
+        <p style="padding: 10px" class='bg-info small'>Average based on past 30 days</p>
+      </div>
+    </div>
+
+  <p><a href='/enter-tips/'>Enter tips</a> | <a href='/tips/archive/'>See past tips</a></p>
 
 {% else %}
     <h2 style="font-family: 'Lobster', cursive">No recent tips (last 30 days)</h2>

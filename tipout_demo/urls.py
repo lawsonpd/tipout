@@ -32,6 +32,7 @@ urlpatterns = [
     url(r'^pay-expense/(?P<exp>[0-9]+)/$', expenses.pay_expense, name='pay-expense-submit'),
     url(r'^enter-expenditure/$', expenditures.enter_expenditure, name='enter-expenditure'),
     url(r'^expenditures/$', expenditures.expenditures, name='expenditures'),
+    url(r'^spending-profile/$', expenditures.spending_profile, name='spending-profile'),
     # url(r'^delete-expenditure/([a-z-A-Z-0-9]+)/([a-z-A-Z-0-9]+)/$', expenditures.delete_expenditure, name='delete-expenditure'),
     url(r'^delete-expenditure/(?P<exp>[0-9]+)/$', expenditures.delete_expenditure, name='delete-expenditure'),
     url(r'^edit-expenditure/(?P<exp>[0-9]+)/$', expenditures.edit_expenditure, name='edit-expenditure'),

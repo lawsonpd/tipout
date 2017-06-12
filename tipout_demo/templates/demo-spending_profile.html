@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+  <h1 style="font-family: 'Lobster', cursive">Your spending profile</h1>
+
+  <p class="lead">Average expenditure: <strong>{{ avg_expend }}</strong></p>
+
+  <p class="lead">Average spending per day: <strong>{{ avg_daily_spending }}</strong></p>
+
+  <div class="row">
+    <div class="col-md-4 col-md-offset-4 col-xs-8 col-xs-offset-2">
+      <p style="padding: 10px" class='bg-info small'>Note: expense costs not included in averages</p>
+    </div>
+  </div>
+
+  <p><a href="/enter-expenditure/">Enter expenditure</a> | <a href="/expenditures/archive/">Past expenditures</a></p>
+
+{% endblock %}

@@ -9,6 +9,7 @@ from string import strip
 
 from tipout_demo.models import DemoEmployee, Expenditure, EnterExpenditureForm, EditExpenditureForm, Balance
 from budget_with_balance import update_budgets, weekly_budget_simple
+from budget_utils import pretty_dollar_amount
 from custom_auth.models import TipoutUser
 
 from budgettool.settings import CACHE_HASH_KEY
@@ -115,6 +116,28 @@ def expenditures(request):
         cache.set(emp_cache_key+'today_expends', today_expends)
 
     return render(request, 'demo-expenditures.html', {'exps': today_expends})
+
+@cache_control(private=True)
+@login_required(login_url='/login/')
+@require_http_methods(['GET'])
+def spending_profile(request):
+    u = TipoutUser.objects.get(email=request.user)
+    emp = Employee.objects.get(user=u)
+
+    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
+
+    expends = cache.get(emp_cache_key+'expends')
+    if not expends:
+        expends = Expenditure.objects.filter(owner=emp)
+        cache.set(emp_cache_key+'expends', expends)
+
+    expends_sum = sum([exp.cost for exp in expends])
+    days_as_user = (now().date() - emp.signup_date).days
+
+    avg_expend = expends_sum / len(expends)
+    avg_daily_spending = expends_sum / days_as_user
+
+    return render(request, 'spending_profile.html', {'avg_expend': pretty_dollar_amount(avg_expend), 'avg_daily_spending': pretty_dollar_amount(avg_daily_spending)})
 
 # @login_required(login_url='/login/')
 # @require_http_methods(['POST'])
