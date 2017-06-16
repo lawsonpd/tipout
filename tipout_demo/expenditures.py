@@ -122,7 +122,7 @@ def expenditures(request):
 @require_http_methods(['GET'])
 def spending_profile(request):
     u = TipoutUser.objects.get(email=request.user)
-    emp = Employee.objects.get(user=u)
+    emp = DemoEmployee.objects.get(user=u)
 
     emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
 
@@ -132,7 +132,8 @@ def spending_profile(request):
         cache.set(emp_cache_key+'expends', expends)
 
     expends_sum = sum([exp.cost for exp in expends])
-    days_as_user = (now().date() - emp.signup_date).days
+    # add 1 to days_as_user since on first day this is 0
+    days_as_user = (now().date() - emp.signup_date).days + 1
 
     if len(expends) == 0:
         avg_expend = 0
@@ -140,7 +141,7 @@ def spending_profile(request):
         avg_expend = expends_sum / len(expends)
     avg_daily_spending = expends_sum / days_as_user
 
-    return render(request, 'spending_profile.html', {'avg_expend': pretty_dollar_amount(avg_expend), 'avg_daily_spending': pretty_dollar_amount(avg_daily_spending)})
+    return render(request, 'demo-spending_profile.html', {'avg_expend': pretty_dollar_amount(avg_expend), 'avg_daily_spending': pretty_dollar_amount(avg_daily_spending)})
 
 # @login_required(login_url='/login/')
 # @require_http_methods(['POST'])

@@ -132,7 +132,8 @@ def spending_profile(request):
         cache.set(emp_cache_key+'expends', expends)
 
     expends_sum = sum([exp.cost for exp in expends])
-    days_as_user = (now().date() - emp.signup_date).days
+    # add 1 to days_as_user since on first day this is 0
+    days_as_user = (now().date() - emp.signup_date).days + 1
 
     if len(expends) == 0:
         avg_expend = 0
