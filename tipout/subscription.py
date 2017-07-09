@@ -79,7 +79,7 @@ def signup(request, template_name):
             except stripe.error.RateLimitError as e:
                 return render('registration/signup_error.html', {'message': e['message']})
             except stripe.error.InvalidRequestError as e:
-                return render('registration/signup_error.html', {'message': e['message']})
+                return render('registration/signup_error.html', {'message': e})
             except stripe.error.APIConnectionError as e:
                 return render('registration/signup_error.html', {'message': e['message']})
             except stripe.error.StripeError as e:
