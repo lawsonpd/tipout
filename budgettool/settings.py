@@ -79,6 +79,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     # 'bootstrap3',
     'custom_auth.apps.CustomAuthConfig',
+    'user_bank_info.apps.UserBankInfoConfig',
 ]
 
 SITE_ID = 1
