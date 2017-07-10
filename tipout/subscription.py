@@ -75,18 +75,28 @@ def signup(request, template_name):
                     coupon=user_data['coupon'],
                 )
             except stripe.error.CardError as e:
-                return render('registration/signup_error.html', {'message': e['message']})
+                body = e.json_body
+                err = body['error']
+                return render(request, 'registration/signup_error.html', {'message': err['message']})
             except stripe.error.RateLimitError as e:
-                return render('registration/signup_error.html', {'message': e['message']})
+                body = e.json_body
+                err = body['error']
+                return render(request, 'registration/signup_error.html', {'message': err['message']})
             except stripe.error.InvalidRequestError as e:
-                return render('registration/signup_error.html', {'message': e})
+                body = e.json_body
+                err = body['error']
+                return render(request, 'registration/signup_error.html', {'message': err['message']})
             except stripe.error.APIConnectionError as e:
-                return render('registration/signup_error.html', {'message': e['message']})
+                body = e.json_body
+                err = body['error']
+                return render(request, 'registration/signup_error.html', {'message': err['message']})
             except stripe.error.StripeError as e:
                 # maybe also send an email to admin@
-                return render('registration/signup_error.html', {'message': e['message']})
+                body = e.json_body
+                err = body['error']
+                return render(request, 'registration/signup_error.html', {'message': err['message']})
             except Exception as e:
-                return render('registration/signup_error.html', {'message': "We're not exactly sure what happened, but you're welcome to try signing up again."})
+                return render(request, 'registration/signup_error.html', {'message': "We're not exactly sure what happened, but you're welcome to try signing up again."})
 
             new_user = TipoutUser.objects.create_user(email=user_data['email'],
                                                       stripe_email=customer.email,
