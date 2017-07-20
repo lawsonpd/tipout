@@ -65,7 +65,8 @@ def enter_expense(request):
                 exp = Expense.objects.create(owner=emp,
                                              cost=expense_data['cost'],
                                              expense_name=expense_data['expense_name'],
-                                             frequency=expense_data['frequency']
+                                             frequency=expense_data['frequency'],
+                                             paid_on=expense_data['paid_on']
                 )
 
                 expenses = Expense.objects.filter(owner=emp)
