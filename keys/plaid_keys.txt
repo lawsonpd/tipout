@@ -1,0 +1,5 @@
+{
+    'client_id': '5919b358bdc6a44cd258c7ed',
+    'public_key': '24e9b020590bce48aa758fd7fd36cd',
+    'secret': '767b09ba62146e8a0216e867356ea4'
+}
