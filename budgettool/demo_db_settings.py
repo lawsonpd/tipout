@@ -38,15 +38,15 @@ DEBUG = False
 #     },
 # }
 
-with open(os.path.join(BASE_DIR, 'keys/postgres.txt')) as f:
-    POSTGRES_CREDS = f.read()
+with open(os.path.join(BASE_DIR, 'keys/postgres_pw.txt')) as f:
+    POSTGRES_PW = f.read().strip()
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'postgres',
-        'USER': POSTGRES_CREDS['USER'],
-        'PASSWORD': POSTGRES_CREDS['PASSWORD'],
+        'USER': 'poorman',
+        'PASSWORD': POSTGRES_PW,
         'HOST': '',
         'PORT': '',
     }
@@ -236,8 +236,15 @@ with open(os.path.join(BASE_DIR, 'keys/cache_hash_key.txt')) as f:
 #     },
 # }
 
-with open(os.path.join(BASE_DIR, 'keys/stripe_keys.txt')) as f:
-    STRIPE_KEYS = f.read().strip()
+STRIPE_KEYS = {
+  'publishable_key': 'pk_live_WLB0pXGykT9BM5tJ1EixjZF1',
+  'test_pk': 'pk_test_p5rrucKiZvMX19wKoUGVDbRd'
+}
+
+with open(os.path.join(BASE_DIR, 'keys/stripe_secret.txt')) as f:
+    STRIPE_KEYS['secret_key'] = f.read().strip()
+with open(os.path.join(BASE_DIR, 'keys/stripe_test_secret.txt')) as f:
+    STRIPE_KEYS['test_sk'] = f.read().strip()
 
 EMAIL_HOST = 'tipoutapp.com'
 EMAIL_PORT = '25'

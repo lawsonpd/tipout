@@ -1,4 +1,0 @@
-{
-  'USER': 'poorman',
-  'PASSWORD': 'channel12OI&'
-}
