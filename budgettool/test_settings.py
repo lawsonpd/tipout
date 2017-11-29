@@ -38,8 +38,8 @@ DATABASES = {
     },
 }
 
-with open(os.path.join(BASE_DIR, 'keys/postgres.txt')) as f:
-    POSTGRES_CREDS = f.read().strip()
+# with open(os.path.join(BASE_DIR, 'keys/postgres.txt')) as f:
+#     POSTGRES_CREDS = f.read()
 
 # DATABASES = {
 #     'default': {
