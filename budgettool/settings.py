@@ -38,12 +38,15 @@ DEBUG = False
 #     }
 # }
 
+with open(os.path.join(BASE_DIR, 'keys/postgres.txt')) as f:
+    POSTGRES_CREDS = f.read().strip()
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'postgres',
-        'USER': 'poorman',
-        'PASSWORD': 'channel12OI&',
+        'USER': POSTGRES_CREDS['USER'],
+        'PASSWORD': POSTGRES_CREDS['PASSWORD'],
         'HOST': '',
         'PORT': '',
     }

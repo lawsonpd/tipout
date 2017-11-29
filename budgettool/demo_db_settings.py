@@ -22,7 +22,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # SECRET_KEY = os.environ.get('BTSECRET', '')
-with open(os.path.join(BASE_DIR, 'secret_key.txt')) as f:
+with open(os.path.join(BASE_DIR, 'keys/secret_key.txt')) as f:
     SECRET_KEY = f.read().strip()
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -38,12 +38,15 @@ DEBUG = False
 #     },
 # }
 
+with open(os.path.join(BASE_DIR, 'keys/postgres.txt')) as f:
+    POSTGRES_CREDS = f.read().strip()
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'postgres',
-        'USER': 'poorman',
-        'PASSWORD': 'channel12OI&',
+        'USER': POSTGRES_CREDS['USER'],
+        'PASSWORD': POSTGRES_CREDS['PASSWORD'],
         'HOST': '',
         'PORT': '',
     }
@@ -205,7 +208,7 @@ def get_cache():
 
 CACHES = get_cache()
 
-with open(os.path.join(BASE_DIR, 'cache_hash_key.txt')) as f:
+with open(os.path.join(BASE_DIR, 'keys/cache_hash_key.txt')) as f:
     CACHE_HASH_KEY = f.read().strip()
 
 # CACHE_MIDDLEWARE_ALIAS
@@ -233,12 +236,8 @@ with open(os.path.join(BASE_DIR, 'cache_hash_key.txt')) as f:
 #     },
 # }
 
-STRIPE_KEYS = {
-    'secret_key': 'sk_live_VZuuKr51mjqssdIYBtNWU0nq',
-    'publishable_key': 'pk_live_WLB0pXGykT9BM5tJ1EixjZF1',
-    'test_sk': 'sk_test_GVCFYxcWaAZq3zBnEifLXeJd',
-    'test_pk': 'pk_test_p5rrucKiZvMX19wKoUGVDbRd'
-}
+with open(os.path.join(BASE_DIR, 'keys/stripe_keys.txt')) as f:
+    STRIPE_KEYS = f.read().strip()
 
 EMAIL_HOST = 'tipoutapp.com'
 EMAIL_PORT = '25'
