@@ -9,7 +9,7 @@ def avg_daily_tips_earned_initial(init_avg_daily_tips, tips_so_far, signup_date)
     so we're dividing by 21.3 assuming 21.3 work days per month.
     '''
     days_so_far = (now().date() - signup_date).days
-    return (init_avg_daily_tips * Decimal((30 - days_so_far) * .71) + sum(tips_so_far)) / Decimal(21.3)
+    return (init_avg_daily_tips * Decimal((30 - days_so_far - len(tips_so_far)) * .71) + sum(tips_so_far)) / Decimal(21.3)
 
 def avg_daily_tips_earned(tips):
     '''
