@@ -112,7 +112,7 @@ def tips(request):
 
         # tips = Tip.objects.filter(owner=emp,
         #                           date_earned__month=now().date().month).order_by('date_earned')[::-1]
-        if (now().date() - emp.signup_date).days <= 30:
+        if (t - emp.signup_date).days <= 30:
             tip_values = [ tip.amount for tip in tips ]
             avg_daily_tips = pretty_dollar_amount(avg_daily_tips_earned_initial(emp.init_avg_daily_tips, tip_values, emp.signup_date))
             return render(request, 'tips.html', {'avg_daily_tips': avg_daily_tips,
@@ -122,7 +122,7 @@ def tips(request):
                                                 }
             )
         else:
-            recent_tips = tips.filter(date_earned__gt=(now().date()-timedelta(30)))
+            recent_tips = tips.filter(date_earned__gt=(t-timedelta(30)))
             tip_values = [ tip.amount for tip in recent_tips ]
             avg_daily_tips = pretty_dollar_amount(avg_daily_tips_earned(tip_values))
             return render(request, 'tips.html', {'avg_daily_tips': avg_daily_tips,
