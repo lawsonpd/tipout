@@ -24,7 +24,7 @@ def budget_for_specific_day(emp, date):
     over_unders = [budget.over_under for budget in past_budgets]
     ous = Decimal(budget_corrector(over_unders))
 
-    return balance/30 - expense_cost_for_today + ous
+    return balance/30 - Decimal(expense_cost_for_today) + ous
 
 def update_budgets(emp, date):
     '''
@@ -54,7 +54,7 @@ def update_budgets(emp, date):
     return budget_today.amount
 
 def weekly_budget_simple(emp):
-    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
+    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email.encode('utf-8'), md5).hexdigest()
 
     balance = cache.get(emp_cache_key+'balance')
     if not balance:
@@ -75,5 +75,4 @@ def weekly_budget_simple(emp):
 
     over_unders = Decimal(ou_contribs(emp))
 
-    return balance_amt - (expense_cost_per_day * 7) + over_unders
-
+    return balance_amt - Decimal(expense_cost_per_day * 7) + over_unders

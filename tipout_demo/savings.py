@@ -1,5 +1,5 @@
 from tipout_demo.models import Savings, SavingsTransaction, Balance, DemoEmployee, SavingsSetupForm, SavingsTransactionForm
-from budget_with_balance import weekly_budget_simple
+from .budget_with_balance import weekly_budget_simple
 
 from custom_auth.models import TipoutUser
 
@@ -42,9 +42,8 @@ def savings_setup(request):
     emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
 
     if request.method == 'POST':
-    	form = SavingsSetupForm(request.POST)
+        form = SavingsSetupForm(request.POST)
         if form.is_valid():
-
             savings_data = form.cleaned_data
 
             # make sure percent > 0
@@ -57,7 +56,7 @@ def savings_setup(request):
     else:
         emp_savings_percent = emp.savings_percent
         form = SavingsSetupForm()
-    	return render(request, 'demo-savings_setup.html', {'form': form,
+        return render(request, 'demo-savings_setup.html', {'form': form,
                                                       'savings_percent': emp_savings_percent})
 
 @cache_control(private=True)

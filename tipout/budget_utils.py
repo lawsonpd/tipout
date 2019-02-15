@@ -9,7 +9,13 @@ def avg_daily_tips_earned_initial(init_avg_daily_tips, tips_so_far, signup_date)
     so we're dividing by 21.3 assuming 21.3 work days per month.
     '''
     days_so_far = (now().date() - signup_date).days
-    return (init_avg_daily_tips * Decimal((30 - days_so_far - len(tips_so_far)) * .71) + sum(tips_so_far)) / Decimal(21.3)
+    if len(tips_so_far) > 0:
+        tips_avg_so_far = Decimal(sum(tips_so_far) / len(tips_so_far))
+    else:
+        tips_avg_so_far = 0
+    # old way, which didn't work correctly:
+    # return (init_avg_daily_tips * Decimal((30 - days_so_far) * .71)) / Decimal(21.3)
+    return ((init_avg_daily_tips * Decimal((30 - len(tips_so_far)) * .71)) / Decimal(21.3)) + ((tips_avg_so_far * Decimal(len(tips_so_far)* .71)) / Decimal(21.3))
 
 def avg_daily_tips_earned(tips):
     '''
@@ -255,4 +261,3 @@ def ou_contribs(emp):
     for i in xrange(len(budgets)):
         ous.append(float(budgets[i].over_under) / 7.0 * (7-i))
     return sum(ous)
-

@@ -20,7 +20,7 @@ import hmac
 def enter_other_funds(request):
 	u = TipoutUser.objects.get(email=request.user)
 	emp = DemoEmployee.objects.get(user=u)
-	emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
+	emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email.encode('utf-8'), md5).hexdigest()
 
 	if request.method == 'POST':
 		form = EnterOtherFundsForm(request.POST)
@@ -72,7 +72,7 @@ def enter_other_funds(request):
 def other_funds(request):
 	u = TipoutUser.objects.get(email=request.user)
 	emp = DemoEmployee.objects.get(user=u)
-	emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
+	emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email.encode('utf-8'), md5).hexdigest()
 
 	other_funds = cache.get(emp_cache_key+'other_funds')
 	if not other_funds:
@@ -87,7 +87,7 @@ def other_funds(request):
 def delete_other_funds(request, funds_id):
 	u = TipoutUser.objects.get(email=request.user)
 	emp = DemoEmployee.objects.get(user=u)
-	emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
+	emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email.encode('utf-8'), md5).hexdigest()
 
 	if request.method == 'POST':
 		funds_to_delete = OtherFunds.objects.get(owner=emp, pk=funds_id)
@@ -130,4 +130,3 @@ def delete_other_funds(request, funds_id):
 @require_http_methods(['GET', 'POST'])
 def edit_other_funds(request, funds_id):
 	pass
-

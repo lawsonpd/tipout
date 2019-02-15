@@ -6,14 +6,14 @@ from django.core.cache import cache
 from django.views.decorators.cache import cache_control
 
 from tipout_demo.models import Tip, Paycheck, DemoEmployee, Expense, Expenditure, Budget, OtherFunds, Balance, EditBalanceForm
-from budget_utils import (today_budget,
+from .budget_utils import (today_budget,
                           pretty_dollar_amount,
                           expenditures_sum_for_specific_day,
                           # budget_for_specific_day,
                           # update_budgets,
                           # weekly_budget_simple
 )
-from budget_with_balance import (budget_for_specific_day,
+from .budget_with_balance import (budget_for_specific_day,
                                  update_budgets,
                                  weekly_budget_simple
 )
@@ -29,7 +29,7 @@ import hmac
 def balance(request):
     u = TipoutUser.objects.get(email=request.user)
     emp = DemoEmployee.objects.get(user=u)
-    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
+    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email.encode('utf-8'), md5).hexdigest()
 
     balance = cache.get(emp_cache_key+'balance')
     if not balance:
@@ -44,7 +44,7 @@ def balance(request):
 def edit_balance(request):
     u = TipoutUser.objects.get(email=request.user)
     emp = DemoEmployee.objects.get(user=u)
-    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
+    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email.encode('utf-8'), md5).hexdigest()
 
     balance = cache.get(emp_cache_key+'balance')
     if not balance:
@@ -104,7 +104,7 @@ def budget(request):
     # get user, employee
     u = TipoutUser.objects.get(email=request.user)
     emp = DemoEmployee.objects.get(user=u)
-    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
+    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email.encode('utf-8'), md5).hexdigest()
 
     # if user is new, send to new-user-setup
     if emp.new_user:
@@ -218,7 +218,7 @@ def budget(request):
 def budget_history(request):
     u = TipoutUser.objects.get(email=request.user)
     emp = DemoEmployee.objects.get(user=u)
-    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
+    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email.encode('utf-8'), md5).hexdigest()
 
     all_budgets = Budget.objects.filter(owner=emp)
 
@@ -230,7 +230,7 @@ def budget_history(request):
 def reset_budgets(request):
     u = TipoutUser.objects.get(email=request.user)
     emp = DemoEmployee.objects.get(user=u)
-    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
+    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email.encode('utf-8'), md5).hexdigest()
 
     if request.method == 'POST':
         start_date = emp.signup_date
@@ -257,7 +257,7 @@ def reset_budgets(request):
 def weekly_budget(request):
     u = TipoutUser.objects.get(email=request.user)
     emp = DemoEmployee.objects.get(user=u)
-    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
+    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email.encode('utf-8'), md5).hexdigest()
 
     # if user is new, send to new-user-setup
     if emp.new_user:
@@ -276,7 +276,7 @@ def weekly_budget(request):
 def monthly_budget(request):
     u = TipoutUser.objects.get(email=request.user)
     emp = DemoEmployee.objects.get(user=u)
-    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
+    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email.encode('utf-8'), md5).hexdigest()
 
     # if user is new, send to new-user-setup
     if emp.new_user:

@@ -57,7 +57,7 @@ def feedback(request):
 def new_user_setup(request):
     u = TipoutUser.objects.get(email=request.user)
     emp = Employee.objects.get(user=u)
-    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
+    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email.encode('utf-8'), md5).hexdigest()
 
     if request.method == 'GET':
         if not emp.new_user:

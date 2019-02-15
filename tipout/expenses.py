@@ -6,7 +6,7 @@ from django.views.decorators.cache import cache_control
 from django.utils.timezone import now
 
 from tipout.models import Employee, Expense, Balance, Expenditure, EnterExpenseForm, EditExpenseForm, PayExpenseForm
-from budget_with_balance import update_budgets, weekly_budget_simple
+from .budget_with_balance import update_budgets, weekly_budget_simple
 from custom_auth.models import TipoutUser
 
 from budgettool.settings import CACHE_HASH_KEY
@@ -23,7 +23,7 @@ def expenses(request):
     u = TipoutUser.objects.get(email=request.user)
     emp = Employee.objects.get(user=u)
 
-    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
+    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email.encode('utf-8'), md5).hexdigest()
 
     expenses = cache.get(emp_cache_key+'expenses')
     if not expenses:
@@ -48,7 +48,7 @@ def enter_expense(request):
 
             expense_data = form.cleaned_data
 
-            emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
+            emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email.encode('utf-8'), md5).hexdigest()
 
             expenses = cache.get(emp_cache_key+'expenses')
             if not expenses:
@@ -103,7 +103,7 @@ def edit_expense(request, *args):
     u = TipoutUser.objects.get(email=request.user)
     emp = Employee.objects.get(user=u)
 
-    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
+    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email.encode('utf-8'), md5).hexdigest()
 
     expenses = cache.get(emp_cache_key+'expenses')
     if not expenses:
@@ -159,7 +159,7 @@ def delete_expense(request, *args):
         u = TipoutUser.objects.get(email=request.user)
         emp = Employee.objects.get(user=u)
 
-        emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
+        emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email.encode('utf-8'), md5).hexdigest()
 
         expenses = cache.get(emp_cache_key+'expenses')
         if not expenses:
@@ -192,7 +192,7 @@ def delete_expense(request, *args):
 
         wk_budget = weekly_budget_simple(emp)
         cache.set(emp_cache_key+'weekly_budget', wk_budget)
-        
+
         return redirect('/expenses/')
 
 @cache_control(private=True)
@@ -202,7 +202,7 @@ def pay_expense(request, exp=None):
     u = TipoutUser.objects.get(email=request.user)
     emp = Employee.objects.get(user=u)
 
-    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
+    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email.encode('utf-8'), md5).hexdigest()
 
     expenses = cache.get(emp_cache_key+'expenses')
     if not expenses:

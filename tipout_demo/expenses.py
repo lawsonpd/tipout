@@ -6,7 +6,7 @@ from django.views.decorators.cache import cache_control
 from django.utils.timezone import now
 
 from tipout_demo.models import DemoEmployee, Expense, Balance, Expenditure, EnterExpenseForm, EditExpenseForm, PayExpenseForm
-from budget_with_balance import update_budgets, weekly_budget_simple
+from .budget_with_balance import update_budgets, weekly_budget_simple
 from custom_auth.models import TipoutUser
 
 from budgettool.settings import CACHE_HASH_KEY
@@ -191,7 +191,7 @@ def delete_expense(request, *args):
 
         wk_budget = weekly_budget_simple(emp)
         cache.set(emp_cache_key+'weekly_budget', wk_budget)
-        
+
         return redirect('/demo/expenses/')
 
 @cache_control(private=True)

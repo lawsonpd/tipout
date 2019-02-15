@@ -23,7 +23,7 @@ def launch_demo(request):
     '''
     demo_email = 'demo' + get_random_string(length=8) + '@tipoutapp.com'
     demo_pw = get_random_string(length=12)
-    print demo_pw
+    print(demo_pw)
     new_user = TipoutUser.objects.create_user(email=demo_email,
                                               stripe_email=demo_email,
                                               stripe_id='Demo',
@@ -36,7 +36,7 @@ def launch_demo(request):
     user = authenticate(email=new_user.email, password=demo_pw)
     if user is not None:
         login(request, user)
-        
+
         new_emp = DemoEmployee.objects.create(user=new_user)
         emp_first_budget = Budget.objects.create(owner=new_emp, amount=0)
         emp_balance = Balance.objects.create(owner=new_emp)

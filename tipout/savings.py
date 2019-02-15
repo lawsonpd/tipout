@@ -1,5 +1,5 @@
 from tipout.models import Savings, SavingsTransaction, Balance, Employee, SavingsSetupForm, SavingsTransactionForm
-from budget_with_balance import weekly_budget_simple, update_budgets
+from .budget_with_balance import weekly_budget_simple, update_budgets
 
 from custom_auth.models import TipoutUser
 
@@ -24,7 +24,7 @@ import hmac
 def savings(request):
     u = TipoutUser.objects.get(email=request.user)
     emp = Employee.objects.get(user=u)
-    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
+    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email.encode('utf-8'), md5).hexdigest()
 
     savings = cache.get(emp_cache_key+'savings')
     if not savings:
@@ -42,9 +42,8 @@ def savings_setup(request):
     emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
 
     if request.method == 'POST':
-    	form = SavingsSetupForm(request.POST)
+        form = SavingsSetupForm(request.POST)
         if form.is_valid():
-
             savings_data = form.cleaned_data
 
             # make sure percent > 0
@@ -57,7 +56,7 @@ def savings_setup(request):
     else:
         emp_savings_percent = emp.savings_percent
         form = SavingsSetupForm()
-    	return render(request, 'savings_setup.html', {'form': form,
+        return render(request, 'savings_setup.html', {'form': form,
                                                       'savings_percent': emp_savings_percent})
 
 @cache_control(private=True)
@@ -69,7 +68,7 @@ def savings_transaction(request):
         if form.is_valid():
             u = TipoutUser.objects.get(email=request.user)
             emp = Employee.objects.get(user=u)
-            emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
+            emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email.encode('utf-8'), md5).hexdigest()
 
             trans_data = form.cleaned_data
             if request.POST['inlineRadioOptions'] == 'withdraw':
@@ -122,7 +121,7 @@ def savings_transaction(request):
 def savings_transaction_history(request):
     u = TipoutUser.objects.get(email=request.user)
     emp = Employee.objects.get(user=u)
-    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
+    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email.encode('utf-8'), md5).hexdigest()
 
     savings_trans = cache.get(emp_cache_key+'savings_trans')
     if not savings_trans:

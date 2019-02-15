@@ -29,7 +29,7 @@ import hmac
 def paychecks(request):
     u = TipoutUser.objects.get(email=request.user)
     emp = Employee.objects.get(user=u)
-    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
+    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email.encode('utf-8'), md5).hexdigest()
 
     recent_paychecks = cache.get(emp_cache_key+'recent_paychecks')
     if not recent_paychecks:
@@ -48,7 +48,7 @@ def paychecks(request):
 def paychecks_archive(request):
     u = TipoutUser.objects.get(email=request.user)
     emp = Employee.objects.get(user=u)
-    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
+    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email.encode('utf-8'), md5).hexdigest()
 
     all_paychecks = cache.get(emp_cache_key+'all_paychecks')
     if not all_paychecks:
@@ -66,7 +66,7 @@ def enter_paycheck(request):
         if form.is_valid():
             u = TipoutUser.objects.get(email=request.user)
             emp = Employee.objects.get(user=u)
-            emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
+            emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email.encode('utf-8'), md5).hexdigest()
 
             paycheck_data = form.cleaned_data
 
@@ -150,7 +150,7 @@ def enter_paycheck(request):
 def edit_paycheck(request, p, *args):
     u = TipoutUser.objects.get(email=request.user)
     emp = Employee.objects.get(user=u)
-    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
+    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email.encode('utf-8'), md5).hexdigest()
 
     # split paycheck url into (email, 'paycheck', year, month, day)
     # paycheck_data_split = args[0].split('-')
@@ -236,7 +236,7 @@ def delete_paycheck(request, p):
     if request.method == 'POST':
         u = TipoutUser.objects.get(email=request.user)
         emp = Employee.objects.get(user=u)
-        emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
+        emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email.encode('utf-8'), md5).hexdigest()
 
         all_paychecks = cache.get(emp_cache_key+'all_paychecks')
         if not all_paychecks:
@@ -299,4 +299,3 @@ def delete_paycheck(request, p):
         cache.set(emp_cache_key+'weekly_budget', wk_budget)
 
         return redirect('/paychecks/')
-

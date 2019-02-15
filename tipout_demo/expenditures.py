@@ -5,11 +5,12 @@ from django.contrib.auth.decorators import permission_required
 from django.utils.timezone import now
 from django.core.cache import cache
 from django.views.decorators.cache import cache_control
-from string import strip
+# strip not available in string module in python3
+# from string import strip
 
 from tipout_demo.models import DemoEmployee, Expenditure, EnterExpenditureForm, EditExpenditureForm, Balance
-from budget_with_balance import update_budgets, weekly_budget_simple
-from budget_utils import pretty_dollar_amount
+from .budget_with_balance import update_budgets, weekly_budget_simple
+from .budget_utils import pretty_dollar_amount
 from custom_auth.models import TipoutUser
 
 from budgettool.settings import CACHE_HASH_KEY

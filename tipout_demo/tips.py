@@ -9,14 +9,14 @@ from decimal import Decimal
 
 from tipout_demo.models import Tip, Expenditure, EnterTipsForm, DemoEmployee, SavingsTransaction, Savings, Balance
 from custom_auth.models import TipoutUser
-from budget_utils import (avg_daily_tips_earned,
+from .budget_utils import (avg_daily_tips_earned,
                           avg_daily_tips_earned_initial,
                           tips_available_per_day_initial,
                           tips_available_per_day,
                           daily_avg_from_paycheck,
                           pretty_dollar_amount
                          )
-from budget_with_balance import update_budgets, weekly_budget_simple
+from .budget_with_balance import update_budgets, weekly_budget_simple
 from budgettool.settings import CACHE_HASH_KEY
 from hashlib import md5
 import hmac
@@ -35,7 +35,7 @@ def enter_tips(request):
 
             u = TipoutUser.objects.get(email=request.user)
             emp = DemoEmployee.objects.get(user=u)
-            emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
+            emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email.encode('utf-8'), md5).hexdigest()
 
             t = Tip(amount=tip_data['amount'],
                     date_earned=tip_data['date_earned'],
@@ -101,7 +101,7 @@ def tips(request):
     if request.method == 'GET':
         u = TipoutUser.objects.get(email=request.user)
         emp = DemoEmployee.objects.get(user=u)
-        emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
+        emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email.encode('utf-8'), md5).hexdigest()
 
         t = now().date()
 
@@ -144,7 +144,7 @@ def delete_tip(request, tip_id, *args):
     if request.method == 'POST':
         u = TipoutUser.objects.get(email=request.user)
         emp = DemoEmployee.objects.get(user=u)
-        emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
+        emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email.encode('utf-8'), md5).hexdigest()
 
         tips = cache.get(emp_cache_key+'tips')
         if not tips:
@@ -211,7 +211,7 @@ def tips_archive(request, year=None, month=None, day=None, *args):
 
     u = TipoutUser.objects.get(email=request.user)
     emp = DemoEmployee.objects.get(user=u)
-    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
+    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email.encode('utf-8'), md5).hexdigest()
 
     tips = cache.get(emp_cache_key+'tips')
     if not tips:

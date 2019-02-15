@@ -5,11 +5,12 @@ from django.contrib.auth.decorators import permission_required
 from django.utils.timezone import now
 from django.core.cache import cache
 from django.views.decorators.cache import cache_control
-from string import strip
+# strip not available in string module in python3
+# from string import strip
 
 from tipout.models import Employee, Expenditure, EnterExpenditureForm, EditExpenditureForm, Balance
-from budget_with_balance import update_budgets, weekly_budget_simple
-from budget_utils import pretty_dollar_amount
+from .budget_with_balance import update_budgets, weekly_budget_simple
+from .budget_utils import pretty_dollar_amount
 from custom_auth.models import TipoutUser
 
 from budgettool.settings import CACHE_HASH_KEY
@@ -31,7 +32,7 @@ def enter_expenditure(request):
             emp = Employee.objects.get(user=u)
             exp_data = form.cleaned_data
 
-            emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
+            emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email.encode('utf-8'), md5).hexdigest()
 
             expends = cache.get(emp_cache_key+'expends')
             if not expends:
@@ -108,7 +109,7 @@ def expenditures(request):
     u = TipoutUser.objects.get(email=request.user)
     emp = Employee.objects.get(user=u)
 
-    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
+    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email.encode('utf-8'), md5).hexdigest()
 
     today_expends = cache.get(emp_cache_key+'today_expends')
     if not today_expends:
@@ -124,7 +125,7 @@ def spending_profile(request):
     u = TipoutUser.objects.get(email=request.user)
     emp = Employee.objects.get(user=u)
 
-    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
+    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email.encode('utf-8'), md5).hexdigest()
 
     expends = cache.get(emp_cache_key+'expends')
     if not expends:
@@ -167,7 +168,7 @@ def delete_expenditure(request, exp, *args):
         u = TipoutUser.objects.get(email=request.user)
         emp = Employee.objects.get(user=u)
 
-        emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
+        emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email.encode('utf-8'), md5).hexdigest()
 
         expends = cache.get(emp_cache_key+'expends')
         if not expends:
@@ -226,7 +227,7 @@ def edit_expenditure(request, exp, *args):
     u = TipoutUser.objects.get(email=request.user)
     emp = Employee.objects.get(user=u)
 
-    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
+    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email.encode('utf-8'), md5).hexdigest()
 
     expends = cache.get(emp_cache_key+'expends')
     if not expends:
@@ -296,7 +297,7 @@ def expenditures_archive(request, *args):
     u = TipoutUser.objects.get(email=request.user)
     emp = Employee.objects.get(user=u)
 
-    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
+    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email.encode('utf-8'), md5).hexdigest()
 
     expends = cache.get(emp_cache_key+'expends')
     if not expends:
@@ -317,7 +318,7 @@ def expenditures_year_archive(request, year, *args):
     u = TipoutUser.objects.get(email=request.user)
     emp = Employee.objects.get(user=u)
 
-    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
+    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email.encode('utf-8'), md5).hexdigest()
 
     expends = cache.get(emp_cache_key+'expends')
     if not expends:
@@ -342,7 +343,7 @@ def expenditures_month_archive(request, year, month, *args):
     u = TipoutUser.objects.get(email=request.user)
     emp = Employee.objects.get(user=u)
 
-    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
+    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email.encode('utf-8'), md5).hexdigest()
 
     expends = cache.get(emp_cache_key+'expends')
     if not expends:
@@ -365,7 +366,7 @@ def expenditures_day_archive(request, year, month, day, *args):
     u = TipoutUser.objects.get(email=request.user)
     emp = Employee.objects.get(user=u)
 
-    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
+    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email.encode('utf-8'), md5).hexdigest()
 
     expends = cache.get(emp_cache_key+'expends')
     if not expends:
@@ -392,7 +393,7 @@ def expenditure_detail(request, year, month, day, exp, *args):
     u = TipoutUser.objects.get(email=request.user)
     emp = Employee.objects.get(user=u)
 
-    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
+    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email.encode('utf-8'), md5).hexdigest()
 
     expends = cache.get(emp_cache_key+'expends')
     if not expends:

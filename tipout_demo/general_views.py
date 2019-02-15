@@ -61,9 +61,9 @@ def new_user_setup(request):
     # if not demo_alive:
     #     u.delete()
     #     return render(request, 'home.html')
-    
+
     emp = DemoEmployee.objects.get(user=u)
-    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email, md5).hexdigest()
+    emp_cache_key = hmac.new(CACHE_HASH_KEY, emp.user.email.encode('utf-8'), md5).hexdigest()
 
     if request.method == 'GET':
         if not emp.new_user:

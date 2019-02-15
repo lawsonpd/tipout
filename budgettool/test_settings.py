@@ -213,7 +213,7 @@ def get_cache():
 CACHES = get_cache()
 
 with open(os.path.join(BASE_DIR, 'keys/cache_hash_key.txt')) as f:
-    CACHE_HASH_KEY = f.read().strip()
+    CACHE_HASH_KEY = bytearray(f.read().strip(), 'utf-8')
 
 # CACHE_MIDDLEWARE_ALIAS
 
