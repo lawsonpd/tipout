@@ -9,13 +9,18 @@ def avg_daily_tips_earned_initial(init_avg_daily_tips, tips_so_far, signup_date)
     so we're dividing by 21.3 assuming 21.3 work days per month.
     '''
     days_so_far = (now().date() - signup_date).days
+    days_left_in_month = 30 - days_so_far
+    days_left_to_work = days_left_in_month * 0.71
+    days_worked_so_far = len(tips_so_far)
     if len(tips_so_far) > 0:
         tips_avg_so_far = Decimal(sum(tips_so_far) / len(tips_so_far))
     else:
         tips_avg_so_far = 0
     # old way, which didn't work correctly:
     # return (init_avg_daily_tips * Decimal((30 - days_so_far) * .71)) / Decimal(21.3)
-    return ((init_avg_daily_tips * Decimal((30 - len(tips_so_far)) * .71)) / Decimal(21.3)) + ((tips_avg_so_far * Decimal(len(tips_so_far)* .71)) / Decimal(21.3))
+    # return ((init_avg_daily_tips * Decimal((30 - len(tips_so_far)) * .71)) / Decimal(21.3)) + ((tips_avg_so_far * Decimal(len(tips_so_far)* .71)) / Decimal(21.3))
+    return ((days_left_in_month * float(init_avg_daily_tips) * 0.71) + float(sum(tips_so_far))) \
+            / (days_left_to_work + days_worked_so_far)
 
 def avg_daily_tips_earned(tips):
     '''
