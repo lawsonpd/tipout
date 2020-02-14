@@ -8,3 +8,4 @@ GIT_DIFF_DEMO_APP.txt
 budgettool/test_settings.py
 gunicorn_error
 debug.log
+.DS_Store
