@@ -10,3 +10,4 @@ gunicorn_error
 debug.log
 .DS_Store
 keys.txt
+materialize/
