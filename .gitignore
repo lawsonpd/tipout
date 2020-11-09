@@ -9,3 +9,4 @@ budgettool/test_settings.py
 gunicorn_error
 debug.log
 .DS_Store
+keys.txt
