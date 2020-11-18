@@ -6,3 +6,4 @@ budgettool/test_settings.py
 debug.log
 .env
 materialize/
+test_settings.py

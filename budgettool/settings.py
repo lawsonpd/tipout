@@ -13,6 +13,9 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 import os
 import dj_database_url
 
+from dotenv import load_dotenv
+load_dotenv()
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -22,8 +25,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # SECRET_KEY = os.environ.get('BTSECRET', '')
-with open(os.path.join(BASE_DIR, 'keys/secret_key.txt')) as f:
-    SECRET_KEY = f.read().strip()
+# with open(os.path.join(BASE_DIR, 'keys/secret_key.txt')) as f:
+#     SECRET_KEY = f.read().strip()
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
@@ -38,8 +42,8 @@ DEBUG = False
 #     }
 # }
 
-with open(os.path.join(BASE_DIR, 'keys/postgres_pw.txt')) as f:
-    POSTGRES_PW = f.read().strip()
+# with open(os.path.join(BASE_DIR, 'keys/postgres_pw.txt')) as f:
+#     POSTGRES_PW = f.read().strip()
 
 DATABASES = {
     'default': {
@@ -213,8 +217,9 @@ def get_cache():
 
 CACHES = get_cache()
 
-with open(os.path.join(BASE_DIR, 'keys/cache_hash_key.txt')) as f:
-    CACHE_HASH_KEY = bytearray(f.read().strip(), 'utf-8')
+# with open(os.path.join(BASE_DIR, 'keys/cache_hash_key.txt')) as f:
+#     CACHE_HASH_KEY = bytearray(f.read().strip(), 'utf-8')
+CACHE_HASH_KEY = os.getenv('CACHE_HASH_KEY')
 
 # CACHE_MIDDLEWARE_ALIAS
 
@@ -243,23 +248,26 @@ with open(os.path.join(BASE_DIR, 'keys/cache_hash_key.txt')) as f:
 
 STRIPE_KEYS = {
   'publishable_key': 'pk_live_WLB0pXGykT9BM5tJ1EixjZF1',
-  'test_pk': 'pk_test_p5rrucKiZvMX19wKoUGVDbRd'
+  'test_pk': 'pk_test_p5rrucKiZvMX19wKoUGVDbRd',
+  'secret_key': os.getenv('STRIPE_SECRET_KEY'),
+  'test_sk': os.getenv('STRIPE_TEST_SECRET_KEY')
 }
 
-with open(os.path.join(BASE_DIR, 'keys/stripe_secret.txt')) as f:
-    STRIPE_KEYS['secret_key'] = f.read().strip()
-with open(os.path.join(BASE_DIR, 'keys/stripe_test_secret.txt')) as f:
-    STRIPE_KEYS['test_sk'] = f.read().strip()
+# with open(os.path.join(BASE_DIR, 'keys/stripe_secret.txt')) as f:
+#     STRIPE_KEYS['secret_key'] = f.read().strip()
+# with open(os.path.join(BASE_DIR, 'keys/stripe_test_secret.txt')) as f:
+#     STRIPE_KEYS['test_sk'] = f.read().strip()
 
 
 
 PLAID_KEYS = {
   'client_id': '5919b358bdc6a44cd258c7ed',
   'public_key': '24e9b020590bce48aa758fd7fd36cd',
+  'secret': os.getenv('PLAID_SECRET')
 }
 
-with open(os.path.join(BASE_DIR, 'keys/plaid_secret.txt')) as f:
-    PLAID_KEYS['secret'] = f.read().strip()
+# with open(os.path.join(BASE_DIR, 'keys/plaid_secret.txt')) as f:
+#     PLAID_KEYS['secret'] = f.read().strip()
 
 EMAIL_HOST = 'tipoutapp.com'
 EMAIL_PORT = '25'
