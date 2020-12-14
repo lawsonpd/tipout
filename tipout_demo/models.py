@@ -4,13 +4,13 @@ from django.db import models
 # from django.contrib.auth.models import User
 from custom_auth.models import TipoutUser
 from django.contrib.auth.forms import UserCreationForm
-from django.utils.encoding import python_2_unicode_compatible
+# from django.utils.encoding import python_2_unicode_compatible
 from django.forms import ModelForm
 from django.utils.translation import ugettext_lazy as _
 from django.utils.text import slugify
 from django.utils.timezone import now
 
-@python_2_unicode_compatible
+# @python_2_unicode_compatible
 class DemoEmployee(models.Model):
     user = models.OneToOneField(
         TipoutUser,
@@ -27,7 +27,7 @@ class DemoEmployee(models.Model):
         email_name = self.user.email.split('@')
         return email_name[0]
 
-@python_2_unicode_compatible
+# @python_2_unicode_compatible
 class Tip(models.Model):
     owner = models.ForeignKey(DemoEmployee, on_delete=models.CASCADE, related_name='tips')
     # should amount be FloatField?
@@ -83,7 +83,7 @@ class Expense(models.Model):
         url_name = '-'.join(expense_name_split)
         return "/%s" % url_name
 
-@python_2_unicode_compatible
+# @python_2_unicode_compatible
 class Expenditure(models.Model):
     owner = models.ForeignKey(DemoEmployee, on_delete=models.CASCADE, related_name='expenditures')
     cost = models.DecimalField(max_digits=9, decimal_places=2)

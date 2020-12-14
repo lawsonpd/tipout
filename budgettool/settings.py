@@ -30,7 +30,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
@@ -48,11 +48,11 @@ DEBUG = False
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'postgres',
-        'USER': 'poorman',
-        'PASSWORD': POSTGRES_PW,
-        'HOST': '',
-        'PORT': '',
+        'NAME': 'tipout-db',
+        'USER': 'tipout',
+        'PASSWORD': os.getenv('POSTGRES_PW'),
+        'HOST': '127.0.0.1',
+        'PORT': '5432',
     }
 }
 
@@ -91,7 +91,7 @@ INSTALLED_APPS = [
 
 SITE_ID = 1
 
-MIDDLEWARE_CLASSES = [
+MIDDLEWARE = [
     # 'django.middleware.cache.UpdateCacheMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

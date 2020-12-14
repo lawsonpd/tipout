@@ -1,5 +1,5 @@
 from django.urls import path, include
-from django.contrib.auth import views as auth_views
+from django.contrib.auth import login as auth_login, logout as auth_logout
 
 from tipout_demo import subscription as demo_subscription
 
@@ -38,7 +38,7 @@ urlpatterns = [
     # path('delete-expenditure/([a-z-A-Z-0-9]+)/([a-z-A-Z-0-9]+)/$', expenditures.delete_expenditure, name='delete-expenditure'),
     path('delete-expenditure/<int:exp>/', expenditures.delete_expenditure, name='delete-expenditure'),
     path('edit-expenditure/<int:exp>/', expenditures.edit_expenditure, name='edit-expenditure'),
-    path('expenditures/archive/$', expenditures.expenditures_archive, name='expenditures-archive'),
+    path('expenditures/archive/', expenditures.expenditures_archive, name='expenditures-archive'),
     path('expenditures/archive/<int:year>/', expenditures.expenditures_year_archive, name='expenditures-year-archive'),
     path('expenditures/archive/<int:year>/<int:month>/', expenditures.expenditures_month_archive, name='expenditures-month-archive'),
     path('expenditures/archive/<int:year>/<int:month>/<int:day>/', expenditures.expenditures_day_archive, name='expenditures-day-archive'),
@@ -73,12 +73,12 @@ urlpatterns = [
     # path('view-feedback/', general_views.view_feedback, name='view-feedback'),
     path(
         'login/',
-        auth_views.login,
+        auth_login,
         {'template_name': 'registration/login.html'}
     ),
     path(
         'logout/',
-        auth_views.logout,
+        auth_logout,
         {'template_name': 'registration/logout.html'}
     ),
     path('', include('django.contrib.auth.urls')),
