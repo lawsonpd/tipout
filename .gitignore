@@ -1,4 +1,5 @@
-venv
+venv/
+venvold/
 *.pyc
 staticfiles
 notes.txt
