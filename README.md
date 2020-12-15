@@ -24,7 +24,7 @@ As a solo (and somewhat novice) developer, I didn't feel confident taking it int
 
 I still believe it's a product that serves a real need, as I had this need myself, and although it never saw its way into the hands of real users, I have no regrets about putting in the effort. I learned a lot about product management (using tools like Trello), UI/UX and SDLC.
 
-Live deployment: [tipout-app.herokuapp.com/demo](tipout-app.herokuapp.com/demo)
+Live deployment: [https://tipout-app.herokuapp.com/demo](tipout-app.herokuapp.com/demo)
 
 _Update_: I'm in the (gradual) process of refactoring the app using Django 3.1 and the app (at the Heroku address above) is currently down.
 
