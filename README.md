@@ -24,4 +24,5 @@ As a solo (and somewhat novice) developer, I didn't feel confident taking it int
 
 I still believe it's a product that serves a real need, as I had this need myself, and although it never saw its way into the hands of real users, I have no regrets about putting in the effort. I learned a lot about product management (using tools like Trello to track feature development), UI/UX and SDLC.
 
+### Footnotes
 <span id="fn1"></span> [1](#footnote). I can't defend this as an optimal way to budget, but at the time it worked for me.
