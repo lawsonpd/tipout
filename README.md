@@ -7,9 +7,9 @@ For servers, bartenders and anyone else who earns tips as all or part of their i
 I simply wanted to know what my earnings were, what my spending looked like and, importantly, what I could spend on a given day while also saving enough to pay my recurring bills[<sup id="footnote">1</sup>](#fn1). So, a few years later, I built an app with these features and a simple UI.
 
 ## Features
-- automatic daily budget based on past earnings and recurring expenses
+- view automatic daily budget based on past earnings and recurring expenses
 - record earnings (tips and paychecks)
-- record expenses (i.e. recurring bills or payments) and expenditures (i.e. one-off spending)
+- record expenses (i.e. recurring bills or payments) and expenditures (i.e. one-off purchases)
 - view daily and weekly spending patterns
 - view monthly earnings patterns
 
