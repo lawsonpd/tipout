@@ -7,3 +7,4 @@ budgettool/test_settings.py
 debug.log
 .env
 materialize/
+materialize-v0.98.2.zip
