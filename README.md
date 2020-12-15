@@ -1,5 +1,5 @@
 # tipout
-A daily budgeting tool for employees who earn tips
+Daily budgeting tool built with Django
 
 ## Purpose
 For servers, bartenders and anyone else who earns tips as all or part of their income, budgeting can be challenging since earnings are unpredictable and can vary month-to-month, week-to-week and day-to-day. When I was a server, I tried using a spreadsheet to track earnings and manage spending, but this was not a good user experience and was more complicated than I wanted to tolerate.
