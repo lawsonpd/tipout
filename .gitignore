@@ -7,3 +7,4 @@ debug.log
 .env
 materialize/
 test_settings.py
+materialize-v0.98.2.zip
